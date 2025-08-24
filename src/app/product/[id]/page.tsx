@@ -11,9 +11,15 @@ import { useCart } from '@/hooks/use-cart';
 import { Minus, Plus, ArrowLeft } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { Product } from '@/lib/types';
+import type { Product, Review } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AiRecommender } from '@/components/user/AiRecommender';
+import { Separator } from '@/components/ui/separator';
+import { useReviews } from '@/hooks/use-reviews';
+import { ReviewForm } from '@/components/user/ReviewForm';
+import { StarRating } from '@/components/user/StarRating';
+import { format } from 'date-fns';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
@@ -24,6 +30,7 @@ export default function ProductDetailPage() {
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const { reviews, loading: reviewsLoading } = useReviews(id as string);
 
   useEffect(() => {
     if (!id) return;
@@ -77,6 +84,8 @@ export default function ProductDetailPage() {
     setQuantity(prev => Math.max(1, prev + amount));
   };
 
+  const averageRating = reviews.length > 0 ? reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length : 0;
+
   return (
     <div className="min-h-screen flex flex-col">
       <UserHeader />
@@ -98,6 +107,10 @@ export default function ProductDetailPage() {
           </div>
           <div className="flex flex-col gap-6">
             <h1 className="text-4xl font-bold font-headline text-primary">{product.name}</h1>
+            <div className="flex items-center gap-2">
+                <StarRating rating={averageRating} readOnly />
+                <span className="text-muted-foreground">({reviews.length} reviews)</span>
+            </div>
             <p className="text-lg text-muted-foreground">{product.description}</p>
             <p className="text-4xl font-extrabold text-accent">PKR {product.price.toFixed(2)}</p>
             <div className="flex items-center gap-4">
@@ -121,6 +134,47 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </div>
+
+        <Separator className="my-16" />
+
+        <div className="grid md:grid-cols-2 gap-12">
+            <div>
+                <h2 className="text-3xl font-bold font-headline mb-6">Leave a Review</h2>
+                <ReviewForm productId={product.id} />
+            </div>
+            <div>
+                 <h2 className="text-3xl font-bold font-headline mb-6">What others are saying</h2>
+                 {reviewsLoading ? (
+                    <div className="space-y-4">
+                        <Skeleton className="h-24 w-full" />
+                        <Skeleton className="h-24 w-full" />
+                    </div>
+                 ) : reviews.length > 0 ? (
+                    <div className="space-y-6 max-h-[500px] overflow-y-auto pr-4">
+                        {reviews.map(review => (
+                            <div key={review.id} className="flex gap-4 p-4 rounded-lg bg-secondary">
+                               <Avatar>
+                                    <AvatarFallback>{review.customerName.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div className="flex-grow">
+                                    <div className="flex items-center justify-between">
+                                        <p className="font-semibold">{review.customerName}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {format(review.createdAt.toDate(), 'PPP')}
+                                        </p>
+                                    </div>
+                                    <StarRating rating={review.rating} readOnly size={16} />
+                                    <p className="mt-2 text-muted-foreground">{review.feedback}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                 ) : (
+                    <p className="text-muted-foreground">No reviews yet. Be the first one to review!</p>
+                 )}
+            </div>
+        </div>
+
         <AiRecommender product={product} />
       </main>
     </div>

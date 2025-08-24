@@ -7,6 +7,7 @@ import { ProductProvider } from '@/hooks/use-products';
 import { SiteSettingsProvider } from '@/hooks/use-site-settings';
 import { CategoryProvider } from '@/hooks/use-categories';
 import { RiderProvider } from '@/hooks/use-riders';
+import { ReviewProvider } from '@/hooks/use-reviews';
 
 export const metadata: Metadata = {
   title: 'QuickBite',
@@ -34,10 +35,12 @@ export default function RootLayout({
             <CategoryProvider>
               <RiderProvider>
                 <OrderProvider>
-                  <CartProvider>
-                    {children}
-                    <Toaster />
-                  </CartProvider>
+                  <ReviewProvider>
+                    <CartProvider>
+                      {children}
+                      <Toaster />
+                    </CartProvider>
+                  </ReviewProvider>
                 </OrderProvider>
               </RiderProvider>
             </CategoryProvider>

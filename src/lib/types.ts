@@ -62,3 +62,12 @@ export interface SiteSettings {
   heroImageUrl: string;
   deliveryFee: number;
 }
+
+export interface Review {
+  id: string;
+  productId: string;
+  customerName: string;
+  rating: number; // 1 to 5
+  feedback: string;
+  createdAt: Timestamp;
+}
