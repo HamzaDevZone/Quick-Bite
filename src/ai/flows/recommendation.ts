@@ -56,11 +56,15 @@ export const suggestComplementaryItemsFlow = ai.defineFlow(
   },
   async ({ productName, category }) => {
     
+    // In a real app, you'd fetch products from your database here.
+    const allProducts = PRODUCTS;
+    const allProductNames = allProducts.map(p => p.name).join(', ');
+
     const llmResponse = await prompt({ productName, category });
     const recommendedProductNames = llmResponse.output || [];
 
     // Filter the main product list to get the full product objects
-    const recommendedProducts = PRODUCTS.filter(p => recommendedProductNames.includes(p.name));
+    const recommendedProducts = allProducts.filter(p => recommendedProductNames.includes(p.name));
     
     return recommendedProducts;
   }

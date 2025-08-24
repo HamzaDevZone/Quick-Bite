@@ -13,6 +13,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Product } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AiRecommender } from '@/components/user/AiRecommender';
 
 export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
@@ -120,6 +121,7 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </div>
+        <AiRecommender product={product} />
       </main>
     </div>
   );

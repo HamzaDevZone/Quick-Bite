@@ -1,62 +1,74 @@
-{
-  "name": "nextn",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev --turbopack -p 9002",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@hookform/resolvers": "^4.1.3",
-    "@radix-ui/react-accordion": "^1.2.3",
-    "@radix-ui/react-alert-dialog": "^1.1.6",
-    "@radix-ui/react-avatar": "^1.1.3",
-    "@radix-ui/react-checkbox": "^1.1.4",
-    "@radix-ui/react-collapsible": "^1.1.11",
-    "@radix-ui/react-dialog": "^1.1.6",
-    "@radix-ui/react-dropdown-menu": "^2.1.6",
-    "@radix-ui/react-label": "^2.1.2",
-    "@radix-ui/react-menubar": "^1.1.6",
-    "@radix-ui/react-popover": "^1.1.6",
-    "@radix-ui/react-progress": "^1.1.2",
-    "@radix-ui/react-radio-group": "^1.2.3",
-    "@radix-ui/react-scroll-area": "^1.2.3",
-    "@radix-ui/react-select": "^2.1.6",
-    "@radix-ui/react-separator": "^1.1.2",
-    "@radix-ui/react-slider": "^1.2.3",
-    "@radix-ui/react-slot": "^1.2.3",
-    "@radix-ui/react-switch": "^1.1.3",
-    "@radix-ui/react-tabs": "^1.1.3",
-    "@radix-ui/react-toast": "^1.2.6",
-    "@radix-ui/react-tooltip": "^1.1.8",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "date-fns": "^3.6.0",
-    "dotenv": "^16.5.0",
-    "embla-carousel-react": "^8.6.0",
-    "firebase": "^11.9.1",
-    "framer-motion": "^11.2.12",
-    "lucide-react": "^0.475.0",
-    "next": "15.3.3",
-    "patch-package": "^8.0.0",
-    "react": "^18.3.1",
-    "react-day-picker": "^8.10.1",
-    "react-dom": "^18.3.1",
-    "react-hook-form": "^7.54.2",
-    "recharts": "^2.15.1",
-    "tailwind-merge": "^3.0.1",
-    "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.24.2"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
-  }
+
+'use client';
+
+import { useEffect, useState } from 'react';
+import { suggestComplementaryItemsFlow } from '@/ai/flows/recommendation';
+import type { Product } from '@/lib/types';
+import { ProductCard } from './ProductCard';
+import { Wand2 } from 'lucide-react';
+import { Skeleton } from '../ui/skeleton';
+
+interface AiRecommenderProps {
+  product: Product;
 }
+
+export function AiRecommender({ product }: AiRecommenderProps) {
+  const [recommendations, setRecommendations] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const getRecommendations = async () => {
+      setLoading(true);
+      try {
+        const result = await suggestComplementaryItemsFlow({ 
+            productName: product.name,
+            category: product.category 
+        });
+        setRecommendations(result);
+      } catch (error) {
+        console.error("Failed to get AI recommendations:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getRecommendations();
+  }, [product]);
+
+  return (
+    <div className="mt-16">
+      <h2 className="text-3xl font-bold font-headline mb-6 flex items-center gap-2">
+        <Wand2 className="h-8 w-8 text-primary" />
+        <span>You Might Also Like</span>
+      </h2>
+      
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+            <CardSkeleton />
+            <CardSkeleton />
+        </div>
+      ) : recommendations.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+          {recommendations.map(recProduct => (
+            <ProductCard key={recProduct.id} product={recProduct} />
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+
+const CardSkeleton = () => (
+  <div className="flex flex-col space-y-3">
+    <Skeleton className="h-[192px] w-full rounded-xl" />
+    <div className="space-y-2">
+      <Skeleton className="h-4 w-4/5" />
+      <Skeleton className="h-4 w-3/5" />
+    </div>
+     <div className="flex justify-between items-center pt-2">
+      <Skeleton className="h-6 w-1/4" />
+       <Skeleton className="h-8 w-8 rounded-full" />
+    </div>
+  </div>
+);

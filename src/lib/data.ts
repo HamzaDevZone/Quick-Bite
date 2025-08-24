@@ -1,5 +1,10 @@
 import type { Product, Category, Order, Rider, Admin } from './types';
 
+// This file is now used as a fallback or for initial data structure reference.
+// The primary data source is Firebase Firestore.
+// The data here will NOT be reflected in the app unless you modify the hooks
+// to read from these arrays instead of Firestore.
+
 export const ADMINS: Admin[] = [
     {
         id: 'default-admin',
