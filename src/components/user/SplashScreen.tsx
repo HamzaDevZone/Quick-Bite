@@ -39,9 +39,15 @@ export function SplashScreen() {
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.2 }}
-              className="flex items-center justify-center bg-primary rounded-full w-24 h-24"
+              className="relative w-24 h-24"
             >
-              <span className="text-5xl font-bold text-primary-foreground">Q</span>
+              <Image 
+                src={settings.splashLogoUrl}
+                alt="QuickBite Logo"
+                fill
+                className="object-contain"
+                data-ai-hint="app logo"
+              />
             </motion.div>
             <motion.h1
               initial={{ y: 20, opacity: 0 }}

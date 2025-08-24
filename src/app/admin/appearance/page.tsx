@@ -13,6 +13,7 @@ import { useEffect } from 'react';
 const appearanceFormSchema = z.object({
   heroImageUrl: z.string().url('Please enter a valid URL.'),
   splashImageUrl: z.string().url('Please enter a valid URL.'),
+  splashLogoUrl: z.string().url('Please enter a valid URL.'),
   menuImageUrl: z.string().url('Please enter a valid URL.'),
   deliveryFee: z.coerce.number().min(0, 'Delivery fee cannot be negative.'),
 });
@@ -25,6 +26,7 @@ export default function AdminAppearancePage() {
     defaultValues: {
       heroImageUrl: settings.heroImageUrl,
       splashImageUrl: settings.splashImageUrl,
+      splashLogoUrl: settings.splashLogoUrl,
       menuImageUrl: settings.menuImageUrl,
       deliveryFee: settings.deliveryFee,
     },
@@ -34,6 +36,7 @@ export default function AdminAppearancePage() {
     form.reset({ 
       heroImageUrl: settings.heroImageUrl,
       splashImageUrl: settings.splashImageUrl,
+      splashLogoUrl: settings.splashLogoUrl,
       menuImageUrl: settings.menuImageUrl,
       deliveryFee: settings.deliveryFee,
     });
@@ -75,6 +78,19 @@ export default function AdminAppearancePage() {
                     <FormLabel>Splash Screen Background URL</FormLabel>
                     <FormControl>
                       <Input placeholder="https://example.com/splash-bg.png" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="splashLogoUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Splash Screen Logo URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://example.com/splash-logo.png" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

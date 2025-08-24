@@ -16,6 +16,7 @@ const defaultSettings: SiteSettings = {
   heroImageUrl: 'https://placehold.co/1920x1080.png',
   splashImageUrl: 'https://placehold.co/1080x1920.png',
   menuImageUrl: 'https://placehold.co/1920x1080.png',
+  splashLogoUrl: 'https://placehold.co/200x200.png',
   deliveryFee: 150,
 };
 

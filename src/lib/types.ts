@@ -63,6 +63,7 @@ export interface SiteSettings {
   splashImageUrl: string;
   menuImageUrl: string;
   deliveryFee: number;
+  splashLogoUrl: string;
 }
 
 export interface Review {
