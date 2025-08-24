@@ -5,23 +5,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { RIDERS } from '@/lib/data';
 import type { Rider } from '@/lib/types';
 import { Bike, Mail, Phone, User } from 'lucide-react';
+import { useRiders } from '@/hooks/use-riders';
 
 export default function RiderProfilePage() {
     const [rider, setRider] = useState<Rider | null>(null);
+    const { riders, loading } = useRiders();
 
     useEffect(() => {
         const authData = sessionStorage.getItem('quickbite_rider_auth');
-        if (authData) {
+        if (authData && !loading) {
             const riderId = JSON.parse(authData).riderId;
-            const currentRider = RIDERS.find(r => r.id === riderId);
+            const currentRider = riders.find(r => r.id === riderId);
             setRider(currentRider || null);
         }
-    }, []);
+    }, [loading, riders]);
 
-    if (!rider) {
+    if (loading || !rider) {
         return (
             <div>
                 <h1 className="text-3xl font-bold mb-6 font-headline">My Profile</h1>

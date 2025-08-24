@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { RiderSidebar } from '@/components/rider/RiderSidebar';
 import { OrderProvider } from '@/hooks/use-orders';
 import { Skeleton } from '@/components/ui/skeleton';
+import { RiderProvider } from '@/hooks/use-riders';
 
 export default function RiderLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -46,7 +47,7 @@ export default function RiderLayout({ children }: { children: React.ReactNode })
     }
     
     if (pathname === '/rider/login') {
-        return <>{children}</>;
+        return <RiderProvider>{children}</RiderProvider>;
     }
 
     if (!isAuth) {
@@ -54,13 +55,15 @@ export default function RiderLayout({ children }: { children: React.ReactNode })
     }
 
     return (
-        <OrderProvider>
-            <div className="flex min-h-screen">
-                <RiderSidebar />
-                <main className="flex-1 p-8 bg-secondary/40">
-                    {children}
-                </main>
-            </div>
-        </OrderProvider>
+        <RiderProvider>
+          <OrderProvider>
+              <div className="flex min-h-screen">
+                  <RiderSidebar />
+                  <main className="flex-1 p-8 bg-secondary/40">
+                      {children}
+                  </main>
+              </div>
+          </OrderProvider>
+        </RiderProvider>
     );
 }

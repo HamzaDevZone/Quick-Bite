@@ -8,17 +8,18 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Bike } from 'lucide-react';
-import { RIDERS } from '@/lib/data';
+import { useRiders } from '@/hooks/use-riders';
 
 export default function RiderLoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
     const { toast } = useToast();
+    const { riders } = useRiders();
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
-        const rider = RIDERS.find(r => r.email === email && r.password === password);
+        const rider = riders.find(r => r.email === email && r.password === password);
 
         if (rider) {
             try {
