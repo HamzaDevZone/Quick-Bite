@@ -1,25 +1,59 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useOrders } from '@/hooks/use-orders';
 import { useProducts } from '@/hooks/use-products';
 import { DollarSign, Package, ShoppingCart, Activity } from 'lucide-react';
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { ChartContainer, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
+import type { Timestamp } from 'firebase/firestore';
+
+const chartConfig = {
+  revenue: {
+    label: "Revenue",
+    color: "hsl(var(--primary))",
+  },
+} satisfies ChartConfig
 
 export default function AdminDashboardPage() {
     const { orders } = useOrders();
     const { products } = useProducts();
 
-    const totalRevenue = orders
-        .filter(order => order.status === 'Delivered')
-        .reduce((sum, order) => sum + order.total, 0);
+    const deliveredOrders = orders.filter(order => order.status === 'Delivered');
 
+    const totalRevenue = deliveredOrders.reduce((sum, order) => sum + order.total, 0);
     const totalOrders = orders.length;
-
     const activeOrders = orders.filter(order => order.status !== 'Delivered').length;
-    
     const totalProducts = products.length;
 
+    // Prepare data for the last 7 days
+    const salesData: { date: string; revenue: number }[] = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    for (let i = 6; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        const dateString = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        salesData.push({ date: dateString, revenue: 0 });
+    }
+
+    deliveredOrders.forEach(order => {
+        const orderDateObj = order.orderDate instanceof Timestamp ? order.orderDate.toDate() : new Date(order.orderDate);
+        
+        const todayMinus7 = new Date(today);
+        todayMinus7.setDate(today.getDate() - 6);
+
+        if (orderDateObj >= todayMinus7 && orderDateObj <= today) {
+            const dateString = orderDateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const index = salesData.findIndex(d => d.date === dateString);
+            if (index !== -1) {
+                salesData[index].revenue += order.total;
+            }
+        }
+    });
+    
     return (
         <div>
             <h1 className="text-3xl font-bold mb-6 font-headline">Dashboard</h1>
@@ -79,10 +113,20 @@ export default function AdminDashboardPage() {
             </div>
              <Card className="mt-6">
                 <CardHeader>
-                    <CardTitle>Welcome, Admin!</CardTitle>
+                    <CardTitle>Recent Sales</CardTitle>
+                    <CardDescription>Revenue from the last 7 days.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <p>This is your central hub for managing QuickBite. You can manage products, view orders, and more from the sidebar.</p>
+                    <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                       <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={salesData} margin={{ top: 20, right: 20, left: -10, bottom: 0 }}>
+                                <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} />
+                                <YAxis tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => `$${value}`} />
+                                <Tooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+                                <Bar dataKey="revenue" fill="var(--color-revenue)" radius={8} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </ChartContainer>
                 </CardContent>
             </Card>
         </div>
