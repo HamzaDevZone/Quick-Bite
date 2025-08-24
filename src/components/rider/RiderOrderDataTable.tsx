@@ -13,8 +13,9 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
-interface OrderDataTableProps {
+interface RiderOrderDataTableProps {
   data: Order[];
 }
 
@@ -25,7 +26,7 @@ const statusColors: Record<OrderStatus, string> = {
   Delivered: 'bg-green-500/20 text-green-500 border-green-500/30',
 };
 
-export function OrderDataTable({ data }: OrderDataTableProps) {
+export function RiderOrderDataTable({ data }: RiderOrderDataTableProps) {
   const { updateOrderStatus } = useOrders();
 
   const handleStatusChange = (orderId: string, status: OrderStatus) => {
@@ -39,22 +40,29 @@ export function OrderDataTable({ data }: OrderDataTableProps) {
           <TableRow>
             <TableHead>Order ID</TableHead>
             <TableHead>Customer</TableHead>
-            <TableHead>Items</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Rider</TableHead>
+            <TableHead>Address</TableHead>
             <TableHead className="text-right">Total</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
+          {data.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={6} className="h-24 text-center">
+                No orders found.
+              </TableCell>
+            </TableRow>
+          )}
           {data.map(order => (
             <TableRow key={order.id}>
-              <TableCell className="font-medium">{order.id}</TableCell>
+              <TableCell className="font-medium">
+                <Link href={`/rider/orders/${order.id}`} className="text-primary hover:underline">
+                    {order.id}
+                </Link>
+              </TableCell>
               <TableCell>{order.customerName}</TableCell>
-              <TableCell>{order.items.reduce((acc, item) => acc + item.quantity, 0)}</TableCell>
-              <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
-              <TableCell>{order.riderId || 'Unassigned'}</TableCell>
+              <TableCell>{order.customerAddress}</TableCell>
               <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
               <TableCell>
                 <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
@@ -62,24 +70,24 @@ export function OrderDataTable({ data }: OrderDataTableProps) {
                 </Badge>
               </TableCell>
               <TableCell className="text-right">
-                <DropdownMenu>
+                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
+                    <Button variant="ghost" className="h-8 w-8 p-0" disabled={order.status === 'Delivered' || order.status === 'Pending'}>
                       <span className="sr-only">Open menu</span>
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Pending')}>
-                      Mark as Pending
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Preparing')}>
-                      Mark as Preparing
-                    </DropdownMenuItem>
-                     <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Picked')}>
+                    <DropdownMenuItem 
+                      onClick={() => handleStatusChange(order.id, 'Picked')}
+                      disabled={order.status !== 'Preparing'}
+                    >
                       Mark as Picked
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Delivered')}>
+                    <DropdownMenuItem 
+                      onClick={() => handleStatusChange(order.id, 'Delivered')}
+                      disabled={order.status !== 'Picked'}
+                    >
                       Mark as Delivered
                     </DropdownMenuItem>
                   </DropdownMenuContent>

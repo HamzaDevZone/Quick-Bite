@@ -1,4 +1,4 @@
-import type { Product, Category, Order } from './types';
+import type { Product, Category, Order, Rider } from './types';
 
 export const CATEGORIES: Category[] = [
   { id: 'burgers', name: 'Burgers' },
@@ -74,29 +74,46 @@ export const PRODUCTS: Product[] = [
   },
 ];
 
+export const RIDERS: Rider[] = [
+    {
+        id: 'rider-1',
+        name: 'Alex Green',
+        email: 'rider@example.com',
+        password: 'password123',
+        phone: '123-456-7890',
+        vehicleInfo: 'Motorcycle - Yamaha MT-07'
+    }
+];
+
 export const ORDERS: Order[] = [
     {
         id: 'ORD001',
         customerName: 'John Doe',
+        customerPhone: '555-123-4567',
+        customerAddress: '123 Main St, Anytown, USA',
         items: [
             { product: PRODUCTS[0], quantity: 1 },
             { product: PRODUCTS[2], quantity: 1 },
             { product: PRODUCTS[3], quantity: 1 },
         ],
-        status: 'Pending',
+        status: 'Preparing',
         total: 15.97,
         orderDate: '2024-05-21T10:30:00Z',
+        riderId: 'rider-1',
     },
     {
         id: 'ORD002',
         customerName: 'Jane Smith',
+        customerPhone: '555-987-6543',
+        customerAddress: '456 Oak Ave, Anytown, USA',
         items: [
             { product: PRODUCTS[1], quantity: 1 },
             { product: PRODUCTS[6], quantity: 2 },
         ],
-        status: 'Preparing',
+        status: 'Picked',
         total: 24.97,
         orderDate: '2024-05-21T10:35:00Z',
+        riderId: 'rider-1',
     },
     {
         id: 'ORD003',
@@ -107,5 +124,19 @@ export const ORDERS: Order[] = [
         status: 'Delivered',
         total: 23.98,
         orderDate: '2024-05-20T18:00:00Z',
+        riderId: 'rider-1',
+    },
+     {
+        id: 'ORD004',
+        customerName: 'Sarah Brown',
+        customerPhone: '555-222-3333',
+        customerAddress: '789 Pine Ln, Anytown, USA',
+        items: [
+            { product: PRODUCTS[5], quantity: 1 },
+            { product: PRODUCTS[7], quantity: 1 },
+        ],
+        status: 'Pending',
+        total: 13.98,
+        orderDate: '2024-05-21T11:00:00Z',
     },
 ];
