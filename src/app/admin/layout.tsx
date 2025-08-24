@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { RiderProvider } from '@/hooks/use-riders';
 import { CategoryProvider } from '@/hooks/use-categories';
 import { SiteSettingsProvider } from '@/hooks/use-site-settings';
+import { AdminProvider } from '@/hooks/use-admins';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -49,7 +50,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
     
     if (pathname === '/admin/login') {
-        return <>{children}</>;
+        return <AdminProvider>{children}</AdminProvider>;
     }
 
     if (!isAuth) {
@@ -57,6 +58,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
 
     return (
+      <AdminProvider>
         <ProductProvider>
             <OrderProvider>
                 <RiderProvider>
@@ -73,5 +75,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </RiderProvider>
             </OrderProvider>
         </ProductProvider>
+      </AdminProvider>
     );
 }

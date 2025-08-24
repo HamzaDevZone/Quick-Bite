@@ -1,4 +1,8 @@
-import type { Product, Category, Order, Rider } from './types';
+import type { Product, Category, Order, Rider, Admin } from './types';
+
+export const ADMINS: Admin[] = [
+  { id: 'admin-1', name: 'Super Admin', email: 'gk00536789@gmail.com', password: 'gk00536789' }
+];
 
 export const CATEGORIES: Category[] = [
   { id: 'burgers', name: 'Burgers', iconUrl: 'https://i.ibb.co/GcmC6GZ/burgers.png' },

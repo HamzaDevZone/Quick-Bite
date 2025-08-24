@@ -35,6 +35,13 @@ export interface Rider {
     profilePictureUrl?: string;
 }
 
+export interface Admin {
+  id: string;
+  name: string;
+  email: string;
+  password?: string;
+}
+
 export interface Order {
   id: string;
   customerName: string;

@@ -8,16 +8,20 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { KeyRound } from 'lucide-react';
+import { useAdmins } from '@/hooks/use-admins';
 
 export default function AdminLoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
     const { toast } = useToast();
+    const { admins } = useAdmins();
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
-        if (email === 'gk00536789@gmail.com' && password === 'gk00536789') {
+        const adminUser = admins.find(admin => admin.email === email && admin.password === password);
+
+        if (adminUser) {
             try {
                 sessionStorage.setItem('quickbite_admin_auth', 'true');
                 toast({ title: 'Login Successful', description: 'Redirecting to dashboard...' });
