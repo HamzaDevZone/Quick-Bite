@@ -1,6 +1,12 @@
 import type { Product, Category, Order, Rider, Admin } from './types';
 
 export const ADMINS: Admin[] = [
+    {
+        id: 'default-admin',
+        name: 'Default Admin',
+        email: 'admin@example.com',
+        password: 'password'
+    }
 ];
 
 export const CATEGORIES: Category[] = [
