@@ -13,10 +13,10 @@ const SiteSettingsContext = createContext<SiteSettingsContextType | undefined>(u
 
 // Default settings
 const defaultSettings: SiteSettings = {
-  heroImageUrl: 'https://placehold.co/1920x1080.png',
-  splashImageUrl: 'https://placehold.co/1080x1920.png',
-  menuImageUrl: 'https://placehold.co/1920x1080.png',
-  splashLogoUrl: 'https://placehold.co/200x200.png',
+  heroImageUrl: 'https://i.ibb.co/qCXJ4tM/hero-bg.png',
+  splashImageUrl: 'https://i.ibb.co/6PzD4gQ/splash-bg.png',
+  menuImageUrl: 'https://i.ibb.co/M5pS1sV/menu-bg.png',
+  splashLogoUrl: 'https://i.ibb.co/P9gL6M1/logo.png',
   deliveryFee: 150,
 };
 
