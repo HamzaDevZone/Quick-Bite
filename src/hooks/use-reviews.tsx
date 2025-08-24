@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
@@ -71,15 +72,13 @@ export const ReviewProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useReviews = (productId: string) => {
-  const context = useContext(ReviewContext);
+  const { toast } = useToast();
   const [state, setState] = useState<{
     reviews: Review[],
     loading: boolean,
-    addReview: (review: Omit<Review, 'id' | 'createdAt'>) => Promise<void>,
   }>({
     reviews: [],
     loading: true,
-    addReview: async () => {}
   });
 
   useEffect(() => {
@@ -113,7 +112,6 @@ export const useReviews = (productId: string) => {
 
 
   const addReview = async (review: Omit<Review, 'id' | 'createdAt'>) => {
-    const { toast } = useToast();
     try {
       const newReviewData = {
         ...review,
@@ -138,6 +136,7 @@ export const useReviews = (productId: string) => {
     }
   };
 
+  const context = useContext(ReviewContext);
   if (context === undefined) {
     throw new Error('useReviews must be used within a ReviewProvider');
   }
