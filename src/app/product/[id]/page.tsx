@@ -13,7 +13,6 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Product, Review } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AiRecommender } from '@/components/user/AiRecommender';
 import { Separator } from '@/components/ui/separator';
 import { useReviews } from '@/hooks/use-reviews';
 import { ReviewForm } from '@/components/user/ReviewForm';
@@ -174,8 +173,6 @@ export default function ProductDetailPage() {
                  )}
             </div>
         </div>
-
-        <AiRecommender product={product} />
       </main>
     </div>
   );
