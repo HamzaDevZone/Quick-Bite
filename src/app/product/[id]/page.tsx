@@ -1,19 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PRODUCTS } from '@/lib/data';
 import { UserHeader } from '@/components/user/Header';
 import { useCart } from '@/hooks/use-cart';
-import { Minus, Plus } from 'lucide-react';
+import { Minus, Plus, ArrowLeft } from 'lucide-react';
 import AiRecommender from '@/components/user/AiRecommender';
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
+  const router = useRouter();
   const product = PRODUCTS.find(p => p.id === params.id);
 
   if (!product) {
@@ -28,6 +29,10 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     <div className="min-h-screen flex flex-col">
       <UserHeader />
       <main className="flex-grow container mx-auto px-4 py-12">
+         <Button variant="ghost" onClick={() => router.back()} className="mb-8">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Menu
+        </Button>
         <div className="grid md:grid-cols-2 gap-12 items-start">
           <div className="relative aspect-square rounded-lg overflow-hidden shadow-lg">
             <Image
