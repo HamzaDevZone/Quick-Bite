@@ -1,5 +1,5 @@
 'use server';
-import { run } from '@genkit-ai/next/server';
+import { run } from '@genkit-ai/next/runnable';
 import { suggestComplementaryItemsFlow } from '@/ai/flows/recommendation';
 import type { Product } from '@/lib/types';
 
