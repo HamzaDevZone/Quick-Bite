@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 
 const appearanceFormSchema = z.object({
   heroImageUrl: z.string().url('Please enter a valid URL.'),
+  deliveryFee: z.coerce.number().min(0, 'Delivery fee cannot be negative.'),
 });
 
 export default function AdminAppearancePage() {
@@ -21,11 +22,15 @@ export default function AdminAppearancePage() {
     resolver: zodResolver(appearanceFormSchema),
     defaultValues: {
       heroImageUrl: settings.heroImageUrl,
+      deliveryFee: settings.deliveryFee,
     },
   });
   
   useEffect(() => {
-    form.reset({ heroImageUrl: settings.heroImageUrl });
+    form.reset({ 
+      heroImageUrl: settings.heroImageUrl,
+      deliveryFee: settings.deliveryFee,
+    });
   }, [settings, form]);
 
   function onSubmit(values: z.infer<typeof appearanceFormSchema>) {
@@ -34,11 +39,11 @@ export default function AdminAppearancePage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold font-headline mb-6">Appearance</h1>
+      <h1 className="text-3xl font-bold font-headline mb-6">Appearance & General</h1>
       <Card>
         <CardHeader>
-          <CardTitle>Landing Page Settings</CardTitle>
-          <CardDescription>Customize the look of your landing page.</CardDescription>
+          <CardTitle>Site Settings</CardTitle>
+          <CardDescription>Customize the look and feel of your customer-facing app.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -51,6 +56,19 @@ export default function AdminAppearancePage() {
                     <FormLabel>Hero Image URL</FormLabel>
                     <FormControl>
                       <Input placeholder="https://example.com/your-image.png" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="deliveryFee"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Delivery Fee (PKR)</FormLabel>
+                    <FormControl>
+                      <Input type="number" step="1" placeholder="150" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

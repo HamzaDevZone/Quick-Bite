@@ -44,9 +44,9 @@ export default function RiderOrderDetailPage() {
                                         <Image src={item.product.imageUrl} alt={item.product.name} width={64} height={64} className="rounded-md" data-ai-hint="food item"/>
                                         <div>
                                             <p className="font-medium">{item.product.name} <span className="text-sm text-muted-foreground">x {item.quantity}</span></p>
-                                            <p className="text-sm text-muted-foreground">${item.product.price.toFixed(2)}</p>
+                                            <p className="text-sm text-muted-foreground">PKR {item.product.price.toFixed(2)}</p>
                                         </div>
-                                        <p className="ml-auto font-semibold">${(item.product.price * item.quantity).toFixed(2)}</p>
+                                        <p className="ml-auto font-semibold">PKR {(item.product.price * item.quantity).toFixed(2)}</p>
                                     </div>
                                 ))}
                                 <Separator/>
@@ -55,7 +55,7 @@ export default function RiderOrderDetailPage() {
                                         <Wallet className="h-5 w-5 text-muted-foreground" />
                                         <span className="text-base font-medium">{order.paymentMethod}</span>
                                     </div>
-                                    <span>Total: ${order.total.toFixed(2)}</span>
+                                    <span>Total: PKR {order.total.toFixed(2)}</span>
                                 </div>
                             </div>
                         </CardContent>

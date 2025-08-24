@@ -10,9 +10,12 @@ import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/hooks/use-cart';
 import { UserHeader } from '@/components/user/Header';
 import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
+import { useSiteSettings } from '@/hooks/use-site-settings';
 
 export default function CartPage() {
   const { cart, updateQuantity, removeFromCart, cartTotal, itemCount } = useCart();
+  const { settings } = useSiteSettings();
+  const deliveryFee = settings.deliveryFee;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -29,7 +32,7 @@ export default function CartPage() {
                   </div>
                   <div className="flex-grow ml-4">
                     <h2 className="font-semibold text-lg">{item.product.name}</h2>
-                    <p className="text-muted-foreground">${item.product.price.toFixed(2)}</p>
+                    <p className="text-muted-foreground">PKR {item.product.price.toFixed(2)}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(item.product.id, item.quantity - 1)}>
@@ -59,16 +62,16 @@ export default function CartPage() {
                 <CardContent className="space-y-4">
                   <div className="flex justify-between">
                     <span>Subtotal ({itemCount} items)</span>
-                    <span>${cartTotal.toFixed(2)}</span>
+                    <span>PKR {cartTotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Delivery Fee</span>
-                    <span>$5.00</span>
+                    <span>PKR {deliveryFee.toFixed(2)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
-                    <span>${(cartTotal + 5).toFixed(2)}</span>
+                    <span>PKR {(cartTotal + deliveryFee).toFixed(2)}</span>
                   </div>
                 </CardContent>
                 <CardFooter>

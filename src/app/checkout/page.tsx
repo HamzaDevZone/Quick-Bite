@@ -18,6 +18,7 @@ import Image from 'next/image';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { CreditCard, Landmark, Wallet } from 'lucide-react';
 import { useEffect } from 'react';
+import { useSiteSettings } from '@/hooks/use-site-settings';
 
 const paymentMethods = [
     { value: 'Cash on Delivery', label: 'Cash on Delivery', icon: Wallet },
@@ -37,6 +38,8 @@ const checkoutSchema = z.object({
 export default function CheckoutPage() {
   const { cart, cartTotal, itemCount, clearCart } = useCart();
   const { addOrder } = useOrders();
+  const { settings } = useSiteSettings();
+  const deliveryFee = settings.deliveryFee;
   const router = useRouter();
   const { toast } = useToast();
 
@@ -60,11 +63,11 @@ export default function CheckoutPage() {
   }
 
   const onSubmit = async (values: z.infer<typeof checkoutSchema>) => {
-    const deliveryFee = 5.00;
     const orderData = {
       ...values,
       items: cart,
       total: cartTotal + deliveryFee,
+      deliveryFee: deliveryFee,
     };
     await addOrder(orderData);
     toast({
@@ -108,7 +111,7 @@ export default function CheckoutPage() {
                             <FormItem>
                             <FormLabel>Phone Number</FormLabel>
                             <FormControl>
-                                <Input placeholder="555-123-4567" {...field} />
+                                <Input placeholder="0300-1234567" {...field} />
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -121,7 +124,7 @@ export default function CheckoutPage() {
                             <FormItem>
                             <FormLabel>Delivery Address</FormLabel>
                             <FormControl>
-                                <Input placeholder="123 Main St, Anytown, USA" {...field} />
+                                <Input placeholder="House 123, Street 4, Islamabad" {...field} />
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -181,7 +184,7 @@ export default function CheckoutPage() {
                             <p className="font-medium">{item.product.name}</p>
                             <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                         </div>
-                        <p className="font-semibold">${(item.product.price * item.quantity).toFixed(2)}</p>
+                        <p className="font-semibold">PKR {(item.product.price * item.quantity).toFixed(2)}</p>
                         </div>
                     ))}
                     </div>
@@ -189,16 +192,16 @@ export default function CheckoutPage() {
                     <div className="space-y-2">
                     <div className="flex justify-between">
                         <span>Subtotal</span>
-                        <span>${cartTotal.toFixed(2)}</span>
+                        <span>PKR {cartTotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
                         <span>Delivery Fee</span>
-                        <span>$5.00</span>
+                        <span>PKR {deliveryFee.toFixed(2)}</span>
                     </div>
                     <Separator />
                     <div className="flex justify-between font-bold text-lg">
                         <span>Total</span>
-                        <span>${(cartTotal + 5.00).toFixed(2)}</span>
+                        <span>PKR {(cartTotal + deliveryFee).toFixed(2)}</span>
                     </div>
                     </div>
                 </CardContent>

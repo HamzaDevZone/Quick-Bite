@@ -108,7 +108,7 @@ export default function AdminOrderDetailPage() {
                                             <p className="font-medium">{item.product.name}</p>
                                             <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                                         </div>
-                                        <p className="font-semibold">${(item.product.price * item.quantity).toFixed(2)}</p>
+                                        <p className="font-semibold">PKR {(item.product.price * item.quantity).toFixed(2)}</p>
                                     </div>
                                 ))}
                             </div>
@@ -116,8 +116,8 @@ export default function AdminOrderDetailPage() {
                         <CardFooter className="bg-secondary/30 p-4 rounded-b-lg">
                             <div className="w-full flex justify-end">
                                 <div className="text-right">
-                                    <div className="text-sm text-muted-foreground">Delivery Fee: $5.00</div>
-                                    <div className="text-xl font-bold">Total: ${order.total.toFixed(2)}</div>
+                                    <div className="text-sm text-muted-foreground">Delivery Fee: PKR {order.deliveryFee.toFixed(2)}</div>
+                                    <div className="text-xl font-bold">Total: PKR {order.total.toFixed(2)}</div>
                                 </div>
                             </div>
                         </CardFooter>

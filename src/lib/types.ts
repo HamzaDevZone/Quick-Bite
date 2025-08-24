@@ -55,8 +55,10 @@ export interface Order {
   orderDate: Timestamp | string;
   riderId?: string;
   paymentMethod: string;
+  deliveryFee: number;
 }
 
 export interface SiteSettings {
   heroImageUrl: string;
+  deliveryFee: number;
 }

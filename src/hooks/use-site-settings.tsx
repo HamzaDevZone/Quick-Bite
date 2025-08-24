@@ -14,6 +14,7 @@ const SiteSettingsContext = createContext<SiteSettingsContextType | undefined>(u
 // Default settings
 const defaultSettings: SiteSettings = {
   heroImageUrl: 'https://placehold.co/1920x1080.png',
+  deliveryFee: 150,
 };
 
 export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
@@ -24,7 +25,8 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
     try {
       const storedSettings = localStorage.getItem('quickbite-site-settings');
       if (storedSettings) {
-        setSettings(JSON.parse(storedSettings));
+        // Merge stored settings with defaults to ensure new fields are present
+        setSettings(prevSettings => ({ ...prevSettings, ...JSON.parse(storedSettings) }));
       }
     } catch (error) {
       console.error("Could not load site settings from localStorage", error);

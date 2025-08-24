@@ -73,7 +73,7 @@ export function OrderDataTable({ data }: OrderDataTableProps) {
                 <TableCell>{order.paymentMethod}</TableCell>
                 <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
                 <TableCell>{getRiderName(order.riderId)}</TableCell>
-                <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
+                <TableCell className="text-right">PKR {order.total.toFixed(2)}</TableCell>
                 <TableCell>
                   <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
                     {order.status}

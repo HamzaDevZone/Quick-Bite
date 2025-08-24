@@ -13,6 +13,7 @@ interface NewOrderData {
     items: OrderItem[];
     total: number;
     paymentMethod: string;
+    deliveryFee: number;
 }
 
 interface OrderContextType {

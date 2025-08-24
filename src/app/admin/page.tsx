@@ -66,7 +66,7 @@ export default function AdminDashboardPage() {
                         <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
+                        <div className="text-2xl font-bold">PKR {totalRevenue.toFixed(2)}</div>
                         <p className="text-xs text-muted-foreground">
                             From all completed orders
                         </p>
@@ -121,8 +121,8 @@ export default function AdminDashboardPage() {
                        <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={salesData} margin={{ top: 20, right: 20, left: -10, bottom: 0 }}>
                                 <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} />
-                                <YAxis tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => `$${value}`} />
-                                <Tooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+                                <YAxis tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => `PKR${value}`} />
+                                <Tooltip cursor={false} content={<ChartTooltipContent indicator="dot" formatter={(value, name, props) => [`PKR ${Number(value).toFixed(2)}`, props.payload.date]} />} />
                                 <Bar dataKey="revenue" fill="var(--color-revenue)" radius={8} />
                             </BarChart>
                         </ResponsiveContainer>

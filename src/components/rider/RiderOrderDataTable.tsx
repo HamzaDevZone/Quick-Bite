@@ -65,7 +65,7 @@ export function RiderOrderDataTable({ data }: RiderOrderDataTableProps) {
                 </TableCell>
                 <TableCell>{order.customerName}</TableCell>
                 <TableCell>{order.customerAddress}</TableCell>
-                <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
+                <TableCell className="text-right">PKR {order.total.toFixed(2)}</TableCell>
                 <TableCell>
                   <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
                     {order.status}

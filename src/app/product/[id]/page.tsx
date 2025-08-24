@@ -99,7 +99,7 @@ export default function ProductDetailPage() {
           <div className="flex flex-col gap-6">
             <h1 className="text-4xl font-bold font-headline text-primary">{product.name}</h1>
             <p className="text-lg text-muted-foreground">{product.description}</p>
-            <p className="text-4xl font-extrabold text-accent">${product.price.toFixed(2)}</p>
+            <p className="text-4xl font-extrabold text-accent">PKR {product.price.toFixed(2)}</p>
             <div className="flex items-center gap-4">
               <div className="flex items-center border rounded-md">
                 <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(-1)}>

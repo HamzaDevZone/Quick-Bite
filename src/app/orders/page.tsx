@@ -63,14 +63,14 @@ export default function OrderHistoryPage() {
                                             {order.items.map(item => (
                                                 <div key={item.product.id} className="flex justify-between items-center text-sm">
                                                     <span>{item.product.name} x {item.quantity}</span>
-                                                    <span className="text-muted-foreground">${(item.product.price * item.quantity).toFixed(2)}</span>
+                                                    <span className="text-muted-foreground">PKR {(item.product.price * item.quantity).toFixed(2)}</span>
                                                 </div>
                                             ))}
                                         </div>
                                         <Separator />
                                         <div className="flex justify-between font-bold mt-4">
                                             <span>Total</span>
-                                            <span>${order.total.toFixed(2)}</span>
+                                            <span>PKR {order.total.toFixed(2)}</span>
                                         </div>
                                     </CardContent>
                                 </Card>
