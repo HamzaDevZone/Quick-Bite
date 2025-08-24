@@ -6,7 +6,7 @@ import { ShoppingCart, UserCircle, Bike, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/use-cart';
 import { Badge } from '../ui/badge';
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from '../ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '../ui/sheet';
 import { useState } from 'react';
 
 const navLinks = [
@@ -83,6 +83,9 @@ export function UserHeader() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[250px]">
+                    <SheetHeader className="sr-only">
+                        <SheetTitle>Navigation Menu</SheetTitle>
+                    </SheetHeader>
                     <div className="flex flex-col p-4 pt-10">
                         <Link href="/" className="text-2xl font-bold text-primary font-headline mb-8" onClick={() => setIsSheetOpen(false)}>
                             QuickBite
