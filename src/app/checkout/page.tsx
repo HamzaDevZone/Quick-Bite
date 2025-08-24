@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { CreditCard, Landmark, Wallet } from 'lucide-react';
+import { useEffect } from 'react';
 
 const paymentMethods = [
     { value: 'Cash on Delivery', label: 'Cash on Delivery', icon: Wallet },
@@ -48,11 +49,14 @@ export default function CheckoutPage() {
     },
   });
 
-  if (itemCount === 0) {
-    if(typeof window !== 'undefined'){
-        router.replace('/menu');
+  useEffect(() => {
+    if (itemCount === 0) {
+      router.replace('/menu');
     }
-    return null;
+  }, [itemCount, router]);
+
+  if (itemCount === 0) {
+    return null; // Render nothing while redirecting
   }
 
   const onSubmit = async (values: z.infer<typeof checkoutSchema>) => {
