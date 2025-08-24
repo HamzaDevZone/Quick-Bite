@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { CartProvider } from '@/hooks/use-cart';
+import { OrderProvider } from '@/hooks/use-orders';
+import { ProductProvider } from '@/hooks/use-products';
 
 export const metadata: Metadata = {
   title: 'QuickBite',
@@ -24,10 +26,14 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <CartProvider>
-          {children}
-          <Toaster />
-        </CartProvider>
+        <ProductProvider>
+          <OrderProvider>
+            <CartProvider>
+              {children}
+              <Toaster />
+            </CartProvider>
+          </OrderProvider>
+        </ProductProvider>
       </body>
     </html>
   );
