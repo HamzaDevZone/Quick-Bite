@@ -76,18 +76,17 @@ export interface Review {
 }
 
 export interface Message {
-  id: string;
-  conversationId: string;
-  senderId: string; // 'admin' or user's ID/name
-  text: string;
-  createdAt: Timestamp;
+    id: string;
+    conversationId: string; // Typically user's email
+    sender: 'user' | 'admin';
+    text: string;
+    createdAt: Timestamp;
 }
 
 export interface Conversation {
-  id: string;
-  userId: string; // Could be customer name or a unique ID
-  userName: string;
-  lastMessage: string;
-  updatedAt: Timestamp;
-  isReadByAdmin: boolean;
+    id: string; // The user's email
+    userName: string;
+    lastMessage: string;
+    updatedAt: Timestamp;
+    isReadByAdmin: boolean;
 }

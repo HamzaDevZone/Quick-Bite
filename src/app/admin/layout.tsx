@@ -10,6 +10,7 @@ import { RiderProvider } from '@/hooks/use-riders';
 import { CategoryProvider } from '@/hooks/use-categories';
 import { SiteSettingsProvider } from '@/hooks/use-site-settings';
 import { AdminProvider } from '@/hooks/use-admins';
+import { MessageProvider } from '@/hooks/use-messages';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -64,12 +65,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <RiderProvider>
                     <CategoryProvider>
                         <SiteSettingsProvider>
-                            <div className="flex min-h-screen">
-                                <AdminSidebar />
-                                <main className="flex-1 p-8 bg-secondary/40">
-                                    {children}
-                                </main>
-                            </div>
+                            <MessageProvider>
+                                <div className="flex min-h-screen">
+                                    <AdminSidebar />
+                                    <main className="flex-1 p-8 bg-secondary/40">
+                                        {children}
+                                    </main>
+                                </div>
+                            </MessageProvider>
                         </SiteSettingsProvider>
                     </CategoryProvider>
                 </RiderProvider>

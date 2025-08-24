@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Package, LogOut, UtensilsCrossed, ShoppingCart, Bike, Shapes, Palette, Users, Home } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, UtensilsCrossed, ShoppingCart, Bike, Shapes, Palette, Users, Home, MessageSquare } from 'lucide-react';
 
 const navItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -12,6 +12,7 @@ const navItems = [
     { href: '/admin/categories', label: 'Categories', icon: Shapes },
     { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
     { href: '/admin/riders', label: 'Riders', icon: Bike },
+    { href: '/admin/messages', label: 'Messages', icon: MessageSquare },
     { href: '/admin/admins', label: 'Admins', icon: Users },
     { href: '/admin/appearance', label: 'Appearance', icon: Palette },
 ];
