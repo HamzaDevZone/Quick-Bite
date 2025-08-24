@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle } from 'lucide-react';
+import { ShoppingCart, UserCircle, Bike } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/use-cart';
 import { Badge } from '../ui/badge';
@@ -15,7 +15,7 @@ export function UserHeader() {
         <Link href="/" className="text-2xl font-bold text-primary font-headline">
           QuickBite
         </Link>
-        <nav className="flex items-center gap-4">
+        <nav className="flex items-center gap-2">
           <Link href="/cart" passHref>
             <Button variant="ghost" size="icon" className="relative">
               <ShoppingCart className="h-6 w-6 text-accent" />
@@ -27,6 +27,11 @@ export function UserHeader() {
                   {itemCount}
                 </Badge>
               )}
+            </Button>
+          </Link>
+          <Link href="/rider/login" passHref>
+            <Button variant="ghost" size="icon">
+              <Bike className="h-6 w-6 text-accent" />
             </Button>
           </Link>
           <Link href="/admin/login" passHref>
