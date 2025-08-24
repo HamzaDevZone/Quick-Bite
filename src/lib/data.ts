@@ -110,6 +110,7 @@ export const ORDERS: Order[] = [
         total: 15.97,
         orderDate: '2024-05-21T10:30:00Z',
         riderId: 'rider-1',
+        paymentMethod: 'Cash on Delivery',
     },
     {
         id: 'ORD002',
@@ -124,6 +125,7 @@ export const ORDERS: Order[] = [
         total: 24.97,
         orderDate: '2024-05-21T10:35:00Z',
         riderId: 'rider-1',
+        paymentMethod: 'Jazzcash/Easypaisa',
     },
     {
         id: 'ORD003',
@@ -137,6 +139,7 @@ export const ORDERS: Order[] = [
         total: 23.98,
         orderDate: '2024-05-20T18:00:00Z',
         riderId: 'rider-2',
+        paymentMethod: 'Bank Transfer',
     },
      {
         id: 'ORD004',
@@ -150,5 +153,6 @@ export const ORDERS: Order[] = [
         status: 'Pending',
         total: 13.98,
         orderDate: '2024-05-21T11:00:00Z',
+        paymentMethod: 'Cash on Delivery',
     },
 ];

@@ -50,7 +50,7 @@ export function OrderDataTable({ data }: OrderDataTableProps) {
           <TableRow>
             <TableHead>Order ID</TableHead>
             <TableHead>Customer</TableHead>
-            <TableHead>Address</TableHead>
+            <TableHead>Payment</TableHead>
             <TableHead>Date</TableHead>
             <TableHead>Rider</TableHead>
             <TableHead className="text-right">Total</TableHead>
@@ -63,7 +63,7 @@ export function OrderDataTable({ data }: OrderDataTableProps) {
             <TableRow key={order.id}>
               <TableCell className="font-medium">{order.id}</TableCell>
               <TableCell>{order.customerName}</TableCell>
-              <TableCell>{order.customerAddress}</TableCell>
+              <TableCell>{order.paymentMethod}</TableCell>
               <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
               <TableCell>{getRiderName(order.riderId)}</TableCell>
               <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>

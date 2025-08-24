@@ -11,6 +11,7 @@ interface NewOrderData {
     customerAddress: string;
     items: OrderItem[];
     total: number;
+    paymentMethod: string;
 }
 
 interface OrderContextType {

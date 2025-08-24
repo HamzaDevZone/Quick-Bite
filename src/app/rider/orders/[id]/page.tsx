@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useOrders } from '@/hooks/use-orders';
 import { OrderStatus, Order } from '@/lib/types';
-import { ArrowLeft, Check, Bike, Package } from 'lucide-react';
+import { ArrowLeft, Check, Bike, Package, Wallet } from 'lucide-react';
 import Image from 'next/image';
 
 export default function RiderOrderDetailPage() {
@@ -49,7 +49,11 @@ export default function RiderOrderDetailPage() {
                                     </div>
                                 ))}
                                 <Separator/>
-                                <div className="flex justify-end font-bold text-lg">
+                                <div className="flex justify-between font-bold text-lg items-center">
+                                    <div className="flex items-center gap-2">
+                                        <Wallet className="h-5 w-5 text-muted-foreground" />
+                                        <span className="text-base font-medium">{order.paymentMethod}</span>
+                                    </div>
                                     <span>Total: ${order.total.toFixed(2)}</span>
                                 </div>
                             </div>

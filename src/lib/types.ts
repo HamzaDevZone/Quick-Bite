@@ -45,4 +45,5 @@ export interface Order {
   total: number;
   orderDate: string;
   riderId?: string;
+  paymentMethod: string;
 }
