@@ -39,7 +39,7 @@ export function SplashScreen() {
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.2 }}
-              className="relative w-24 h-24"
+              className="relative w-40 h-40"
             >
               <Image 
                 src={settings.splashLogoUrl}
