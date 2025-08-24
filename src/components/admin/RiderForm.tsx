@@ -100,7 +100,7 @@ export function RiderForm({ riderToEdit, setFormOpen }: RiderFormProps) {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder={riderToEdit ? 'Leave blank to keep current password' : '********'} {...field} />
+                <Input type="password" placeholder={riderToEdit ? 'Leave blank to keep current password' : 'Set a new password'} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
