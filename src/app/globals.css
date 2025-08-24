@@ -43,7 +43,7 @@ body {
     --sidebar-ring: 24 95% 53%;
   }
   .dark {
-    --background: 220 27% 14%;
+    --background: 220 27% 10%;
     --foreground: 210 40% 98%;
     --card: 220 27% 14%;
     --card-foreground: 210 40% 98%;
@@ -87,7 +87,4 @@ body {
     color: hsl(var(--foreground));
   }
   
-  .dark body {
-    background: linear-gradient(135deg, #FF512F, #DD2476);
-  }
 }
