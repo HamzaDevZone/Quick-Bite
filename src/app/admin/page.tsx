@@ -41,7 +41,7 @@ export default function AdminDashboardPage() {
 
     deliveredOrders.forEach(order => {
         const orderDateObj = (order.orderDate && typeof (order.orderDate as any).toDate === 'function') 
-            ? (order.orderDate as any).toDate() 
+            ? (order.orderDate as Timestamp).toDate() 
             : new Date(order.orderDate);
         
         const todayMinus7 = new Date(today);
