@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -39,7 +40,7 @@ export default function CheckoutPage() {
   if (itemCount === 0) {
     // Redirect to home if cart is empty, this could happen if user navigates here directly
     if(typeof window !== 'undefined'){
-        router.replace('/');
+        router.replace('/menu');
     }
     return null;
   }
@@ -57,7 +58,7 @@ export default function CheckoutPage() {
       description: 'Thank you for your order. We have started processing it.',
     });
     clearCart();
-    router.push('/');
+    router.push('/menu');
   };
 
   return (

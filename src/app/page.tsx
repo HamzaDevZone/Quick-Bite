@@ -1,67 +1,89 @@
-"use client"
-import { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
-import { CATEGORIES, PRODUCTS } from '@/lib/data';
-import { ProductCard } from '@/components/user/ProductCard';
-import { CategoryTabs } from '@/components/user/CategoryTabs';
+
+'use client';
+
+import Link from 'next/link';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
 import { UserHeader } from '@/components/user/Header';
 import { SplashScreen } from '@/components/user/SplashScreen';
+import { UtensilsCrossed, ShoppingCart, Bike } from 'lucide-react';
 
-export default function HomePage() {
-  const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const filteredProducts = PRODUCTS.filter(product => {
-    const categoryMatch = activeCategory === 'all' || product.category.toLowerCase().replace(/\s+/g, '-') === activeCategory;
-    const searchMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return categoryMatch && searchMatch;
-  });
-
+export default function LandingPage() {
   return (
     <>
       <SplashScreen />
       <div className="flex flex-col min-h-screen">
         <UserHeader />
-        <main className="flex-1 container mx-auto py-8 px-4">
-          <section className="text-center mb-12">
-            <h1 className="text-5xl font-extrabold tracking-tight text-primary mb-2 font-headline">
-              Welcome to QuickBite
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              Delicious food, delivered fast to your door.
-            </p>
+        <main className="flex-1">
+          {/* Hero Section */}
+          <section className="relative h-[60vh] flex items-center justify-center text-center text-white bg-black/50">
+            <Image 
+              src="https://placehold.co/1920x1080.png"
+              alt="Delicious food background"
+              fill
+              className="object-cover -z-10"
+              data-ai-hint="delicious food background"
+            />
+            <div className="bg-black/50 p-8 rounded-lg">
+              <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-4 font-headline">
+                QuickBite Delivers
+              </h1>
+              <p className="text-lg md:text-xl max-w-2xl mx-auto">
+                Your favorite meals from local restaurants, delivered fast to your door.
+              </p>
+              <Button asChild size="lg" className="mt-8 rounded-full">
+                <Link href="/menu">Get Started</Link>
+              </Button>
+            </div>
           </section>
 
-          <div className="mb-8 max-w-2xl mx-auto">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search for pizza, burgers, and more..."
-                className="pl-10 w-full h-12 text-base rounded-full bg-secondary border-transparent focus:border-primary focus:ring-primary"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+          {/* Features Section */}
+          <section className="py-20 bg-secondary">
+            <div className="container mx-auto px-4 text-center">
+              <h2 className="text-4xl font-bold mb-12 font-headline text-primary">How It Works</h2>
+              <div className="grid md:grid-cols-3 gap-12">
+                <div className="flex flex-col items-center">
+                  <div className="p-6 bg-primary rounded-full mb-4">
+                    <UtensilsCrossed className="h-10 w-10 text-primary-foreground" />
+                  </div>
+                  <h3 className="text-2xl font-semibold mb-2">Choose Your Meal</h3>
+                  <p className="text-muted-foreground">Browse through a wide variety of restaurants and dishes.</p>
+                </div>
+                <div className="flex flex-col items-center">
+                  <div className="p-6 bg-primary rounded-full mb-4">
+                    <ShoppingCart className="h-10 w-10 text-primary-foreground" />
+                  </div>
+                  <h3 className="text-2xl font-semibold mb-2">Place Your Order</h3>
+                  <p className="text-muted-foreground">Add items to your cart and checkout in seconds.</p>
+                </div>
+                <div className="flex flex-col items-center">
+                  <div className="p-6 bg-primary rounded-full mb-4">
+                    <Bike className="h-10 w-10 text-primary-foreground" />
+                  </div>
+                  <h3 className="text-2xl font-semibold mb-2">Fast Delivery</h3>
+                  <p className="text-muted-foreground">Our riders will deliver your food hot and fresh.</p>
+                </div>
+              </div>
             </div>
-          </div>
-          
-          <CategoryTabs 
-            categories={CATEGORIES}
-            activeCategory={activeCategory}
-            setActiveCategory={setActiveCategory}
-          />
+          </section>
 
-          <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-8">
-            {filteredProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+          {/* Call to Action Section */}
+           <section className="py-20">
+            <div className="container mx-auto px-4 text-center">
+              <h2 className="text-4xl font-bold mb-4 font-headline">Ready to Order?</h2>
+              <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
+                Don't wait! Find your next favorite meal and get it delivered right to you.
+              </p>
+              <Button asChild size="lg" className="rounded-full">
+                <Link href="/menu">Browse Restaurants</Link>
+              </Button>
+            </div>
           </section>
         </main>
-        <footer className="bg-secondary py-4 mt-12">
-            <div className="container mx-auto text-center text-muted-foreground text-sm">
-                &copy; 2024 QuickBite. All Rights Reserved.
-            </div>
+        <footer className="bg-background border-t">
+          <div className="container mx-auto py-6 px-4 text-center text-muted-foreground">
+            <p>&copy; 2024 QuickBite. All Rights Reserved.</p>
+          </div>
         </footer>
       </div>
     </>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -16,6 +17,9 @@ export function UserHeader() {
           QuickBite
         </Link>
         <nav className="flex items-center gap-2">
+           <Button asChild variant="ghost">
+              <Link href="/menu">Menu</Link>
+            </Button>
           <Link href="/cart" passHref>
             <Button variant="ghost" size="icon" className="relative">
               <ShoppingCart className="h-6 w-6 text-accent" />

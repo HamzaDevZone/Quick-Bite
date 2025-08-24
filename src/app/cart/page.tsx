@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -84,7 +85,7 @@ export default function CartPage() {
             <h2 className="mt-6 text-2xl font-semibold">Your cart is empty</h2>
             <p className="mt-2 text-muted-foreground">Looks like you haven't added anything to your cart yet.</p>
             <Button asChild className="mt-6 rounded-full">
-              <Link href="/">Start Shopping</Link>
+              <Link href="/menu">Start Shopping</Link>
             </Button>
           </div>
         )}
