@@ -4,11 +4,12 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Package, LogOut, UtensilsCrossed, ShoppingCart, Bike } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, UtensilsCrossed, ShoppingCart, Bike, Shapes } from 'lucide-react';
 
 const navItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/products', label: 'Products', icon: Package },
+    { href: '/admin/categories', label: 'Categories', icon: Shapes },
     { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
     { href: '/admin/riders', label: 'Riders', icon: Bike },
 ];

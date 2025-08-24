@@ -1,10 +1,10 @@
 import type { Product, Category, Order, Rider } from './types';
 
 export const CATEGORIES: Category[] = [
-  { id: 'burgers', name: 'Burgers' },
-  { id: 'pizza', name: 'Pizza' },
-  { id: 'sides', name: 'Sides' },
-  { id: 'drinks', name: 'Drinks' },
+  { id: 'burgers', name: 'Burgers', iconUrl: 'https://i.ibb.co/GcmC6GZ/burgers.png' },
+  { id: 'pizza', name: 'Pizza', iconUrl: 'https://i.ibb.co/gJFyVz4/pizza.png' },
+  { id: 'sides', name: 'Sides', iconUrl: 'https://i.ibb.co/VMyxQzV/sides.png' },
+  { id: 'drinks', name: 'Drinks', iconUrl: 'https://i.ibb.co/hH0vS2d/drinks.png' },
 ];
 
 export const PRODUCTS: Product[] = [
