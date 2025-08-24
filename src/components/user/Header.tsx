@@ -83,8 +83,8 @@ export function UserHeader() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[250px]">
-                    <SheetHeader className="sr-only">
-                        <SheetTitle>Navigation Menu</SheetTitle>
+                    <SheetHeader>
+                        <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                     </SheetHeader>
                     <div className="flex flex-col p-4 pt-10">
                         <Link href="/" className="text-2xl font-bold text-primary font-headline mb-8" onClick={() => setIsSheetOpen(false)}>
