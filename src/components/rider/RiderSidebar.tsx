@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, LogOut, Bike, History, User } from 'lucide-react';
+import { LayoutDashboard, LogOut, Bike, History, User, Home } from 'lucide-react';
 
 const navItems = [
     { href: '/rider', label: 'Dashboard', icon: LayoutDashboard },
@@ -48,6 +48,12 @@ export function RiderSidebar() {
                     </ul>
                 </nav>
                 <div className="p-4 mt-auto border-t">
+                    <Link href="/" passHref>
+                        <Button variant="ghost" className="w-full justify-start mb-2">
+                            <Home className="mr-2 h-5 w-5" />
+                            Back to Home Page
+                        </Button>
+                    </Link>
                     <Button variant="outline" className="w-full" onClick={handleLogout}>
                         <LogOut className="mr-2 h-5 w-5" />
                         Logout

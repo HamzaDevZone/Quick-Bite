@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Package, LogOut, UtensilsCrossed, ShoppingCart, Bike, Shapes, Palette, Users } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, UtensilsCrossed, ShoppingCart, Bike, Shapes, Palette, Users, Home } from 'lucide-react';
 
 const navItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -52,6 +52,12 @@ export function AdminSidebar() {
                     </ul>
                 </nav>
                 <div className="p-4 mt-auto border-t">
+                    <Link href="/" passHref>
+                        <Button variant="ghost" className="w-full justify-start mb-2">
+                            <Home className="mr-2 h-5 w-5" />
+                            Back to Home Page
+                        </Button>
+                    </Link>
                     <Button variant="outline" className="w-full" onClick={handleLogout}>
                         <LogOut className="mr-2 h-5 w-5" />
                         Logout
