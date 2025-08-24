@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { Order, OrderStatus, OrderItem } from '@/lib/types';
 import { ORDERS } from '@/lib/data';
 import { useToast } from './use-toast';
@@ -16,6 +16,7 @@ interface NewOrderData {
 
 interface OrderContextType {
   orders: Order[];
+  userOrderIds: string[];
   addOrder: (orderData: NewOrderData) => void;
   updateOrderStatus: (orderId: string, status: OrderStatus) => void;
   assignRiderToOrder: (orderId: string, riderId: string) => void;
@@ -26,6 +27,18 @@ const OrderContext = createContext<OrderContextType | undefined>(undefined);
 export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
   const [orders, setOrders] = useState<Order[]>(ORDERS);
+  const [userOrderIds, setUserOrderIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      const storedOrderIds = localStorage.getItem('quickbite_user_orders');
+      if (storedOrderIds) {
+        setUserOrderIds(JSON.parse(storedOrderIds));
+      }
+    } catch (error) {
+      console.error("Could not load user order IDs from localStorage", error);
+    }
+  }, []);
 
   const addOrder = (orderData: NewOrderData) => {
     const newOrder: Order = {
@@ -35,6 +48,15 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         orderDate: new Date().toISOString(),
     };
     setOrders(prevOrders => [newOrder, ...prevOrders]);
+    
+    // Save order ID to localStorage for user history
+    try {
+        const updatedOrderIds = [...userOrderIds, newOrder.id];
+        setUserOrderIds(updatedOrderIds);
+        localStorage.setItem('quickbite_user_orders', JSON.stringify(updatedOrderIds));
+    } catch (error) {
+        console.error("Could not save user order ID to localStorage", error);
+    }
   }
 
   const updateOrderStatus = (orderId: string, status: OrderStatus) => {
@@ -52,7 +74,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <OrderContext.Provider value={{ orders, addOrder, updateOrderStatus, assignRiderToOrder }}>
+    <OrderContext.Provider value={{ orders, userOrderIds, addOrder, updateOrderStatus, assignRiderToOrder }}>
       {children}
     </OrderContext.Provider>
   );

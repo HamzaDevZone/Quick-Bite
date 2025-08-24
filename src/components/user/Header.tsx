@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Bike } from 'lucide-react';
+import { ShoppingCart, UserCircle, Bike, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/use-cart';
 import { Badge } from '../ui/badge';
@@ -19,6 +19,9 @@ export function UserHeader() {
         <nav className="flex items-center gap-2">
            <Button asChild variant="ghost">
               <Link href="/menu">Menu</Link>
+            </Button>
+            <Button asChild variant="ghost">
+              <Link href="/orders">My Orders</Link>
             </Button>
           <Link href="/cart" passHref>
             <Button variant="ghost" size="icon" className="relative">
