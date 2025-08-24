@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { ProductProvider } from '@/hooks/use-products';
+import { OrderProvider } from '@/hooks/use-orders';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -54,12 +55,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     return (
         <ProductProvider>
-            <div className="flex min-h-screen">
-                <AdminSidebar />
-                <main className="flex-1 p-8 bg-secondary/40">
-                    {children}
-                </main>
-            </div>
+            <OrderProvider>
+                <div className="flex min-h-screen">
+                    <AdminSidebar />
+                    <main className="flex-1 p-8 bg-secondary/40">
+                        {children}
+                    </main>
+                </div>
+            </OrderProvider>
         </ProductProvider>
     );
 }

@@ -1,4 +1,4 @@
-import type { Product, Category } from './types';
+import type { Product, Category, Order } from './types';
 
 export const CATEGORIES: Category[] = [
   { id: 'burgers', name: 'Burgers' },
@@ -72,4 +72,40 @@ export const PRODUCTS: Product[] = [
     category: 'Drinks',
     imageUrl: 'https://placehold.co/600x400.png',
   },
+];
+
+export const ORDERS: Order[] = [
+    {
+        id: 'ORD001',
+        customerName: 'John Doe',
+        items: [
+            { product: PRODUCTS[0], quantity: 1 },
+            { product: PRODUCTS[2], quantity: 1 },
+            { product: PRODUCTS[3], quantity: 1 },
+        ],
+        status: 'Pending',
+        total: 15.97,
+        orderDate: '2024-05-21T10:30:00Z',
+    },
+    {
+        id: 'ORD002',
+        customerName: 'Jane Smith',
+        items: [
+            { product: PRODUCTS[1], quantity: 1 },
+            { product: PRODUCTS[6], quantity: 2 },
+        ],
+        status: 'Preparing',
+        total: 24.97,
+        orderDate: '2024-05-21T10:35:00Z',
+    },
+    {
+        id: 'ORD003',
+        customerName: 'Mike Johnson',
+        items: [
+            { product: PRODUCTS[4], quantity: 2 },
+        ],
+        status: 'Delivered',
+        total: 23.98,
+        orderDate: '2024-05-20T18:00:00Z',
+    },
 ];
