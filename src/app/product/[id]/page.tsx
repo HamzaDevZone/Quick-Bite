@@ -10,7 +10,6 @@ import { PRODUCTS } from '@/lib/data';
 import { UserHeader } from '@/components/user/Header';
 import { useCart } from '@/hooks/use-cart';
 import { Minus, Plus, ArrowLeft } from 'lucide-react';
-import AiRecommender from '@/components/user/AiRecommender';
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   const [quantity, setQuantity] = useState(1);
@@ -68,7 +67,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                 Add to Cart
               </Button>
             </div>
-            <AiRecommender currentProduct={product} />
           </div>
         </div>
       </main>
