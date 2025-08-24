@@ -22,7 +22,7 @@ export default function AdminLoginPage() {
 
         // Special case: If no admins exist in the database, allow default login
         if (!loading && admins.length === 0) {
-            if (email === 'admin@example.com' && password === 'password') {
+            if (email === 'gk00536789@gmail.com' && password === 'gk00536789') {
                 try {
                     sessionStorage.setItem('quickbite_admin_auth', 'true');
                     toast({ title: 'Login Successful (Default)', description: 'Please create your own admin account now.' });
