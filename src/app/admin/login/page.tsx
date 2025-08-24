@@ -15,10 +15,30 @@ export default function AdminLoginPage() {
     const [password, setPassword] = useState('');
     const router = useRouter();
     const { toast } = useToast();
-    const { admins } = useAdmins();
+    const { admins, loading } = useAdmins();
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Special case: If no admins exist in the database, allow default login
+        if (!loading && admins.length === 0) {
+            if (email === 'admin@example.com' && password === 'password') {
+                try {
+                    sessionStorage.setItem('quickbite_admin_auth', 'true');
+                    toast({ title: 'Login Successful (Default)', description: 'Please create your own admin account now.' });
+                    router.push('/admin/admins');
+                } catch (error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Login Failed',
+                        description: 'Could not set session. Please enable cookies/storage and try again.',
+                    });
+                }
+                return;
+            }
+        }
+
+        // Regular login check
         const adminUser = admins.find(admin => admin.email === email && admin.password === password);
 
         if (adminUser) {
@@ -75,8 +95,8 @@ export default function AdminLoginPage() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button type="submit" className="w-full">
-                            Login
+                        <Button type="submit" className="w-full" disabled={loading}>
+                            {loading ? 'Loading...' : 'Login'}
                         </Button>
                     </CardFooter>
                 </form>
