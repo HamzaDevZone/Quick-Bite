@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import type { OrderStatus, Order } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Clock, UtensilsCrossed, Package, Check, ShoppingBag, User, Phone, MapPin } from 'lucide-react';
+import { Clock, UtensilsCrossed, Package, Check, ShoppingBag, User, Phone, MapPin, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import type { Timestamp } from 'firebase/firestore';
@@ -72,6 +72,19 @@ export default function ProfilePage() {
                                 ) : (
                                     <p className="text-sm text-muted-foreground">No order information available yet.</p>
                                 )}
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Support</CardTitle>
+                                <CardDescription>Need help with an order or have a question?</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Button asChild className="w-full">
+                                    <Link href="/contact">
+                                        <MessageSquare className="mr-2 h-4 w-4" /> Contact Support
+                                    </Link>
+                                </Button>
                             </CardContent>
                         </Card>
                     </div>

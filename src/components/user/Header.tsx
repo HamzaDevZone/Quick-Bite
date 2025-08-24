@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Bike, Menu } from 'lucide-react';
+import { ShoppingCart, UserCircle, Bike, Menu, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/use-cart';
 import { Badge } from '../ui/badge';
@@ -13,6 +13,7 @@ const navLinks = [
     { href: '/menu', label: 'Menu' },
     { href: '/orders', label: 'My Orders' },
     { href: '/profile', label: 'My Profile', icon: UserCircle },
+    { href: '/contact', label: 'Contact Us', icon: MessageSquare },
     { href: '/admin/login', label: 'Admin Panel', icon: UserCircle },
     { href: '/rider/login', label: 'Rider Panel', icon: Bike },
 ];
@@ -38,6 +39,9 @@ export function UserHeader() {
             </Button>
              <Button asChild variant="ghost">
               <Link href="/profile">My Profile</Link>
+            </Button>
+             <Button asChild variant="ghost">
+              <Link href="/contact">Contact Us</Link>
             </Button>
             <Link href="/cart" passHref>
                 <Button variant="ghost" size="icon" className="relative">
