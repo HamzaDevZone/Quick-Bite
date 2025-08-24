@@ -13,6 +13,5 @@ export const ai = genkit({
     firebase(),
     googleCloud(),
   ],
-  logLevel: 'debug',
   enableTracingAndMetrics: true,
 });
