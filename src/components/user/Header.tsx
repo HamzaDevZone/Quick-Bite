@@ -12,6 +12,7 @@ import { useState } from 'react';
 const navLinks = [
     { href: '/menu', label: 'Menu' },
     { href: '/orders', label: 'My Orders' },
+    { href: '/profile', label: 'My Profile', icon: UserCircle },
     { href: '/admin/login', label: 'Admin Panel', icon: UserCircle },
     { href: '/rider/login', label: 'Rider Panel', icon: Bike },
 ];
@@ -34,6 +35,9 @@ export function UserHeader() {
             </Button>
             <Button asChild variant="ghost">
               <Link href="/orders">My Orders</Link>
+            </Button>
+             <Button asChild variant="ghost">
+              <Link href="/profile">My Profile</Link>
             </Button>
             <Link href="/cart" passHref>
                 <Button variant="ghost" size="icon" className="relative">
