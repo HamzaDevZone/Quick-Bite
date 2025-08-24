@@ -18,6 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRiders } from '@/hooks/use-riders';
+import Link from 'next/link';
 
 interface OrderDataTableProps {
   data: Order[];
@@ -61,7 +62,11 @@ export function OrderDataTable({ data }: OrderDataTableProps) {
         <TableBody>
           {data.map(order => (
             <TableRow key={order.id}>
-              <TableCell className="font-medium">{order.id}</TableCell>
+              <TableCell className="font-medium">
+                <Link href={`/admin/orders/${order.id}`} className="text-primary hover:underline">
+                  {order.id}
+                </Link>
+              </TableCell>
               <TableCell>{order.customerName}</TableCell>
               <TableCell>{order.paymentMethod}</TableCell>
               <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
