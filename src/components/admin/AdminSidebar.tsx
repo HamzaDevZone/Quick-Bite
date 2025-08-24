@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Package, LogOut, UtensilsCrossed, ShoppingCart, Bike, Shapes } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, UtensilsCrossed, ShoppingCart, Bike, Shapes, Palette } from 'lucide-react';
 
 const navItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -12,6 +12,7 @@ const navItems = [
     { href: '/admin/categories', label: 'Categories', icon: Shapes },
     { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
     { href: '/admin/riders', label: 'Riders', icon: Bike },
+    { href: '/admin/appearance', label: 'Appearance', icon: Palette },
 ];
 
 export function AdminSidebar() {

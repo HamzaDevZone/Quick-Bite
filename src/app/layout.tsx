@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { CartProvider } from '@/hooks/use-cart';
 import { OrderProvider } from '@/hooks/use-orders';
 import { ProductProvider } from '@/hooks/use-products';
+import { SiteSettingsProvider } from '@/hooks/use-site-settings';
 
 export const metadata: Metadata = {
   title: 'QuickBite',
@@ -26,14 +27,16 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <ProductProvider>
-          <OrderProvider>
-            <CartProvider>
-              {children}
-              <Toaster />
-            </CartProvider>
-          </OrderProvider>
-        </ProductProvider>
+        <SiteSettingsProvider>
+          <ProductProvider>
+            <OrderProvider>
+              <CartProvider>
+                {children}
+                <Toaster />
+              </CartProvider>
+            </OrderProvider>
+          </ProductProvider>
+        </SiteSettingsProvider>
       </body>
     </html>
   );

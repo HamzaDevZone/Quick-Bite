@@ -8,6 +8,7 @@ import { OrderProvider } from '@/hooks/use-orders';
 import { Skeleton } from '@/components/ui/skeleton';
 import { RiderProvider } from '@/hooks/use-riders';
 import { CategoryProvider } from '@/hooks/use-categories';
+import { SiteSettingsProvider } from '@/hooks/use-site-settings';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -60,12 +61,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <OrderProvider>
                 <RiderProvider>
                     <CategoryProvider>
-                        <div className="flex min-h-screen">
-                            <AdminSidebar />
-                            <main className="flex-1 p-8 bg-secondary/40">
-                                {children}
-                            </main>
-                        </div>
+                        <SiteSettingsProvider>
+                            <div className="flex min-h-screen">
+                                <AdminSidebar />
+                                <main className="flex-1 p-8 bg-secondary/40">
+                                    {children}
+                                </main>
+                            </div>
+                        </SiteSettingsProvider>
                     </CategoryProvider>
                 </RiderProvider>
             </OrderProvider>

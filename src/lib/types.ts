@@ -47,3 +47,7 @@ export interface Order {
   riderId?: string;
   paymentMethod: string;
 }
+
+export interface SiteSettings {
+  heroImageUrl: string;
+}

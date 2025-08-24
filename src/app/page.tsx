@@ -7,8 +7,11 @@ import { Button } from '@/components/ui/button';
 import { UserHeader } from '@/components/user/Header';
 import { SplashScreen } from '@/components/user/SplashScreen';
 import { UtensilsCrossed, ShoppingCart, Bike } from 'lucide-react';
+import { useSiteSettings } from '@/hooks/use-site-settings';
 
 export default function LandingPage() {
+  const { settings } = useSiteSettings();
+
   return (
     <>
       <SplashScreen />
@@ -18,7 +21,7 @@ export default function LandingPage() {
           {/* Hero Section */}
           <section className="relative h-[60vh] flex items-center justify-center text-center text-white bg-black/50">
             <Image 
-              src="https://placehold.co/1920x1080.png"
+              src={settings.heroImageUrl}
               alt="Delicious food background"
               fill
               className="object-cover -z-10"
