@@ -1,6 +1,6 @@
 
 'use server';
-import {genkit} from 'genkit';
+import {genkit} from 'genkit/ai';
 import {googleAI} from '@genkit-ai/googleai';
 import {firebase} from '@genkit-ai/firebase';
 import {googleCloud} from '@genkit-ai/google-cloud';
