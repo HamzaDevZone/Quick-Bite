@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import type { Product } from '@/lib/types';
 import { useProducts } from '@/hooks/use-products';
-import { CATEGORIES } from '@/lib/data';
+import { useCategories } from '@/hooks/use-categories';
 import { useEffect } from 'react';
 
 const formSchema = z.object({
@@ -28,6 +28,7 @@ interface ProductFormProps {
 
 export function ProductForm({ productToEdit, setFormOpen }: ProductFormProps) {
   const { addProduct, updateProduct } = useProducts();
+  const { categories } = useCategories();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -109,7 +110,7 @@ export function ProductForm({ productToEdit, setFormOpen }: ProductFormProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {CATEGORIES.map(cat => (
+                  {categories.map(cat => (
                     <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>
                   ))}
                 </SelectContent>
