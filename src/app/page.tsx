@@ -13,7 +13,7 @@ export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredProducts = PRODUCTS.filter(product => {
-    const categoryMatch = activeCategory === 'all' || product.category.toLowerCase() === activeCategory;
+    const categoryMatch = activeCategory === 'all' || product.category.toLowerCase().replace(/\s+/g, '-') === activeCategory;
     const searchMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
     return categoryMatch && searchMatch;
   });
