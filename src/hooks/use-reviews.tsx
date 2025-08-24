@@ -25,10 +25,12 @@ export const ReviewProvider = ({ children }: { children: ReactNode }) => {
     setLoadingStates(prev => ({ ...prev, [productId]: true }));
     try {
       const reviewsCollection = collection(db, 'reviews');
-      const q = query(reviewsCollection, where('productId', '==', productId), orderBy('createdAt', 'desc'));
+      const q = query(reviewsCollection, where('productId', '==', productId));
       const querySnapshot = await getDocs(q);
       const reviewsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Review));
       
+      reviewsData.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+
       setAllReviews(prev => ({ ...prev, [productId]: reviewsData }));
     } catch (error) {
       console.error(`Error fetching reviews for product ${productId}: `, error);
@@ -49,6 +51,7 @@ export const ReviewProvider = ({ children }: { children: ReactNode }) => {
 
       setAllReviews(prev => {
         const productReviews = prev[review.productId] ? [newReview, ...prev[review.productId]] : [newReview];
+        productReviews.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
         return { ...prev, [review.productId]: productReviews };
       });
       toast({ title: 'Review Submitted', description: 'Thank you for your feedback!' });
@@ -58,32 +61,17 @@ export const ReviewProvider = ({ children }: { children: ReactNode }) => {
     }
   };
   
-  // This value will be passed to consumers
-  const contextValue = {
-    allReviews,
-    loadingStates,
-    fetchReviews,
-    addReview
-  };
-
-  // Dummy context provider to satisfy the type. The real logic is in useReviews hook.
   const dummyContext: ReviewContextType = {
     reviews: [],
     addReview: async () => {},
     loading: true,
   }
 
-  // We are not using the context provider in a traditional way.
-  // The state is managed here, but consumed via a custom hook `useReviews` that gets productId.
-  // This is a pattern to manage sliced state.
   return <ReviewContext.Provider value={dummyContext}>{children}</ReviewContext.Provider>;
 };
 
-// This is the hook that components will use.
 export const useReviews = (productId: string) => {
   const context = useContext(ReviewContext);
-  // The context is a bit of a hack in this pattern, so we grab the real state manager from the provider.
-  // In a real app, you might use a more robust state management library like Zustand or Redux.
   const [state, setState] = useState<{
     reviews: Review[],
     loading: boolean,
@@ -101,10 +89,11 @@ export const useReviews = (productId: string) => {
     const fetchReviewsForProduct = async () => {
         try {
             const reviewsCollection = collection(db, 'reviews');
-            const q = query(reviewsCollection, where('productId', '==', productId), orderBy('createdAt', 'desc'));
+            const q = query(reviewsCollection, where('productId', '==', productId));
             const querySnapshot = await getDocs(q);
             if (isMounted) {
                 const reviewsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Review));
+                reviewsData.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
                 setState(prevState => ({ ...prevState, reviews: reviewsData, loading: false }));
             }
         } catch (error) {
@@ -133,10 +122,14 @@ export const useReviews = (productId: string) => {
       const docRef = await addDoc(collection(db, 'reviews'), newReviewData);
       const newReview = { ...newReviewData, id: docRef.id } as Review;
       
-      setState(prevState => ({
-          ...prevState,
-          reviews: [newReview, ...prevState.reviews]
-      }))
+      setState(prevState => {
+          const updatedReviews = [newReview, ...prevState.reviews];
+          updatedReviews.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+          return {
+            ...prevState,
+            reviews: updatedReviews
+          }
+      })
 
       toast({ title: 'Review Submitted', description: 'Thank you for your feedback!' });
     } catch (error) {
