@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import type { Timestamp } from 'firebase/firestore';
 
 const statusColors: Record<OrderStatus, string> = {
   Pending: 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30',
@@ -54,6 +55,13 @@ export default function AdminOrderDetailPage() {
             </div>
         );
     }
+
+    const getDate = (date: Timestamp | string) => {
+        if (typeof date === 'string') {
+            return new Date(date);
+        }
+        return date.toDate();
+    };
     
     const handleStatusUpdate = (status: OrderStatus) => {
         updateOrderStatus(order.id, status);
@@ -87,7 +95,7 @@ export default function AdminOrderDetailPage() {
                                 </Badge>
                             </CardTitle>
                              <div className="text-sm text-muted-foreground flex items-center gap-4 pt-2">
-                                <span className="flex items-center gap-1.5"><Clock className="w-4 h-4"/> {new Date(order.orderDate).toLocaleString()}</span>
+                                <span className="flex items-center gap-1.5"><Clock className="w-4 h-4"/> {getDate(order.orderDate).toLocaleString()}</span>
                                 <span className="flex items-center gap-1.5"><DollarSign className="w-4 h-4"/> {order.paymentMethod}</span>
                              </div>
                         </CardHeader>

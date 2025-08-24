@@ -1,3 +1,5 @@
+import type { Timestamp } from 'firebase/firestore';
+
 export interface Product {
   id: string;
   name: string;
@@ -50,7 +52,7 @@ export interface Order {
   items: OrderItem[];
   status: OrderStatus;
   total: number;
-  orderDate: string;
+  orderDate: Timestamp | string;
   riderId?: string;
   paymentMethod: string;
 }

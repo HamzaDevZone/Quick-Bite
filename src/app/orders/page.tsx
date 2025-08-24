@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { Clock, UtensilsCrossed, Package, Check, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import type { Timestamp } from 'firebase/firestore';
 
 const statusDetails: Record<OrderStatus, { text: string; icon: React.ElementType; color: string }> = {
   Pending: { text: 'Pending', icon: Clock, color: 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30' },
@@ -23,8 +24,14 @@ export default function OrderHistoryPage() {
     const { orders, userOrderIds } = useOrders();
 
     const userOrders = orders
-        .filter(order => userOrderIds.includes(order.id))
-        .sort((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime());
+        .filter(order => userOrderIds.includes(order.id));
+
+    const getDate = (date: Timestamp | string) => {
+        if (typeof date === 'string') {
+            return new Date(date);
+        }
+        return date.toDate();
+    };
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -41,7 +48,7 @@ export default function OrderHistoryPage() {
                                         <div>
                                             <CardTitle>Order #{order.id}</CardTitle>
                                             <CardDescription>
-                                                {new Date(order.orderDate).toLocaleDateString('en-US', {
+                                                {getDate(order.orderDate).toLocaleDateString('en-US', {
                                                     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
                                                 })}
                                             </CardDescription>

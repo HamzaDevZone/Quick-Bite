@@ -55,20 +55,20 @@ export default function CheckoutPage() {
     return null;
   }
 
-  const onSubmit = (values: z.infer<typeof checkoutSchema>) => {
+  const onSubmit = async (values: z.infer<typeof checkoutSchema>) => {
     const deliveryFee = 5.00;
     const orderData = {
       ...values,
       items: cart,
       total: cartTotal + deliveryFee,
     };
-    addOrder(orderData);
+    await addOrder(orderData);
     toast({
       title: 'Order Placed!',
       description: 'Thank you for your order. We have started processing it.',
     });
     clearCart();
-    router.push('/menu');
+    router.push('/orders');
   };
 
   return (
@@ -199,8 +199,8 @@ export default function CheckoutPage() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button type="submit" size="lg" className="w-full">
-                        Place Order
+                    <Button type="submit" size="lg" className="w-full" disabled={form.formState.isSubmitting}>
+                        {form.formState.isSubmitting ? 'Placing Order...' : 'Place Order'}
                     </Button>
                 </CardFooter>
                 </Card>
