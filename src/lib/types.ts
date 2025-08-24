@@ -37,8 +37,8 @@ export interface Rider {
 export interface Order {
   id: string;
   customerName: string;
-  customerPhone?: string;
-  customerAddress?: string;
+  customerPhone: string;
+  customerAddress: string;
   items: OrderItem[];
   status: OrderStatus;
   total: number;

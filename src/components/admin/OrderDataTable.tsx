@@ -1,7 +1,7 @@
 'use client';
 
 import { useOrders } from '@/hooks/use-orders';
-import type { Order, OrderStatus } from '@/lib/types';
+import type { Order, OrderStatus, Rider } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,10 +9,15 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useRiders } from '@/hooks/use-riders';
 
 interface OrderDataTableProps {
   data: Order[];
@@ -26,11 +31,17 @@ const statusColors: Record<OrderStatus, string> = {
 };
 
 export function OrderDataTable({ data }: OrderDataTableProps) {
-  const { updateOrderStatus } = useOrders();
+  const { updateOrderStatus, assignRiderToOrder } = useOrders();
+  const { riders } = useRiders();
 
   const handleStatusChange = (orderId: string, status: OrderStatus) => {
     updateOrderStatus(orderId, status);
   };
+  
+  const getRiderName = (riderId?: string) => {
+    if (!riderId) return 'Unassigned';
+    return riders.find(r => r.id === riderId)?.name || 'Unknown Rider';
+  }
 
   return (
     <div className="rounded-md border bg-card">
@@ -39,7 +50,7 @@ export function OrderDataTable({ data }: OrderDataTableProps) {
           <TableRow>
             <TableHead>Order ID</TableHead>
             <TableHead>Customer</TableHead>
-            <TableHead>Items</TableHead>
+            <TableHead>Address</TableHead>
             <TableHead>Date</TableHead>
             <TableHead>Rider</TableHead>
             <TableHead className="text-right">Total</TableHead>
@@ -52,9 +63,9 @@ export function OrderDataTable({ data }: OrderDataTableProps) {
             <TableRow key={order.id}>
               <TableCell className="font-medium">{order.id}</TableCell>
               <TableCell>{order.customerName}</TableCell>
-              <TableCell>{order.items.reduce((acc, item) => acc + item.quantity, 0)}</TableCell>
+              <TableCell>{order.customerAddress}</TableCell>
               <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
-              <TableCell>{order.riderId || 'Unassigned'}</TableCell>
+              <TableCell>{getRiderName(order.riderId)}</TableCell>
               <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
               <TableCell>
                 <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
@@ -70,6 +81,21 @@ export function OrderDataTable({ data }: OrderDataTableProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>Assign Rider</DropdownMenuSubTrigger>
+                        <DropdownMenuPortal>
+                            <DropdownMenuSubContent>
+                                {riders.map(rider => (
+                                    <DropdownMenuItem key={rider.id} onClick={() => assignRiderToOrder(order.id, rider.id)}>
+                                        {rider.name}
+                                    </DropdownMenuItem>
+                                ))}
+                                 <DropdownMenuItem disabled={riders.length === 0}>
+                                    {riders.length === 0 && 'No riders available'}
+                                </DropdownMenuItem>
+                            </DropdownMenuSubContent>
+                        </DropdownMenuPortal>
+                    </DropdownMenuSub>
                     <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Pending')}>
                       Mark as Pending
                     </DropdownMenuItem>

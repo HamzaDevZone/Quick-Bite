@@ -128,6 +128,8 @@ export const ORDERS: Order[] = [
     {
         id: 'ORD003',
         customerName: 'Mike Johnson',
+        customerPhone: '555-555-5555',
+        customerAddress: '789 Pine Ln, Othertown, USA',
         items: [
             { product: PRODUCTS[4], quantity: 2 },
         ],
