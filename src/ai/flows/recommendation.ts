@@ -1,7 +1,14 @@
-import { ai } from '../genkit';
-import { defineFlow } from 'genkit/flow';
-import { z } from 'zod';
-import { PRODUCTS } from '@/lib/data';
+
+'use server';
+/**
+ * @fileOverview A flow for suggesting complementary items.
+ *
+ * - suggestComplementaryItemsFlow - A function that suggests items based on a given product.
+ */
+import {ai} from '@/ai/genkit';
+import {z} from 'zod';
+import {PRODUCTS} from '@/lib/data';
+import type {Product} from '@/lib/types';
 
 const ProductSchema = z.object({
   id: z.string(),
@@ -12,29 +19,48 @@ const ProductSchema = z.object({
   imageUrl: z.string(),
 });
 
-export const suggestComplementaryItemsFlow = defineFlow(
+const SuggestComplementaryItemsInputSchema = z.object({
+  productName: z.string(),
+  category: z.string(),
+});
+
+const SuggestComplementaryItemsOutputSchema = z.array(z.string()).describe("A list of product names that are complementary to the input product.");
+
+const allProductNames = PRODUCTS.map(p => p.name).join(', ');
+
+const prompt = ai.definePrompt({
+    name: 'suggestComplementaryItemsPrompt',
+    input: { schema: SuggestComplementaryItemsInputSchema },
+    output: { schema: SuggestComplementaryItemsOutputSchema },
+    prompt: `You are a food recommendation expert for a delivery app.
+    Given a product, suggest two other items from the menu that would complement it well.
+    For example, for a burger, you might suggest fries and a coke. For a pizza, you might suggest onion rings and a sprite.
+
+    Here are all the available products on the menu:
+    ${allProductNames}
+
+    Current Product:
+    Name: {{{productName}}}
+    Category: {{{category}}}
+
+    Suggest exactly two complementary product names from the available list. Only return the names in the output array.
+    `,
+});
+
+
+export const suggestComplementaryItemsFlow = ai.defineFlow(
   {
     name: 'suggestComplementaryItemsFlow',
-    inputSchema: z.object({
-      productName: z.string(),
-      category: z.string(),
-    }),
+    inputSchema: SuggestComplementaryItemsInputSchema,
     outputSchema: z.array(ProductSchema),
   },
   async ({ productName, category }) => {
-    // This is a mock implementation. A real implementation would use a generative model.
-    console.log(`Finding recommendations for ${productName} in category ${category}`);
     
-    let recommendations: string[] = [];
-    if (category.toLowerCase() === 'burgers') {
-      recommendations = ['Crispy French Fries', 'Coca-Cola'];
-    } else if (category.toLowerCase() === 'pizza') {
-      recommendations = ['Onion Rings', 'Sprite'];
-    } else {
-      recommendations = ['Crispy French Fries', 'Coca-Cola'];
-    }
+    const llmResponse = await prompt({ productName, category });
+    const recommendedProductNames = llmResponse.output || [];
 
-    const recommendedProducts = PRODUCTS.filter(p => recommendations.includes(p.name));
+    // Filter the main product list to get the full product objects
+    const recommendedProducts = PRODUCTS.filter(p => recommendedProductNames.includes(p.name));
     
     return recommendedProducts;
   }
