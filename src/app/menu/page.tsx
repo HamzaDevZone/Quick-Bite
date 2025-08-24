@@ -17,7 +17,7 @@ export default function MenuPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const { products, loading: productsLoading } = useProducts();
   const { categories, loading: categoriesLoading } = useCategories();
-  const { settings } = useSiteSettings();
+  const { settings, isLoading: settingsLoading } = useSiteSettings();
 
 
   const filteredProducts = products.filter(product => {
@@ -26,20 +26,22 @@ export default function MenuPage() {
     return categoryMatch && searchMatch;
   });
 
-  const isLoading = productsLoading || categoriesLoading;
+  const isLoading = productsLoading || categoriesLoading || settingsLoading;
 
   return (
       <div className="flex flex-col min-h-screen">
         <UserHeader />
         <main className="flex-1">
           <section className="relative text-center mb-12 py-20 flex flex-col items-center justify-center text-white">
-            <Image
-              src={settings.menuImageUrl}
-              alt="Menu background"
-              fill
-              className="object-cover -z-10"
-              data-ai-hint="delicious food background"
-            />
+            {isLoading ? <Skeleton className="absolute inset-0 w-full h-full" /> : (
+              <Image
+                src={settings.menuImageUrl}
+                alt="Menu background"
+                fill
+                className="object-cover -z-10"
+                data-ai-hint="delicious food background"
+              />
+            )}
             <div className="absolute inset-0 bg-black/60 -z-10"></div>
              <div className="z-10 p-4">
                 <h1 className="text-5xl font-extrabold tracking-tight text-white mb-2 font-headline">

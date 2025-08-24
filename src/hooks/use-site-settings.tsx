@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
@@ -7,6 +8,7 @@ import { useToast } from './use-toast';
 interface SiteSettingsContextType {
   settings: SiteSettings;
   updateSettings: (newSettings: Partial<SiteSettings>) => void;
+  isLoading: boolean;
 }
 
 const SiteSettingsContext = createContext<SiteSettingsContextType | undefined>(undefined);
@@ -23,6 +25,7 @@ const defaultSettings: SiteSettings = {
 export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
   const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     try {
@@ -33,6 +36,8 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch (error) {
       console.error("Could not load site settings from localStorage", error);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -49,7 +54,7 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <SiteSettingsContext.Provider value={{ settings, updateSettings }}>
+    <SiteSettingsContext.Provider value={{ settings, updateSettings, isLoading }}>
       {children}
     </SiteSettingsContext.Provider>
   );

@@ -8,9 +8,28 @@ import { UserHeader } from '@/components/user/Header';
 import { SplashScreen } from '@/components/user/SplashScreen';
 import { UtensilsCrossed, ShoppingCart, Bike } from 'lucide-react';
 import { useSiteSettings } from '@/hooks/use-site-settings';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function LandingPage() {
-  const { settings } = useSiteSettings();
+  const { settings, isLoading } = useSiteSettings();
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <UserHeader />
+        <main className="flex-1">
+          <section className="relative h-[60vh] flex items-center justify-center text-center text-white bg-black/50">
+            <Skeleton className="absolute inset-0 w-full h-full" />
+            <div className="bg-black/50 p-8 rounded-lg">
+              <Skeleton className="h-16 w-96 mb-4" />
+              <Skeleton className="h-6 w-80" />
+              <Skeleton className="h-12 w-32 mt-8 rounded-full" />
+            </div>
+          </section>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <>
