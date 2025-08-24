@@ -31,6 +31,7 @@ import type { Rider } from '@/lib/types';
 import { useRiders } from '@/hooks/use-riders';
 import { RiderForm } from './RiderForm';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { ScrollArea } from '../ui/scroll-area';
 
 interface RiderDataTableProps {
   data: Rider[];
@@ -55,54 +56,56 @@ export function RiderDataTable({ data }: RiderDataTableProps) {
   return (
     <>
       <div className="rounded-md border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Avatar</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Vehicle</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map(rider => (
-              <TableRow key={rider.id}>
-                <TableCell>
-                  <Avatar>
-                    <AvatarImage src={rider.profilePictureUrl} alt={rider.name} data-ai-hint="person avatar"/>
-                    <AvatarFallback>{rider.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                </TableCell>
-                <TableCell className="font-medium">{rider.name}</TableCell>
-                <TableCell>{rider.email}</TableCell>
-                <TableCell>{rider.phone}</TableCell>
-                <TableCell>{rider.vehicleInfo}</TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEdit(rider)}>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setRiderToDelete(rider)} className="text-destructive">
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+        <ScrollArea className="w-full whitespace-nowrap">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Avatar</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Vehicle</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {data.map(rider => (
+                <TableRow key={rider.id}>
+                  <TableCell>
+                    <Avatar>
+                      <AvatarImage src={rider.profilePictureUrl} alt={rider.name} data-ai-hint="person avatar"/>
+                      <AvatarFallback>{rider.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                  </TableCell>
+                  <TableCell className="font-medium">{rider.name}</TableCell>
+                  <TableCell>{rider.email}</TableCell>
+                  <TableCell>{rider.phone}</TableCell>
+                  <TableCell>{rider.vehicleInfo}</TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEdit(rider)}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setRiderToDelete(rider)} className="text-destructive">
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </ScrollArea>
       </div>
       
       <Dialog open={!!riderToEdit} onOpenChange={(isOpen) => !isOpen && setRiderToEdit(null)}>

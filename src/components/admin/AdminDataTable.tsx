@@ -30,6 +30,7 @@ import type { Admin } from '@/lib/types';
 import { useAdmins } from '@/hooks/use-admins';
 import { AdminForm } from './AdminForm';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { ScrollArea } from '../ui/scroll-area';
 
 interface AdminDataTableProps {
   data: Admin[];
@@ -54,6 +55,7 @@ export function AdminDataTable({ data }: AdminDataTableProps) {
   return (
     <>
       <div className="rounded-md border bg-card">
+        <ScrollArea className="w-full whitespace-nowrap">
         <Table>
           <TableHeader>
             <TableRow>
@@ -97,6 +99,7 @@ export function AdminDataTable({ data }: AdminDataTableProps) {
             ))}
           </TableBody>
         </Table>
+        </ScrollArea>
       </div>
       
       <Dialog open={!!adminToEdit} onOpenChange={(isOpen) => !isOpen && setAdminToEdit(null)}>

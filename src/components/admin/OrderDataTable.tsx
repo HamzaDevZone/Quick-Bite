@@ -19,6 +19,7 @@ import { MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRiders } from '@/hooks/use-riders';
 import Link from 'next/link';
+import { ScrollArea } from '../ui/scroll-area';
 
 interface OrderDataTableProps {
   data: Order[];
@@ -46,80 +47,82 @@ export function OrderDataTable({ data }: OrderDataTableProps) {
 
   return (
     <div className="rounded-md border bg-card">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Order ID</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Payment</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Rider</TableHead>
-            <TableHead className="text-right">Total</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.map(order => (
-            <TableRow key={order.id}>
-              <TableCell className="font-medium">
-                <Link href={`/admin/orders/${order.id}`} className="text-primary hover:underline">
-                  {order.id}
-                </Link>
-              </TableCell>
-              <TableCell>{order.customerName}</TableCell>
-              <TableCell>{order.paymentMethod}</TableCell>
-              <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
-              <TableCell>{getRiderName(order.riderId)}</TableCell>
-              <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
-              <TableCell>
-                <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
-                  {order.status}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <span className="sr-only">Open menu</span>
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuSub>
-                        <DropdownMenuSubTrigger>Assign Rider</DropdownMenuSubTrigger>
-                        <DropdownMenuPortal>
-                            <DropdownMenuSubContent>
-                                {riders.map(rider => (
-                                    <DropdownMenuItem key={rider.id} onClick={() => assignRiderToOrder(order.id, rider.id)}>
-                                        {rider.name}
-                                    </DropdownMenuItem>
-                                ))}
-                                 <DropdownMenuItem disabled={riders.length === 0}>
-                                    {riders.length === 0 && 'No riders available'}
-                                </DropdownMenuItem>
-                            </DropdownMenuSubContent>
-                        </DropdownMenuPortal>
-                    </DropdownMenuSub>
-                    <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Pending')}>
-                      Mark as Pending
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Preparing')}>
-                      Mark as Preparing
-                    </DropdownMenuItem>
-                     <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Picked')}>
-                      Mark as Picked
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Delivered')}>
-                      Mark as Delivered
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
+      <ScrollArea className="w-full whitespace-nowrap">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Order ID</TableHead>
+              <TableHead>Customer</TableHead>
+              <TableHead>Payment</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Rider</TableHead>
+              <TableHead className="text-right">Total</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {data.map(order => (
+              <TableRow key={order.id}>
+                <TableCell className="font-medium">
+                  <Link href={`/admin/orders/${order.id}`} className="text-primary hover:underline">
+                    {order.id}
+                  </Link>
+                </TableCell>
+                <TableCell>{order.customerName}</TableCell>
+                <TableCell>{order.paymentMethod}</TableCell>
+                <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
+                <TableCell>{getRiderName(order.riderId)}</TableCell>
+                <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
+                <TableCell>
+                  <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
+                    {order.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuSub>
+                          <DropdownMenuSubTrigger>Assign Rider</DropdownMenuSubTrigger>
+                          <DropdownMenuPortal>
+                              <DropdownMenuSubContent>
+                                  {riders.map(rider => (
+                                      <DropdownMenuItem key={rider.id} onClick={() => assignRiderToOrder(order.id, rider.id)}>
+                                          {rider.name}
+                                      </DropdownMenuItem>
+                                  ))}
+                                   <DropdownMenuItem disabled={riders.length === 0}>
+                                      {riders.length === 0 && 'No riders available'}
+                                  </DropdownMenuItem>
+                              </DropdownMenuSubContent>
+                          </DropdownMenuPortal>
+                      </DropdownMenuSub>
+                      <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Pending')}>
+                        Mark as Pending
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Preparing')}>
+                        Mark as Preparing
+                      </DropdownMenuItem>
+                       <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Picked')}>
+                        Mark as Picked
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Delivered')}>
+                        Mark as Delivered
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </ScrollArea>
     </div>
   );
 }

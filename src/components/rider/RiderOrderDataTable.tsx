@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { ScrollArea } from '../ui/scroll-area';
 
 interface RiderOrderDataTableProps {
   data: Order[];
@@ -35,68 +36,70 @@ export function RiderOrderDataTable({ data }: RiderOrderDataTableProps) {
 
   return (
     <div className="rounded-md border bg-card">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Order ID</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Address</TableHead>
-            <TableHead className="text-right">Total</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.length === 0 && (
+      <ScrollArea className="w-full whitespace-nowrap">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={6} className="h-24 text-center">
-                No orders found.
-              </TableCell>
+              <TableHead>Order ID</TableHead>
+              <TableHead>Customer</TableHead>
+              <TableHead>Address</TableHead>
+              <TableHead className="text-right">Total</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
-          )}
-          {data.map(order => (
-            <TableRow key={order.id}>
-              <TableCell className="font-medium">
-                <Link href={`/rider/orders/${order.id}`} className="text-primary hover:underline">
-                    {order.id}
-                </Link>
-              </TableCell>
-              <TableCell>{order.customerName}</TableCell>
-              <TableCell>{order.customerAddress}</TableCell>
-              <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
-              <TableCell>
-                <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
-                  {order.status}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-right">
-                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0" disabled={order.status === 'Delivered' || order.status === 'Pending'}>
-                      <span className="sr-only">Open menu</span>
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem 
-                      onClick={() => handleStatusChange(order.id, 'Picked')}
-                      disabled={order.status !== 'Preparing'}
-                    >
-                      Mark as Picked
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => handleStatusChange(order.id, 'Delivered')}
-                      disabled={order.status !== 'Picked'}
-                    >
-                      Mark as Delivered
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {data.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={6} className="h-24 text-center">
+                  No orders found.
+                </TableCell>
+              </TableRow>
+            )}
+            {data.map(order => (
+              <TableRow key={order.id}>
+                <TableCell className="font-medium">
+                  <Link href={`/rider/orders/${order.id}`} className="text-primary hover:underline">
+                      {order.id}
+                  </Link>
+                </TableCell>
+                <TableCell>{order.customerName}</TableCell>
+                <TableCell>{order.customerAddress}</TableCell>
+                <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
+                <TableCell>
+                  <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
+                    {order.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                   <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0" disabled={order.status === 'Delivered' || order.status === 'Pending'}>
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem 
+                        onClick={() => handleStatusChange(order.id, 'Picked')}
+                        disabled={order.status !== 'Preparing'}
+                      >
+                        Mark as Picked
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => handleStatusChange(order.id, 'Delivered')}
+                        disabled={order.status !== 'Picked'}
+                      >
+                        Mark as Delivered
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </ScrollArea>
     </div>
   );
 }
