@@ -31,6 +31,7 @@ export interface Rider {
     password?: string; // Should not be sent to client
     phone: string;
     vehicleInfo: string;
+    profilePictureUrl?: string;
 }
 
 export interface Order {

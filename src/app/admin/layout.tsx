@@ -6,6 +6,7 @@ import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { ProductProvider } from '@/hooks/use-products';
 import { OrderProvider } from '@/hooks/use-orders';
 import { Skeleton } from '@/components/ui/skeleton';
+import { RiderProvider } from '@/hooks/use-riders';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -56,12 +57,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return (
         <ProductProvider>
             <OrderProvider>
-                <div className="flex min-h-screen">
-                    <AdminSidebar />
-                    <main className="flex-1 p-8 bg-secondary/40">
-                        {children}
-                    </main>
-                </div>
+                <RiderProvider>
+                    <div className="flex min-h-screen">
+                        <AdminSidebar />
+                        <main className="flex-1 p-8 bg-secondary/40">
+                            {children}
+                        </main>
+                    </div>
+                </RiderProvider>
             </OrderProvider>
         </ProductProvider>
     );

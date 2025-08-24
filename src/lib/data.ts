@@ -81,7 +81,17 @@ export const RIDERS: Rider[] = [
         email: 'rider@example.com',
         password: 'password123',
         phone: '123-456-7890',
-        vehicleInfo: 'Motorcycle - Yamaha MT-07'
+        vehicleInfo: 'Motorcycle - Yamaha MT-07',
+        profilePictureUrl: 'https://placehold.co/100x100.png'
+    },
+    {
+        id: 'rider-2',
+        name: 'Ben Carter',
+        email: 'ben@example.com',
+        password: 'password123',
+        phone: '098-765-4321',
+        vehicleInfo: 'Scooter - Honda PCX150',
+        profilePictureUrl: 'https://placehold.co/100x100.png'
     }
 ];
 
@@ -124,7 +134,7 @@ export const ORDERS: Order[] = [
         status: 'Delivered',
         total: 23.98,
         orderDate: '2024-05-20T18:00:00Z',
-        riderId: 'rider-1',
+        riderId: 'rider-2',
     },
      {
         id: 'ORD004',
