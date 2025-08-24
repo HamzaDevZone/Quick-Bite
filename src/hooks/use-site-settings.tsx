@@ -14,6 +14,8 @@ const SiteSettingsContext = createContext<SiteSettingsContextType | undefined>(u
 // Default settings
 const defaultSettings: SiteSettings = {
   heroImageUrl: 'https://placehold.co/1920x1080.png',
+  splashImageUrl: 'https://placehold.co/1080x1920.png',
+  menuImageUrl: 'https://placehold.co/1920x1080.png',
   deliveryFee: 150,
 };
 

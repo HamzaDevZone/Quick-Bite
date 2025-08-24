@@ -12,6 +12,8 @@ import { useEffect } from 'react';
 
 const appearanceFormSchema = z.object({
   heroImageUrl: z.string().url('Please enter a valid URL.'),
+  splashImageUrl: z.string().url('Please enter a valid URL.'),
+  menuImageUrl: z.string().url('Please enter a valid URL.'),
   deliveryFee: z.coerce.number().min(0, 'Delivery fee cannot be negative.'),
 });
 
@@ -22,6 +24,8 @@ export default function AdminAppearancePage() {
     resolver: zodResolver(appearanceFormSchema),
     defaultValues: {
       heroImageUrl: settings.heroImageUrl,
+      splashImageUrl: settings.splashImageUrl,
+      menuImageUrl: settings.menuImageUrl,
       deliveryFee: settings.deliveryFee,
     },
   });
@@ -29,6 +33,8 @@ export default function AdminAppearancePage() {
   useEffect(() => {
     form.reset({ 
       heroImageUrl: settings.heroImageUrl,
+      splashImageUrl: settings.splashImageUrl,
+      menuImageUrl: settings.menuImageUrl,
       deliveryFee: settings.deliveryFee,
     });
   }, [settings, form]);
@@ -53,9 +59,35 @@ export default function AdminAppearancePage() {
                 name="heroImageUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Hero Image URL</FormLabel>
+                    <FormLabel>Home Page Hero Image URL</FormLabel>
                     <FormControl>
                       <Input placeholder="https://example.com/your-image.png" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="splashImageUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Splash Screen Background URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://example.com/splash-bg.png" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="menuImageUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Menu Page Header Background URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://example.com/menu-bg.png" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

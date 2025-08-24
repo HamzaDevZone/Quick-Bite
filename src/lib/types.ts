@@ -60,6 +60,8 @@ export interface Order {
 
 export interface SiteSettings {
   heroImageUrl: string;
+  splashImageUrl: string;
+  menuImageUrl: string;
   deliveryFee: number;
 }
 
