@@ -53,7 +53,7 @@ export default function SignupPage() {
         title: 'Account Created',
         description: 'Welcome! You have been successfully signed up.',
       });
-      router.push('/profile');
+      router.push('/menu');
 
     } catch (error: any) {
       console.error(error);
