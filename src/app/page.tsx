@@ -9,21 +9,9 @@ import { SplashScreen } from '@/components/user/SplashScreen';
 import { UtensilsCrossed, ShoppingCart, Bike } from 'lucide-react';
 import { useSiteSettings } from '@/hooks/use-site-settings';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function LandingPage() {
   const { settings, isLoading } = useSiteSettings();
-  const router = useRouter();
-
-  useEffect(() => {
-    // Redirect to menu page after a delay
-    const timer = setTimeout(() => {
-      router.push('/menu');
-    }, 3000); // 3-second delay on landing page
-
-    return () => clearTimeout(timer);
-  }, [router]);
 
   if (isLoading) {
     return (
