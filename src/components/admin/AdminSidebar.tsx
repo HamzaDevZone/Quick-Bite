@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -5,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { LayoutDashboard, Package, LogOut, UtensilsCrossed, ShoppingCart, Bike, Shapes, Palette, Users, Home, MessageSquare, Star } from 'lucide-react';
+import { useOrders } from '@/hooks/use-orders';
 
 const navItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -21,11 +23,14 @@ const navItems = [
 export function AdminSidebar() {
     const pathname = usePathname();
     const router = useRouter();
+    const { orders } = useOrders();
 
     const handleLogout = () => {
         sessionStorage.removeItem('quickbite_admin_auth');
         router.push('/admin/login');
     };
+    
+    const hasNewOrders = orders.some(order => order.status === 'Pending');
 
     return (
         <aside className="w-64 flex-shrink-0 bg-background border-r">
@@ -39,7 +44,7 @@ export function AdminSidebar() {
                 <nav className="flex-grow p-4">
                     <ul className="space-y-2">
                         {navItems.map(item => (
-                            <li key={item.href}>
+                            <li key={item.href} className="relative">
                                 <Link href={item.href}>
                                     <Button
                                         variant={pathname === item.href ? 'secondary' : 'ghost'}
@@ -49,6 +54,9 @@ export function AdminSidebar() {
                                         {item.label}
                                     </Button>
                                 </Link>
+                                {item.href === '/admin/orders' && hasNewOrders && (
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-destructive" />
+                                )}
                             </li>
                         ))}
                     </ul>

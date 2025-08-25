@@ -81,17 +81,20 @@ export interface Review {
   createdAt: Timestamp;
 }
 
+export type UserType = 'user' | 'rider' | 'admin';
+
 export interface Message {
     id: string;
     conversationId: string; // Typically user's email
-    sender: 'user' | 'admin';
+    sender: UserType;
     text: string;
     createdAt: Timestamp;
 }
 
 export interface Conversation {
-    id: string; // The user's email
+    id: string; // The user's/rider's email
     userName: string;
+    userType: UserType;
     lastMessage: string;
     updatedAt: Timestamp;
     isReadByAdmin: boolean;

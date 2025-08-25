@@ -13,6 +13,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useToast } from '@/hooks/use-toast';
 import { MessageSquare, Send } from 'lucide-react';
 import { useMessages } from '@/hooks/use-messages';
+import { useAuth } from '@/hooks/use-auth';
+import { useEffect } from 'react';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name is required.'),
@@ -23,6 +25,7 @@ const formSchema = z.object({
 export default function ContactPage() {
     const { toast } = useToast();
     const { addMessage } = useMessages();
+    const { user } = useAuth();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -33,11 +36,20 @@ export default function ContactPage() {
         },
     });
 
+    useEffect(() => {
+        if(user) {
+            form.setValue('name', user.displayName || '');
+            form.setValue('email', user.email || '');
+        }
+    }, [user, form]);
+
+
     const handleSubmit = async (values: z.infer<typeof formSchema>) => {
         await addMessage({
             userName: values.name,
             userEmail: values.email,
             text: values.message,
+            userType: 'user'
         });
 
         toast({
@@ -45,7 +57,10 @@ export default function ContactPage() {
             description: "An admin will get back to you shortly.",
         });
         
-        form.reset();
+        form.reset({
+            ...values,
+            message: ''
+        });
     };
 
     return (
@@ -68,7 +83,7 @@ export default function ContactPage() {
                                     <FormItem>
                                         <FormLabel>Your Name</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="John Doe" {...field} />
+                                            <Input placeholder="John Doe" {...field} disabled={!!user} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -81,7 +96,7 @@ export default function ContactPage() {
                                     <FormItem>
                                         <FormLabel>Your Email</FormLabel>
                                         <FormControl>
-                                            <Input type="email" placeholder="john@example.com" {...field} />
+                                            <Input type="email" placeholder="john@example.com" {...field} disabled={!!user} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

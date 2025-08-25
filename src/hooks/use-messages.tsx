@@ -1,9 +1,10 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import { collection, getDocs, addDoc, updateDoc, doc, Timestamp, query, where, orderBy, onSnapshot, Unsubscribe, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { Message, Conversation } from '@/lib/types';
+import type { Message, Conversation, UserType } from '@/lib/types';
 import { useToast } from './use-toast';
 
 interface MessageContextType {
@@ -11,7 +12,7 @@ interface MessageContextType {
   messages: Record<string, Message[]>;
   loadingConversations: boolean;
   loadingMessages: Record<string, boolean>;
-  addMessage: (data: { userName: string; userEmail: string; text: string }) => Promise<void>;
+  addMessage: (data: { userName: string; userEmail: string; text: string, userType: UserType }) => Promise<void>;
   sendMessage: (conversationId: string, text: string) => Promise<void>;
 }
 
@@ -71,13 +72,13 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
 
   }, [messageUnsubscribers, toast]);
 
-  const addMessage = async ({ userName, userEmail, text }: { userName: string; userEmail: string; text: string }) => {
+  const addMessage = async ({ userName, userEmail, text, userType = 'user' }: { userName: string; userEmail: string; text: string, userType: UserType }) => {
     const conversationId = userEmail;
     try {
       // Add message
       await addDoc(collection(db, 'messages'), {
         conversationId,
-        sender: 'user',
+        sender: userType,
         text,
         createdAt: Timestamp.now(),
       });
@@ -86,6 +87,7 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
       const conversationDocRef = doc(db, 'conversations', conversationId);
       await setDoc(conversationDocRef, {
         userName,
+        userType,
         lastMessage: text,
         updatedAt: Timestamp.now(),
         isReadByAdmin: false,

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -7,11 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Send, ArrowLeft } from 'lucide-react';
+import { Send, ArrowLeft, User, Bike } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import type { Conversation, Message } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 
 export default function AdminMessagesPage() {
     const { conversations, messages, loadingConversations, loadingMessages, sendMessage } = useMessages();
@@ -51,11 +53,22 @@ export default function AdminMessagesPage() {
                                             "flex justify-between items-center p-3 rounded-lg cursor-pointer hover:bg-accent",
                                             !convo.isReadByAdmin && "bg-primary/10"
                                         )}>
-                                        <div>
-                                            <p className={cn("font-semibold", !convo.isReadByAdmin && "text-primary")}>{convo.userName}</p>
-                                            <p className="text-sm text-muted-foreground truncate max-w-xs">{convo.lastMessage}</p>
+                                        <div className="flex items-center gap-3">
+                                             <Avatar>
+                                                <AvatarFallback>{convo.userName.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <p className={cn("font-semibold", !convo.isReadByAdmin && "text-primary")}>{convo.userName}</p>
+                                                <p className="text-sm text-muted-foreground truncate max-w-xs">{convo.lastMessage}</p>
+                                            </div>
                                         </div>
-                                        <p className="text-xs text-muted-foreground">{format(convo.updatedAt.toDate(), 'PP')}</p>
+                                        <div className="flex flex-col items-end gap-2">
+                                            <Badge variant="outline" className="capitalize">
+                                                {convo.userType === 'rider' ? <Bike className="mr-2 h-4 w-4" /> : <User className="mr-2 h-4 w-4" />}
+                                                {convo.userType}
+                                            </Badge>
+                                            <p className="text-xs text-muted-foreground">{format(convo.updatedAt.toDate(), 'PP')}</p>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -88,7 +101,7 @@ export default function AdminMessagesPage() {
                         ) : (
                             currentMessages.map(msg => (
                                 <div key={msg.id} className={cn("flex items-end gap-2", msg.sender === 'admin' ? 'justify-end' : 'justify-start')}>
-                                     {msg.sender === 'user' && (
+                                     {msg.sender !== 'admin' && (
                                         <Avatar className="h-8 w-8">
                                             <AvatarFallback>{selectedConversation.userName.charAt(0)}</AvatarFallback>
                                         </Avatar>
@@ -125,3 +138,4 @@ export default function AdminMessagesPage() {
         </div>
     );
 }
+
