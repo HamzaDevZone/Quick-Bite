@@ -62,8 +62,9 @@ export interface Order {
 }
 
 export interface PaymentMethod {
-  value: string;
+  id: string;
   label: string;
+  details: string;
 }
 
 export interface SiteSettings {

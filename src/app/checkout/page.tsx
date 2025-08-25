@@ -17,9 +17,12 @@ import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { CreditCard, Landmark, Wallet } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSiteSettings } from '@/hooks/use-site-settings';
 import { Textarea } from '@/components/ui/textarea';
+import type { PaymentMethod } from '@/lib/types';
+import { cn } from '@/lib/utils';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const checkoutSchema = z.object({
   customerName: z.string().min(2, 'Name is required.'),
@@ -36,6 +39,7 @@ export default function CheckoutPage() {
   const deliveryFee = settings.deliveryFee;
   const router = useRouter();
   const { toast } = useToast();
+  const [selectedMethodDetails, setSelectedMethodDetails] = useState<string | undefined>(undefined);
 
   const form = useForm<z.infer<typeof checkoutSchema>>({
     resolver: zodResolver(checkoutSchema),
@@ -82,6 +86,12 @@ export default function CheckoutPage() {
         return CreditCard;
     }
     return Wallet; // Default icon
+  }
+
+  const handlePaymentMethodChange = (value: string) => {
+    form.setValue('paymentMethod', value);
+    const selectedMethod = settings.paymentMethods.find(m => m.label === value);
+    setSelectedMethodDetails(selectedMethod?.details);
   }
 
 
@@ -173,16 +183,16 @@ export default function CheckoutPage() {
                                 <FormItem className="space-y-3">
                                     <FormControl>
                                         <RadioGroup
-                                            onValueChange={field.onChange}
+                                            onValueChange={handlePaymentMethodChange}
                                             defaultValue={field.value}
                                             className="flex flex-col space-y-1"
                                         >
                                             {(settings.paymentMethods || []).map((method) => {
-                                                const Icon = getIconForMethod(method.value);
+                                                const Icon = getIconForMethod(method.label);
                                                 return (
-                                                    <FormItem key={method.value} className="flex items-center space-x-3 space-y-0 rounded-md border p-4 hover:bg-accent/50 has-[[data-state=checked]]:bg-accent/80 transition-colors">
+                                                    <FormItem key={method.id} className="flex items-center space-x-3 space-y-0 rounded-md border p-4 hover:bg-accent/50 has-[[data-state=checked]]:bg-accent/80 transition-colors">
                                                         <FormControl>
-                                                            <RadioGroupItem value={method.value} />
+                                                            <RadioGroupItem value={method.label} />
                                                         </FormControl>
                                                         <Icon className="h-5 w-5 text-muted-foreground" />
                                                         <FormLabel className="font-normal flex-grow cursor-pointer">
@@ -197,6 +207,14 @@ export default function CheckoutPage() {
                                 </FormItem>
                             )}
                         />
+                        {selectedMethodDetails && (
+                             <Alert className="mt-4">
+                                <Wallet className="h-4 w-4" />
+                                <AlertDescription>
+                                    {selectedMethodDetails}
+                                </AlertDescription>
+                            </Alert>
+                        )}
                     </CardContent>
                 </Card>
 

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Package, LogOut, UtensilsCrossed, ShoppingCart, Bike, Shapes, Palette, Users, Home, MessageSquare, Star } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, UtensilsCrossed, ShoppingCart, Bike, Shapes, Palette, Users, Home, MessageSquare, Star, Wallet } from 'lucide-react';
 import { useOrders } from '@/hooks/use-orders';
 
 const navItems = [
@@ -18,6 +18,7 @@ const navItems = [
     { href: '/admin/reviews', label: 'Reviews', icon: Star },
     { href: '/admin/admins', label: 'Admins', icon: Users },
     { href: '/admin/appearance', label: 'Appearance', icon: Palette },
+    { href: '/admin/finance', label: 'Finance', icon: Wallet },
 ];
 
 export function AdminSidebar() {
