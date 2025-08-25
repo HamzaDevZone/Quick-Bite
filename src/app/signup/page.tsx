@@ -43,9 +43,11 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       
       // Update user's profile with their name
-      await updateProfile(userCredential.user, {
-        displayName: values.name,
-      });
+      if (auth.currentUser) {
+        await updateProfile(auth.currentUser, {
+          displayName: values.name,
+        });
+      }
 
       toast({
         title: 'Account Created',
