@@ -1,7 +1,7 @@
 
 
 "use client"
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Search, Utensils } from 'lucide-react';
@@ -18,6 +18,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useReviews } from '@/hooks/use-reviews';
 import type { Review } from '@/lib/types';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
 
 export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -27,6 +29,14 @@ export default function MenuPage() {
   const { categories, loading: categoriesLoading } = useCategories();
   const { settings, isLoading: settingsLoading } = useSiteSettings();
   const { reviews: allReviews, loading: reviewsLoading } = useReviews(null);
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/login');
+    }
+  }, [user, authLoading, router]);
 
   const productsPerPage = 8;
 
@@ -76,7 +86,7 @@ export default function MenuPage() {
     return categoryMatch && searchMatch;
   });
 
-  const isLoading = productsLoading || categoriesLoading || settingsLoading || reviewsLoading;
+  const isLoading = productsLoading || categoriesLoading || settingsLoading || reviewsLoading || authLoading;
 
   // Pagination Logic
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -89,6 +99,17 @@ export default function MenuPage() {
       setCurrentPage(pageNumber);
     }
   };
+  
+  if (isLoading || !user) {
+    return (
+        <div className="flex flex-col min-h-screen">
+          <UserHeader />
+           <div className="flex-grow flex items-center justify-center">
+                <p>Loading...</p>
+           </div>
+        </div>
+    )
+  }
 
   return (
       <div className="flex flex-col min-h-screen">
