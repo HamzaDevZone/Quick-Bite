@@ -8,7 +8,7 @@ import { Skeleton } from '../ui/skeleton';
 
 export function SplashScreen() {
   const [isVisible, setIsVisible] = useState(true);
-  const { settings, isLoading } = useSiteSettings();
+  const { settings } = useSiteSettings();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -27,15 +27,13 @@ export function SplashScreen() {
           transition={{ duration: 0.5 }}
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background"
         >
-          {isLoading ? <Skeleton className="absolute inset-0 w-full h-full" /> : (
-            <Image 
+          <Image 
               src={settings.splashImageUrl} 
               alt="Splash background"
               fill
               className="object-cover -z-10"
               data-ai-hint="restaurant food background"
             />
-          )}
           <div className="absolute inset-0 bg-black/50"></div>
 
           <div className="z-10 flex flex-col items-center justify-center text-center">
@@ -45,15 +43,13 @@ export function SplashScreen() {
               transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.2 }}
               className="relative w-40 h-40"
             >
-              {isLoading ? <Skeleton className="w-full h-full" /> : (
-                <Image 
+              <Image 
                   src={settings.splashLogoUrl}
                   alt="QuickBite Logo"
                   fill
                   className="object-contain"
                   data-ai-hint="app logo"
                 />
-              )}
             </motion.div>
             <motion.h1
               initial={{ y: 20, opacity: 0 }}
