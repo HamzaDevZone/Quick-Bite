@@ -3,12 +3,12 @@
 
 import { useOrders } from '@/hooks/use-orders';
 import { UserHeader } from '@/components/user/Header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import type { OrderStatus } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Clock, UtensilsCrossed, Package, Check, ShoppingBag } from 'lucide-react';
+import { Clock, UtensilsCrossed, Package, Check, ShoppingBag, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import type { Timestamp } from 'firebase/firestore';
@@ -101,6 +101,16 @@ export default function OrderHistoryPage() {
                                             <span>PKR {order.total.toFixed(2)}</span>
                                         </div>
                                     </CardContent>
+                                     {order.status === 'Picked' && (
+                                        <CardFooter>
+                                            <Button asChild className="w-full">
+                                                <Link href={`/track/${order.id}`}>
+                                                    <MapPin className="mr-2 h-4 w-4" />
+                                                    Track Order
+                                                </Link>
+                                            </Button>
+                                        </CardFooter>
+                                    )}
                                 </Card>
                             )
                         })}

@@ -59,6 +59,7 @@ export interface Order {
   paymentMethod: string;
   deliveryFee: number;
   orderNotes?: string;
+  restaurantLocation?: { lat: number, lng: number }; // Assuming a fixed location for simplicity
 }
 
 export interface PaymentMethod {
@@ -106,4 +107,10 @@ export interface Conversation {
     lastMessage: string;
     updatedAt: Timestamp;
     isReadByAdmin: boolean;
+}
+
+export interface RiderLocation {
+    lat: number;
+    lng: number;
+    timestamp: Timestamp;
 }
