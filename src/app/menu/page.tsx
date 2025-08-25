@@ -151,23 +151,26 @@ export default function MenuPage() {
             </section>
 
              {totalPages > 1 && (
-              <div className="flex justify-center mt-12">
-                <nav className="flex space-x-2">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
-                    <Button
-                      key={number}
-                      onClick={() => paginate(number)}
-                      variant={currentPage === number ? 'default' : 'outline'}
-                      className={cn(
-                        'h-10 w-10 p-0 text-lg',
-                        currentPage === number 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-transparent text-foreground'
-                      )}
-                    >
-                      {number}
-                    </Button>
-                  ))}
+              <div className="flex justify-center mt-12 mb-8">
+                <nav aria-label="Pagination">
+                  <ul className="flex items-center -space-x-px h-10 text-base">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
+                      <li key={number}>
+                        <button
+                          onClick={() => paginate(number)}
+                           className={cn(
+                            "flex items-center justify-center px-4 h-10 leading-tight border transition-colors",
+                            currentPage === number
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground",
+                            "first:rounded-l-lg last:rounded-r-lg"
+                          )}
+                        >
+                          {number}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
                 </nav>
               </div>
             )}
