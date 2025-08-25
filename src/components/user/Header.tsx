@@ -9,6 +9,7 @@ import { Badge } from '../ui/badge';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '../ui/sheet';
 import { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
+import { Separator } from '../ui/separator';
 
 export function UserHeader() {
   const { itemCount } = useCart();
@@ -138,6 +139,17 @@ export function UserHeader() {
                                                 </Button>
                                             </Link>
                                         )}
+                                    </SheetClose>
+                                ))}
+                                <Separator className="my-2" />
+                                {adminLinks.map(({ href, label, icon: Icon }) => (
+                                     <SheetClose key={href} asChild>
+                                        <Link href={href} passHref>
+                                            <Button variant="ghost" className="justify-start text-sm text-muted-foreground">
+                                                {Icon && <Icon className="mr-2 h-4 w-4" />}
+                                                {label}
+                                            </Button>
+                                        </Link>
                                     </SheetClose>
                                 ))}
                              </nav>
