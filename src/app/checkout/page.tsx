@@ -177,7 +177,7 @@ export default function CheckoutPage() {
                                             defaultValue={field.value}
                                             className="flex flex-col space-y-1"
                                         >
-                                            {settings.paymentMethods.map((method) => {
+                                            {(settings.paymentMethods || []).map((method) => {
                                                 const Icon = getIconForMethod(method.value);
                                                 return (
                                                     <FormItem key={method.value} className="flex items-center space-x-3 space-y-0 rounded-md border p-4 hover:bg-accent/50 has-[[data-state=checked]]:bg-accent/80 transition-colors">

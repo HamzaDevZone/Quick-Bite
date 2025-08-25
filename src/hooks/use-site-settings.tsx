@@ -29,7 +29,6 @@ const defaultSettings: SiteSettings = {
     { value: 'Jazzcash', label: 'Jazzcash/Easypaisa' },
     { value: 'Bank Transfer', label: 'Bank Transfer' },
     { value: 'Sadapay/Nayapay', label: 'Sadapay/Nayapay' },
-    { value: 'Payoneer', label: 'Payoneer' },
   ]
 };
 

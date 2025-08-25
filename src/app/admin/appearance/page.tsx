@@ -39,7 +39,19 @@ export default function AdminAppearancePage() {
   });
   
   useEffect(() => {
-    form.reset(settings);
+    if (settings) {
+        form.reset({
+            heroImageUrl: settings.heroImageUrl,
+            splashImageUrl: settings.splashImageUrl,
+            splashLogoUrl: settings.splashLogoUrl,
+            menuImageUrl: settings.menuImageUrl,
+            deliveryFee: settings.deliveryFee,
+            menuCarouselImage1: settings.menuCarouselImage1,
+            menuCarouselImage2: settings.menuCarouselImage2,
+            menuCarouselImage3: settings.menuCarouselImage3,
+            menuCarouselImage4: settings.menuCarouselImage4,
+        });
+    }
   }, [settings, form]);
 
   function onSubmit(values: z.infer<typeof appearanceFormSchema>) {
@@ -65,7 +77,7 @@ export default function AdminAppearancePage() {
       value: newPaymentMethod.trim(),
       label: newPaymentMethod.trim(),
     };
-    const updatedMethods = [...settings.paymentMethods, newMethod];
+    const updatedMethods = [...(settings.paymentMethods || []), newMethod];
     updateSettings({ paymentMethods: updatedMethods });
     setNewPaymentMethod('');
   };
@@ -219,7 +231,7 @@ export default function AdminAppearancePage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            {settings.paymentMethods.map(method => (
+            {(settings.paymentMethods || []).map(method => (
               <div key={method.value} className="flex items-center justify-between p-3 rounded-md border bg-secondary">
                 <span className="flex items-center gap-2"><Wallet className="w-4 h-4 text-muted-foreground"/> {method.label}</span>
                 <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDeletePaymentMethod(method.value)}>
@@ -227,7 +239,7 @@ export default function AdminAppearancePage() {
                 </Button>
               </div>
             ))}
-             {settings.paymentMethods.length === 0 && <p className="text-muted-foreground text-sm p-4 text-center">No payment methods configured.</p>}
+             {(!settings.paymentMethods || settings.paymentMethods.length === 0) && <p className="text-muted-foreground text-sm p-4 text-center">No payment methods configured.</p>}
           </div>
           <Separator />
           <div className="flex gap-2 items-center pt-4">
