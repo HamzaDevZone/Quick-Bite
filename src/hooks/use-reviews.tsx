@@ -16,72 +16,21 @@ interface ReviewContextType {
 const ReviewContext = createContext<ReviewContextType | undefined>(undefined);
 
 export const ReviewProvider = ({ children }: { children: ReactNode }) => {
-  const [allReviews, setAllReviews] = useState<Record<string, Review[]>>({});
-  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
-  const { toast } = useToast();
+  // This provider is a bit complex for its purpose now.
+  // The simplified hook `useReviews` below handles the logic more directly.
+  // We can leave this provider here in case we need more complex, shared state later.
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const fetchReviews = async (productId: string | null) => {
-    if (productId && allReviews[productId]) return;
-
-    const queryTarget = productId 
-      ? query(collection(db, 'reviews'), where('productId', '==', productId))
-      : collection(db, 'reviews');
-
-    const cacheKey = productId || 'all_reviews';
-
-    setLoadingStates(prev => ({ ...prev, [cacheKey]: true }));
-    try {
-      const querySnapshot = await getDocs(queryTarget);
-      const reviewsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Review));
-      
-      reviewsData.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
-
-      if (productId) {
-         setAllReviews(prev => ({ ...prev, [productId]: reviewsData }));
-      } else {
-         setAllReviews(prev => ({ ...prev, all_reviews: reviewsData }));
-      }
-     
-    } catch (error) {
-      console.error(`Error fetching reviews for product ${productId}: `, error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch reviews.' });
-    } finally {
-      setLoadingStates(prev => ({ ...prev, [cacheKey]: false }));
-    }
+  const addReview = async () => {
+    console.warn("addReview from provider is not implemented, use the one from the hook.");
   };
 
-  const addReview = async (review: Omit<Review, 'id' | 'createdAt'>) => {
-    try {
-      const newReviewData = {
-        ...review,
-        createdAt: Timestamp.now(),
-      };
-      const docRef = await addDoc(collection(db, 'reviews'), newReviewData);
-      const newReview = { ...newReviewData, id: docRef.id } as Review;
-
-      setAllReviews(prev => {
-        const productReviews = prev[review.productId] ? [newReview, ...prev[review.productId]] : [newReview];
-        productReviews.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
-        
-        const allReviewsList = prev['all_reviews'] ? [newReview, ...prev['all_reviews']] : [newReview];
-        allReviewsList.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
-        
-        return { ...prev, [review.productId]: productReviews, 'all_reviews': allReviewsList };
-      });
-      toast({ title: 'Review Submitted', description: 'Thank you for your feedback!' });
-    } catch (error) {
-      console.error("Error adding review: ", error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not submit your review.' });
-    }
-  };
-  
-  const dummyContext: ReviewContextType = {
-    reviews: [],
-    addReview: async () => {},
-    loading: true,
-  }
-
-  return <ReviewContext.Provider value={dummyContext}>{children}</ReviewContext.Provider>;
+  return (
+    <ReviewContext.Provider value={{ reviews, addReview, loading }}>
+      {children}
+    </ReviewContext.Provider>
+  );
 };
 
 export const useReviews = (productId: string | null) => {
@@ -97,21 +46,21 @@ export const useReviews = (productId: string | null) => {
   useEffect(() => {
     let isMounted = true;
     const fetchReviewsForProduct = async () => {
+        setState(prevState => ({ ...prevState, loading: true }));
         try {
             const queryTarget = productId
-                ? query(collection(db, 'reviews'), where('productId', '==', productId))
-                : collection(db, 'reviews');
+                ? query(collection(db, 'reviews'), where('productId', '==', productId), orderBy('createdAt', 'desc'))
+                : query(collection(db, 'reviews'), orderBy('createdAt', 'desc'));
 
             const querySnapshot = await getDocs(queryTarget);
             if (isMounted) {
                 const reviewsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Review));
-                reviewsData.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
-                setState(prevState => ({ ...prevState, reviews: reviewsData, loading: false }));
+                setState({ reviews: reviewsData, loading: false });
             }
         } catch (error) {
             console.error(`Error fetching reviews for product ${productId}: `, error);
             if (isMounted) {
-                setState(prevState => ({ ...prevState, loading: false }));
+                setState({ reviews: [], loading: false });
             }
         }
     };
@@ -133,14 +82,11 @@ export const useReviews = (productId: string | null) => {
       const docRef = await addDoc(collection(db, 'reviews'), newReviewData);
       const newReview = { ...newReviewData, id: docRef.id } as Review;
       
-      setState(prevState => {
-          const updatedReviews = [newReview, ...prevState.reviews];
-          updatedReviews.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
-          return {
+      setState(prevState => ({
             ...prevState,
-            reviews: updatedReviews
+            reviews: [newReview, ...prevState.reviews]
           }
-      })
+      ));
 
       toast({ title: 'Review Submitted', description: 'Thank you for your feedback!' });
     } catch (error) {
@@ -148,11 +94,6 @@ export const useReviews = (productId: string | null) => {
       toast({ variant: 'destructive', title: 'Error', description: 'Could not submit your review.' });
     }
   };
-
-  const context = useContext(ReviewContext);
-  if (context === undefined) {
-    throw new Error('useReviews must be used within a ReviewProvider');
-  }
 
   return { ...state, addReview };
 };
