@@ -101,16 +101,6 @@ export default function OrderHistoryPage() {
                                             <span>PKR {order.total.toFixed(2)}</span>
                                         </div>
                                     </CardContent>
-                                     {order.status === 'Picked' && (
-                                        <CardFooter>
-                                            <Button asChild className="w-full">
-                                                <Link href={`/track/${order.id}`}>
-                                                    <MapPin className="mr-2 h-4 w-4" />
-                                                    Track Order
-                                                </Link>
-                                            </Button>
-                                        </CardFooter>
-                                    )}
                                 </Card>
                             )
                         })}
