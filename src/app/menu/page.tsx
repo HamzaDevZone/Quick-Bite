@@ -13,13 +13,18 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useSiteSettings } from '@/hooks/use-site-settings';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import Autoplay from "embla-carousel-autoplay"
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const { products, loading: productsLoading } = useProducts();
   const { categories, loading: categoriesLoading } = useCategories();
   const { settings, isLoading: settingsLoading } = useSiteSettings();
+
+  const productsPerPage = 8;
 
   const plugin = useRef(
     Autoplay({ delay: 4000, stopOnInteraction: true })
@@ -39,6 +44,14 @@ export default function MenuPage() {
   });
 
   const isLoading = productsLoading || categoriesLoading || settingsLoading;
+
+  // Pagination Logic
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
       <div className="flex flex-col min-h-screen">
@@ -92,7 +105,10 @@ export default function MenuPage() {
                     placeholder="Search for pizza, burgers, and more..."
                     className="pl-10 w-full h-12 text-base rounded-full bg-secondary border-transparent focus:border-primary focus:ring-primary"
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      setCurrentPage(1); // Reset to first page on search
+                    }}
                 />
                 </div>
             </div>
@@ -108,17 +124,20 @@ export default function MenuPage() {
                 <CategoryTabs 
                 categories={categories}
                 activeCategory={activeCategory}
-                setActiveCategory={setActiveCategory}
+                setActiveCategory={(category) => {
+                  setActiveCategory(category);
+                  setCurrentPage(1); // Reset to first page on category change
+                }}
                 />
             )}
 
-            <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-8">
+            <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-8 min-h-[500px]">
                 {isLoading ? (
                 Array.from({ length: 8 }).map((_, i) => (
                     <CardSkeleton key={i} />
                 ))
-                ) : filteredProducts.length > 0 ? (
-                    filteredProducts.map(product => (
+                ) : currentProducts.length > 0 ? (
+                    currentProducts.map(product => (
                     <ProductCard key={product.id} product={product} />
                     ))
                 ) : (
@@ -129,6 +148,28 @@ export default function MenuPage() {
                 </div>
                 )}
             </section>
+
+             {totalPages > 1 && (
+              <div className="flex justify-center mt-12">
+                <nav className="flex space-x-2">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
+                    <Button
+                      key={number}
+                      onClick={() => paginate(number)}
+                      variant={currentPage === number ? 'default' : 'outline'}
+                      className={cn(
+                        'h-10 w-10 p-0 text-lg',
+                        currentPage === number 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'bg-transparent text-foreground'
+                      )}
+                    >
+                      {number}
+                    </Button>
+                  ))}
+                </nav>
+              </div>
+            )}
           </div>
         </main>
         <footer className="bg-secondary py-4 mt-12">
