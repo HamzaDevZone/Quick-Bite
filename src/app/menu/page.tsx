@@ -1,6 +1,6 @@
 
 "use client"
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Search, Utensils } from 'lucide-react';
@@ -11,6 +11,16 @@ import { useProducts } from '@/hooks/use-products';
 import { useCategories } from '@/hooks/use-categories';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSiteSettings } from '@/hooks/use-site-settings';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import Autoplay from "embla-carousel-autoplay"
+
+
+const carouselImages = [
+    { src: 'https://placehold.co/1200x500/EAB308/FFFFFF', alt: 'Delicious pizza deal', hint: 'pizza deal' },
+    { src: 'https://placehold.co/1200x500/22C55E/FFFFFF', alt: 'Fresh burgers and fries', hint: 'burgers fries' },
+    { src: 'https://placehold.co/1200x500/3B82F6/FFFFFF', alt: 'Family combo offer', hint: 'family meal' },
+    { src: 'https://placehold.co/1200x500/EF4444/FFFFFF', alt: 'Spicy chicken wings', hint: 'chicken wings' },
+]
 
 export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -19,6 +29,9 @@ export default function MenuPage() {
   const { categories, loading: categoriesLoading } = useCategories();
   const { settings, isLoading: settingsLoading } = useSiteSettings();
 
+  const plugin = useRef(
+    Autoplay({ delay: 4000, stopOnInteraction: true })
+  )
 
   const filteredProducts = products.filter(product => {
     const categoryMatch = activeCategory === 'all' || product.category.toLowerCase().replace(/\s+/g, '-') === activeCategory;
@@ -32,22 +45,38 @@ export default function MenuPage() {
       <div className="flex flex-col min-h-screen">
         <UserHeader />
         <main className="flex-1">
-          <section className="relative text-center mb-12 py-20 flex flex-col items-center justify-center text-white">
-            {isLoading ? <Skeleton className="absolute inset-0 w-full h-full" /> : (
-              <Image
-                src={settings.menuImageUrl}
-                alt="Menu background"
-                fill
-                className="object-cover -z-10"
-                data-ai-hint="delicious food background"
-              />
-            )}
-            <div className="absolute inset-0 bg-black/60 -z-10"></div>
-             <div className="z-10 p-4">
-                <h1 className="text-5xl font-extrabold tracking-tight text-white mb-2 font-headline">
+          <section className="relative text-center mb-12 py-20 flex flex-col items-center justify-center text-white bg-secondary">
+             <Carousel
+                plugins={[plugin.current]}
+                className="w-full"
+                onMouseEnter={plugin.current.stop}
+                onMouseLeave={plugin.current.reset}
+                opts={{ loop: true }}
+                >
+                <CarouselContent>
+                    {carouselImages.map((image, index) => (
+                    <CarouselItem key={index}>
+                        <div className="relative h-[40vh] md:h-[50vh] w-full">
+                           <Image
+                                src={image.src}
+                                alt={image.alt}
+                                fill
+                                className="object-cover"
+                                data-ai-hint={image.hint}
+                            />
+                            <div className="absolute inset-0 bg-black/60"></div>
+                        </div>
+                    </CarouselItem>
+                    ))}
+                </CarouselContent>
+                <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+                <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+            </Carousel>
+            <div className="absolute inset-0 flex flex-col items-center justify-center z-10 p-4 pointer-events-none">
+                <h1 className="text-5xl font-extrabold tracking-tight text-white mb-2 font-headline drop-shadow-lg">
                 Our Menu
                 </h1>
-                <p className="text-lg text-white/90">
+                <p className="text-lg text-white/90 drop-shadow-md">
                 Delicious food, ready to be delivered fast to your door.
                 </p>
             </div>
@@ -123,4 +152,5 @@ const CardSkeleton = () => (
     </div>
   </div>
 );
+
 
