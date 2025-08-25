@@ -1,7 +1,7 @@
 
 
 "use client"
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Search, Utensils } from 'lucide-react';
@@ -16,6 +16,8 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import Autoplay from "embla-carousel-autoplay"
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useReviews } from '@/hooks/use-reviews';
+import type { Review } from '@/lib/types';
 
 export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -24,6 +26,7 @@ export default function MenuPage() {
   const { products, loading: productsLoading } = useProducts();
   const { categories, loading: categoriesLoading } = useCategories();
   const { settings, isLoading: settingsLoading } = useSiteSettings();
+  const { reviews: allReviews, loading: reviewsLoading } = useReviews(null);
 
   const productsPerPage = 8;
 
@@ -38,13 +41,42 @@ export default function MenuPage() {
       { src: settings.menuCarouselImage4, alt: 'Spicy chicken wings', hint: 'chicken wings' },
   ]
 
-  const filteredProducts = products.filter(product => {
+  const productRatings = useMemo(() => {
+    if (reviewsLoading) return {};
+    const ratings: Record<string, { total: number; count: number; average: number }> = {};
+
+    allReviews.forEach((review: Review) => {
+      if (!ratings[review.productId]) {
+        ratings[review.productId] = { total: 0, count: 0, average: 0 };
+      }
+      ratings[review.productId].total += review.rating;
+      ratings[review.productId].count++;
+    });
+    
+    for (const productId in ratings) {
+        ratings[productId].average = ratings[productId].total / ratings[productId].count;
+    }
+
+    return ratings;
+  }, [allReviews, reviewsLoading]);
+
+
+  const sortedProducts = useMemo(() => {
+    return [...products].sort((a, b) => {
+        const ratingA = productRatings[a.id]?.average || 0;
+        const ratingB = productRatings[b.id]?.average || 0;
+        return ratingB - ratingA;
+    });
+  }, [products, productRatings]);
+
+
+  const filteredProducts = sortedProducts.filter(product => {
     const categoryMatch = activeCategory === 'all' || product.category.toLowerCase().replace(/\s+/g, '-') === activeCategory;
     const searchMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
     return categoryMatch && searchMatch;
   });
 
-  const isLoading = productsLoading || categoriesLoading || settingsLoading;
+  const isLoading = productsLoading || categoriesLoading || settingsLoading || reviewsLoading;
 
   // Pagination Logic
   const indexOfLastProduct = currentPage * productsPerPage;

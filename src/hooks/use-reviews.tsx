@@ -20,24 +20,33 @@ export const ReviewProvider = ({ children }: { children: ReactNode }) => {
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
 
-  const fetchReviews = async (productId: string) => {
-    if (!productId || allReviews[productId]) return;
+  const fetchReviews = async (productId: string | null) => {
+    if (productId && allReviews[productId]) return;
 
-    setLoadingStates(prev => ({ ...prev, [productId]: true }));
+    const queryTarget = productId 
+      ? query(collection(db, 'reviews'), where('productId', '==', productId))
+      : collection(db, 'reviews');
+
+    const cacheKey = productId || 'all_reviews';
+
+    setLoadingStates(prev => ({ ...prev, [cacheKey]: true }));
     try {
-      const reviewsCollection = collection(db, 'reviews');
-      const q = query(reviewsCollection, where('productId', '==', productId));
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocs(queryTarget);
       const reviewsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Review));
       
       reviewsData.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
 
-      setAllReviews(prev => ({ ...prev, [productId]: reviewsData }));
+      if (productId) {
+         setAllReviews(prev => ({ ...prev, [productId]: reviewsData }));
+      } else {
+         setAllReviews(prev => ({ ...prev, all_reviews: reviewsData }));
+      }
+     
     } catch (error) {
       console.error(`Error fetching reviews for product ${productId}: `, error);
       toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch reviews.' });
     } finally {
-      setLoadingStates(prev => ({ ...prev, [productId]: false }));
+      setLoadingStates(prev => ({ ...prev, [cacheKey]: false }));
     }
   };
 
@@ -53,7 +62,11 @@ export const ReviewProvider = ({ children }: { children: ReactNode }) => {
       setAllReviews(prev => {
         const productReviews = prev[review.productId] ? [newReview, ...prev[review.productId]] : [newReview];
         productReviews.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
-        return { ...prev, [review.productId]: productReviews };
+        
+        const allReviewsList = prev['all_reviews'] ? [newReview, ...prev['all_reviews']] : [newReview];
+        allReviewsList.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+        
+        return { ...prev, [review.productId]: productReviews, 'all_reviews': allReviewsList };
       });
       toast({ title: 'Review Submitted', description: 'Thank you for your feedback!' });
     } catch (error) {
@@ -71,7 +84,7 @@ export const ReviewProvider = ({ children }: { children: ReactNode }) => {
   return <ReviewContext.Provider value={dummyContext}>{children}</ReviewContext.Provider>;
 };
 
-export const useReviews = (productId: string) => {
+export const useReviews = (productId: string | null) => {
   const { toast } = useToast();
   const [state, setState] = useState<{
     reviews: Review[],
@@ -82,14 +95,14 @@ export const useReviews = (productId: string) => {
   });
 
   useEffect(() => {
-    if (!productId) return;
-
     let isMounted = true;
     const fetchReviewsForProduct = async () => {
         try {
-            const reviewsCollection = collection(db, 'reviews');
-            const q = query(reviewsCollection, where('productId', '==', productId));
-            const querySnapshot = await getDocs(q);
+            const queryTarget = productId
+                ? query(collection(db, 'reviews'), where('productId', '==', productId))
+                : collection(db, 'reviews');
+
+            const querySnapshot = await getDocs(queryTarget);
             if (isMounted) {
                 const reviewsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Review));
                 reviewsData.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
