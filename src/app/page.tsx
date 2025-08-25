@@ -43,6 +43,9 @@ export default function LandingPage() {
               src={settings.heroImageUrl}
               alt="Delicious food background"
               fill
+              priority
+              quality={75}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover -z-10"
               data-ai-hint="delicious food background"
             />

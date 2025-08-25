@@ -99,6 +99,8 @@ export default function ProductDetailPage() {
               src={product.imageUrl}
               alt={product.name}
               fill
+              quality={75}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               style={{ objectFit: 'cover' }}
               className="transition-transform duration-500 hover:scale-105"
               data-ai-hint="food item detail"

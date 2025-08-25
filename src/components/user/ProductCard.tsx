@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -30,6 +31,8 @@ export function ProductCard({ product }: ProductCardProps) {
               src={product.imageUrl}
               alt={product.name}
               fill
+              quality={75}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               style={{ objectFit: 'cover' }}
               className="transition-transform duration-300 group-hover:scale-105"
               data-ai-hint="food item"
