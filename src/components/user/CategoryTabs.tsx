@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -31,11 +32,11 @@ export function CategoryTabs({ categories, activeCategory, setActiveCategory }: 
             {categories.map(category => (
               <Button
                 key={category.id}
-                variant={activeCategory === category.id ? 'secondary' : 'ghost'}
-                onClick={() => setActiveCategory(category.id)}
+                variant={activeCategory === category.name.toLowerCase().replace(/\s+/g, '-') ? 'secondary' : 'ghost'}
+                onClick={() => setActiveCategory(category.name.toLowerCase().replace(/\s+/g, '-'))}
                 className={cn(
                   "rounded-full transition-all duration-300 capitalize h-auto p-3 flex flex-col items-center gap-2",
-                  activeCategory === category.id && 'bg-primary/10 text-primary'
+                  activeCategory === category.name.toLowerCase().replace(/\s+/g, '-') && 'bg-primary/10 text-primary'
                 )}
               >
                 <Avatar className="w-16 h-16 border-2 border-transparent group-hover:border-primary transition-all">
