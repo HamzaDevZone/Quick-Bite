@@ -19,6 +19,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { CreditCard, Landmark, Wallet } from 'lucide-react';
 import { useEffect } from 'react';
 import { useSiteSettings } from '@/hooks/use-site-settings';
+import { Textarea } from '@/components/ui/textarea';
 
 const paymentMethods = [
     { value: 'Cash on Delivery', label: 'Cash on Delivery', icon: Wallet },
@@ -33,6 +34,7 @@ const checkoutSchema = z.object({
   customerPhone: z.string().min(10, 'A valid phone number is required.'),
   customerAddress: z.string().min(10, 'A valid address is required.'),
   paymentMethod: z.string({ required_error: 'Please select a payment method.' }),
+  orderNotes: z.string().optional(),
 });
 
 export default function CheckoutPage() {
@@ -49,6 +51,7 @@ export default function CheckoutPage() {
       customerName: '',
       customerPhone: '',
       customerAddress: '',
+      orderNotes: '',
     },
   });
 
@@ -133,9 +136,30 @@ export default function CheckoutPage() {
                 </CardContent>
                 </Card>
 
+                <Card className="mb-8">
+                    <CardHeader>
+                        <CardTitle>2. Order Notes (Optional)</CardTitle>
+                    </CardHeader>
+                     <CardContent>
+                        <FormField
+                            control={form.control}
+                            name="orderNotes"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Special Instructions</FormLabel>
+                                <FormControl>
+                                    <Textarea placeholder="e.g. Extra spicy, no onions, large size..." {...field} />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+                    </CardContent>
+                </Card>
+
                 <Card>
                     <CardHeader>
-                        <CardTitle>2. Payment Method</CardTitle>
+                        <CardTitle>3. Payment Method</CardTitle>
                     </CardHeader>
                     <CardContent>
                        <FormField
@@ -173,7 +197,7 @@ export default function CheckoutPage() {
             <div>
                 <Card className="bg-secondary sticky top-24">
                 <CardHeader>
-                    <CardTitle>3. Your Order</CardTitle>
+                    <CardTitle>4. Your Order</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">

@@ -58,6 +58,7 @@ export interface Order {
   riderId?: string;
   paymentMethod: string;
   deliveryFee: number;
+  orderNotes?: string;
 }
 
 export interface SiteSettings {

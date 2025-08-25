@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { useOrders } from '@/hooks/use-orders';
 import { useRiders } from '@/hooks/use-riders';
 import { OrderStatus, Rider, Order } from '@/lib/types';
-import { ArrowLeft, User, Phone, MapPin, DollarSign, Clock, Bike, Check, Package, UtensilsCrossed, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, User, Phone, MapPin, DollarSign, Clock, Bike, Check, Package, UtensilsCrossed, ShoppingCart, StickyNote } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -183,6 +183,16 @@ export default function AdminOrderDetailPage() {
                            <p className="flex items-start gap-2"><MapPin className="w-4 h-4 text-muted-foreground mt-1"/> {order.customerAddress}</p>
                         </CardContent>
                     </Card>
+                     {order.orderNotes && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-xl flex items-center gap-2"><StickyNote className="w-5 h-5"/> Order Notes</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-muted-foreground">{order.orderNotes}</p>
+                            </CardContent>
+                        </Card>
+                    )}
                      <Card>
                         <CardHeader>
                             <CardTitle className="text-xl">Order Actions</CardTitle>

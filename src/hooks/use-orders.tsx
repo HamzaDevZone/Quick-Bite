@@ -16,6 +16,7 @@ interface NewOrderData {
     total: number;
     paymentMethod: string;
     deliveryFee: number;
+    orderNotes?: string;
 }
 
 interface OrderContextType {

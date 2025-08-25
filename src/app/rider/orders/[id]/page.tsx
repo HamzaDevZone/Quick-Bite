@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useOrders } from '@/hooks/use-orders';
 import { OrderStatus, Order } from '@/lib/types';
-import { ArrowLeft, Check, Bike, Package, Wallet, User, Phone, MapPin } from 'lucide-react';
+import { ArrowLeft, Check, Bike, Package, Wallet, User, Phone, MapPin, StickyNote } from 'lucide-react';
 import Image from 'next/image';
 
 export default function RiderOrderDetailPage() {
@@ -72,6 +72,16 @@ export default function RiderOrderDetailPage() {
                            <p className="flex items-start gap-2"><MapPin className="w-4 h-4 text-muted-foreground mt-1"/> {order.customerAddress}</p>
                         </CardContent>
                     </Card>
+                     {order.orderNotes && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-xl flex items-center gap-2"><StickyNote className="w-5 h-5"/> Order Notes</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-muted-foreground">{order.orderNotes}</p>
+                            </CardContent>
+                        </Card>
+                    )}
                      <Card>
                         <CardHeader>
                             <CardTitle>Update Status</CardTitle>
