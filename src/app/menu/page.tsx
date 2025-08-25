@@ -52,7 +52,11 @@ export default function MenuPage() {
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber: number) => {
+    if (pageNumber > 0 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
   return (
       <div className="flex flex-col min-h-screen">
@@ -154,22 +158,41 @@ export default function MenuPage() {
               <div className="flex justify-center mt-12 mb-8">
                 <nav aria-label="Pagination">
                   <ul className="flex items-center -space-x-px h-10 text-base">
+                    <li>
+                      <Button
+                        onClick={() => paginate(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        variant="outline"
+                        className="rounded-l-lg"
+                      >
+                        Previous
+                      </Button>
+                    </li>
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
                       <li key={number}>
-                        <button
+                        <Button
                           onClick={() => paginate(number)}
                            className={cn(
-                            "flex items-center justify-center px-4 h-10 leading-tight border transition-colors",
+                            "flex items-center justify-center px-4 h-10 leading-tight border-y transition-colors rounded-none",
                             currentPage === number
-                              ? "bg-primary text-primary-foreground border-primary"
-                              : "bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground",
-                            "first:rounded-l-lg last:rounded-r-lg"
+                              ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
+                              : "bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground"
                           )}
                         >
                           {number}
-                        </button>
+                        </Button>
                       </li>
                     ))}
+                    <li>
+                      <Button
+                        onClick={() => paginate(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        variant="outline"
+                        className="rounded-r-lg"
+                      >
+                        Next
+                      </Button>
+                    </li>
                   </ul>
                 </nav>
               </div>
