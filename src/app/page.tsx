@@ -105,6 +105,9 @@ export default function LandingPage() {
         <footer className="bg-background border-t">
           <div className="container mx-auto py-6 px-4 text-center text-muted-foreground">
             <p>&copy; 2024 QuickBite. All Rights Reserved.</p>
+            <p className="text-xs mt-2">
+              Developed by Huzaifa. To get your own website, feel free to reach out.
+            </p>
           </div>
         </footer>
       </div>

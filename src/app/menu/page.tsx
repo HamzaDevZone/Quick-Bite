@@ -132,9 +132,12 @@ export default function MenuPage() {
           </div>
         </main>
         <footer className="bg-secondary py-4 mt-12">
-            <div className="container mx-auto text-center text-muted-foreground text-sm">
-                &copy; 2024 QuickBite. All Rights Reserved.
-            </div>
+          <div className="container mx-auto text-center text-muted-foreground text-sm">
+            <p>&copy; 2024 QuickBite. All Rights Reserved.</p>
+            <p className="text-xs mt-1">
+              Developed by Huzaifa. To get your own website, feel free to reach out.
+            </p>
+          </div>
         </footer>
       </div>
   );
