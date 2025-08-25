@@ -36,9 +36,9 @@ export function UserHeader() {
   ]
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
+    <header className="sticky top-0 z-40 w-full border-b border-border/20 bg-background/80 backdrop-blur-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="text-2xl font-bold text-primary font-headline">
+        <Link href="/" className="text-2xl font-bold text-primary font-headline tracking-wider">
           QuickBite
         </Link>
         
@@ -59,19 +59,19 @@ export function UserHeader() {
                 <Button asChild variant="ghost">
                     <Link href="/login">Login</Link>
                 </Button>
-                <Button asChild>
+                <Button asChild className="font-bold">
                     <Link href="/signup">Sign Up</Link>
                 </Button>
                 </>
             )}
 
             <Link href="/cart" passHref>
-                <Button variant="ghost" size="icon" className="relative">
-                <ShoppingCart className="h-6 w-6 text-accent" />
+                <Button variant="ghost" size="icon" className="relative ml-2">
+                <ShoppingCart className="h-6 w-6 text-foreground" />
                 {itemCount > 0 && (
                     <Badge 
-                    variant="destructive"
-                    className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full p-0"
+                    variant="default"
+                    className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full p-0 bg-primary text-primary-foreground font-bold"
                     >
                     {itemCount}
                     </Badge>
@@ -84,11 +84,11 @@ export function UserHeader() {
         <div className="md:hidden flex items-center">
             <Link href="/cart" passHref>
                 <Button variant="ghost" size="icon" className="relative mr-2">
-                    <ShoppingCart className="h-6 w-6 text-accent" />
+                    <ShoppingCart className="h-6 w-6 text-foreground" />
                     {itemCount > 0 && (
                         <Badge 
-                        variant="destructive"
-                        className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full p-0"
+                        variant="default"
+                        className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full p-0 bg-primary text-primary-foreground font-bold"
                         >
                         {itemCount}
                         </Badge>
@@ -107,7 +107,7 @@ export function UserHeader() {
                         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                     </SheetHeader>
                     <div className="flex flex-col p-4 pt-10 h-full">
-                        <Link href="/" className="text-2xl font-bold text-primary font-headline mb-8" onClick={() => setIsSheetOpen(false)}>
+                        <Link href="/" className="text-2xl font-bold text-primary font-headline mb-8 tracking-wider" onClick={() => setIsSheetOpen(false)}>
                             QuickBite
                         </Link>
                         <nav className="flex flex-col gap-3">
