@@ -1,3 +1,4 @@
+
 import type { Timestamp } from 'firebase/firestore';
 
 export interface Product {
@@ -10,7 +11,7 @@ export interface Product {
 }
 
 export interface Category {
-  id: string;
+  id:string;
   name: string;
   iconUrl: string;
 }
@@ -64,6 +65,10 @@ export interface SiteSettings {
   menuImageUrl: string;
   deliveryFee: number;
   splashLogoUrl: string;
+  menuCarouselImage1: string;
+  menuCarouselImage2: string;
+  menuCarouselImage3: string;
+  menuCarouselImage4: string;
 }
 
 export interface Review {

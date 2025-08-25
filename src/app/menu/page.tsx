@@ -14,14 +14,6 @@ import { useSiteSettings } from '@/hooks/use-site-settings';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import Autoplay from "embla-carousel-autoplay"
 
-
-const carouselImages = [
-    { src: 'https://placehold.co/1200x500/EAB308/FFFFFF', alt: 'Delicious pizza deal', hint: 'pizza deal' },
-    { src: 'https://placehold.co/1200x500/22C55E/FFFFFF', alt: 'Fresh burgers and fries', hint: 'burgers fries' },
-    { src: 'https://placehold.co/1200x500/3B82F6/FFFFFF', alt: 'Family combo offer', hint: 'family meal' },
-    { src: 'https://placehold.co/1200x500/EF4444/FFFFFF', alt: 'Spicy chicken wings', hint: 'chicken wings' },
-]
-
 export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -32,6 +24,13 @@ export default function MenuPage() {
   const plugin = useRef(
     Autoplay({ delay: 4000, stopOnInteraction: true })
   )
+
+  const carouselImages = [
+      { src: settings.menuCarouselImage1, alt: 'Delicious pizza deal', hint: 'pizza deal' },
+      { src: settings.menuCarouselImage2, alt: 'Fresh burgers and fries', hint: 'burgers fries' },
+      { src: settings.menuCarouselImage3, alt: 'Family combo offer', hint: 'family meal' },
+      { src: settings.menuCarouselImage4, alt: 'Spicy chicken wings', hint: 'chicken wings' },
+  ]
 
   const filteredProducts = products.filter(product => {
     const categoryMatch = activeCategory === 'all' || product.category.toLowerCase().replace(/\s+/g, '-') === activeCategory;
@@ -54,16 +53,18 @@ export default function MenuPage() {
                 opts={{ loop: true }}
                 >
                 <CarouselContent>
-                    {carouselImages.map((image, index) => (
+                    {(isLoading ? Array(4).fill(0) : carouselImages).map((image, index) => (
                     <CarouselItem key={index}>
                         <div className="relative h-[40vh] md:h-[50vh] w-full">
-                           <Image
-                                src={image.src}
-                                alt={image.alt}
-                                fill
-                                className="object-cover"
-                                data-ai-hint={image.hint}
-                            />
+                           {isLoading ? <Skeleton className="w-full h-full" /> : (
+                             <Image
+                                  src={image.src}
+                                  alt={image.alt}
+                                  fill
+                                  className="object-cover"
+                                  data-ai-hint={image.hint}
+                              />
+                           )}
                             <div className="absolute inset-0 bg-black/60"></div>
                         </div>
                     </CarouselItem>
@@ -152,5 +153,3 @@ const CardSkeleton = () => (
     </div>
   </div>
 );
-
-

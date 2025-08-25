@@ -20,6 +20,10 @@ const defaultSettings: SiteSettings = {
   menuImageUrl: 'https://i.ibb.co/M5pS1sV/menu-bg.png',
   splashLogoUrl: 'https://i.ibb.co/P9gL6M1/logo.png',
   deliveryFee: 150,
+  menuCarouselImage1: 'https://placehold.co/1200x500/EAB308/FFFFFF',
+  menuCarouselImage2: 'https://placehold.co/1200x500/22C55E/FFFFFF',
+  menuCarouselImage3: 'https://placehold.co/1200x500/3B82F6/FFFFFF',
+  menuCarouselImage4: 'https://placehold.co/1200x500/EF4444/FFFFFF',
 };
 
 export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {

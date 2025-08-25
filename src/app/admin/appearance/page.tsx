@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -20,6 +21,10 @@ const appearanceFormSchema = z.object({
   splashLogoUrl: z.string().url('Please enter a valid URL.'),
   menuImageUrl: z.string().url('Please enter a valid URL.'),
   deliveryFee: z.coerce.number().min(0, 'Delivery fee cannot be negative.'),
+  menuCarouselImage1: z.string().url('Please enter a valid URL.'),
+  menuCarouselImage2: z.string().url('Please enter a valid URL.'),
+  menuCarouselImage3: z.string().url('Please enter a valid URL.'),
+  menuCarouselImage4: z.string().url('Please enter a valid URL.'),
 });
 
 export default function AdminAppearancePage() {
@@ -28,23 +33,11 @@ export default function AdminAppearancePage() {
 
   const form = useForm<z.infer<typeof appearanceFormSchema>>({
     resolver: zodResolver(appearanceFormSchema),
-    defaultValues: {
-      heroImageUrl: settings.heroImageUrl,
-      splashImageUrl: settings.splashImageUrl,
-      splashLogoUrl: settings.splashLogoUrl,
-      menuImageUrl: settings.menuImageUrl,
-      deliveryFee: settings.deliveryFee,
-    },
+    defaultValues: settings,
   });
   
   useEffect(() => {
-    form.reset({ 
-      heroImageUrl: settings.heroImageUrl,
-      splashImageUrl: settings.splashImageUrl,
-      splashLogoUrl: settings.splashLogoUrl,
-      menuImageUrl: settings.menuImageUrl,
-      deliveryFee: settings.deliveryFee,
-    });
+    form.reset(settings);
   }, [settings, form]);
 
   function onSubmit(values: z.infer<typeof appearanceFormSchema>) {
@@ -116,7 +109,7 @@ export default function AdminAppearancePage() {
                 name="menuImageUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Menu Page Header Background URL</FormLabel>
+                    <FormLabel>Menu Page Header Background URL (Not currently used)</FormLabel>
                     <FormControl>
                       <Input placeholder="https://example.com/menu-bg.png" {...field} />
                     </FormControl>
@@ -132,6 +125,60 @@ export default function AdminAppearancePage() {
                     <FormLabel>Delivery Fee (PKR)</FormLabel>
                     <FormControl>
                       <Input type="number" step="1" placeholder="150" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Separator />
+                <h3 className="text-lg font-medium pt-4">Menu Page Carousel</h3>
+                 <FormField
+                control={form.control}
+                name="menuCarouselImage1"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Carousel Image 1 URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://example.com/carousel-1.png" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+                 <FormField
+                control={form.control}
+                name="menuCarouselImage2"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Carousel Image 2 URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://example.com/carousel-2.png" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+                 <FormField
+                control={form.control}
+                name="menuCarouselImage3"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Carousel Image 3 URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://example.com/carousel-3.png" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+                 <FormField
+                control={form.control}
+                name="menuCarouselImage4"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Carousel Image 4 URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://example.com/carousel-4.png" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
