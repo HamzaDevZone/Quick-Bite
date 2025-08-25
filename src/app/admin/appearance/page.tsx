@@ -9,11 +9,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useSiteSettings } from '@/hooks/use-site-settings';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { sendTestNotification } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Bell } from 'lucide-react';
+import { Bell, Trash2, PlusCircle, Wallet } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import type { PaymentMethod } from '@/lib/types';
 
 const appearanceFormSchema = z.object({
   heroImageUrl: z.string().url('Please enter a valid URL.'),
@@ -30,6 +31,7 @@ const appearanceFormSchema = z.object({
 export default function AdminAppearancePage() {
   const { settings, updateSettings } = useSiteSettings();
   const { toast } = useToast();
+  const [newPaymentMethod, setNewPaymentMethod] = useState('');
 
   const form = useForm<z.infer<typeof appearanceFormSchema>>({
     resolver: zodResolver(appearanceFormSchema),
@@ -52,6 +54,25 @@ export default function AdminAppearancePage() {
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.message });
     }
+  }
+
+  const handleAddPaymentMethod = () => {
+    if (newPaymentMethod.trim() === '') {
+      toast({ variant: 'destructive', title: 'Error', description: 'Payment method name cannot be empty.'});
+      return;
+    }
+    const newMethod: PaymentMethod = {
+      value: newPaymentMethod.trim(),
+      label: newPaymentMethod.trim(),
+    };
+    const updatedMethods = [...settings.paymentMethods, newMethod];
+    updateSettings({ paymentMethods: updatedMethods });
+    setNewPaymentMethod('');
+  };
+
+  const handleDeletePaymentMethod = (value: string) => {
+    const updatedMethods = settings.paymentMethods.filter(method => method.value !== value);
+    updateSettings({ paymentMethods: updatedMethods });
   }
 
   return (
@@ -187,6 +208,38 @@ export default function AdminAppearancePage() {
               <Button type="submit">Save Changes</Button>
             </form>
           </Form>
+        </CardContent>
+      </Card>
+
+      <Separator className="my-8" />
+       <Card>
+        <CardHeader>
+          <CardTitle>Payment Methods</CardTitle>
+          <CardDescription>Manage the payment methods available to customers at checkout.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            {settings.paymentMethods.map(method => (
+              <div key={method.value} className="flex items-center justify-between p-3 rounded-md border bg-secondary">
+                <span className="flex items-center gap-2"><Wallet className="w-4 h-4 text-muted-foreground"/> {method.label}</span>
+                <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDeletePaymentMethod(method.value)}>
+                    <Trash2 className="w-4 h-4"/>
+                </Button>
+              </div>
+            ))}
+             {settings.paymentMethods.length === 0 && <p className="text-muted-foreground text-sm p-4 text-center">No payment methods configured.</p>}
+          </div>
+          <Separator />
+          <div className="flex gap-2 items-center pt-4">
+            <Input 
+                placeholder="e.g. Stripe" 
+                value={newPaymentMethod}
+                onChange={(e) => setNewPaymentMethod(e.target.value)}
+            />
+            <Button onClick={handleAddPaymentMethod}>
+                <PlusCircle className="mr-2 h-4 w-4"/> Add Method
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

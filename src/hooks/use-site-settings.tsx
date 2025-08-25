@@ -24,6 +24,13 @@ const defaultSettings: SiteSettings = {
   menuCarouselImage2: 'https://placehold.co/1200x500/22C55E/FFFFFF',
   menuCarouselImage3: 'https://placehold.co/1200x500/3B82F6/FFFFFF',
   menuCarouselImage4: 'https://placehold.co/1200x500/EF4444/FFFFFF',
+  paymentMethods: [
+    { value: 'Cash on Delivery', label: 'Cash on Delivery' },
+    { value: 'Jazzcash', label: 'Jazzcash/Easypaisa' },
+    { value: 'Bank Transfer', label: 'Bank Transfer' },
+    { value: 'Sadapay/Nayapay', label: 'Sadapay/Nayapay' },
+    { value: 'Payoneer', label: 'Payoneer' },
+  ]
 };
 
 export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {

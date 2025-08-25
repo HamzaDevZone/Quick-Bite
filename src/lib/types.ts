@@ -61,6 +61,11 @@ export interface Order {
   orderNotes?: string;
 }
 
+export interface PaymentMethod {
+  value: string;
+  label: string;
+}
+
 export interface SiteSettings {
   heroImageUrl: string;
   splashImageUrl: string;
@@ -71,6 +76,7 @@ export interface SiteSettings {
   menuCarouselImage2: string;
   menuCarouselImage3: string;
   menuCarouselImage4: string;
+  paymentMethods: PaymentMethod[];
 }
 
 export interface Review {

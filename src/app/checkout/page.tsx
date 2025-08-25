@@ -21,14 +21,6 @@ import { useEffect } from 'react';
 import { useSiteSettings } from '@/hooks/use-site-settings';
 import { Textarea } from '@/components/ui/textarea';
 
-const paymentMethods = [
-    { value: 'Cash on Delivery', label: 'Cash on Delivery', icon: Wallet },
-    { value: 'Jazzcash', label: 'Jazzcash/Easypaisa', icon: CreditCard },
-    { value: 'Bank Transfer', label: 'Bank Transfer', icon: Landmark },
-    { value: 'Sadapay/Nayapay', label: 'Sadapay/Nayapay', icon: CreditCard },
-    { value: 'Payoneer', label: 'Payoneer', icon: CreditCard },
-];
-
 const checkoutSchema = z.object({
   customerName: z.string().min(2, 'Name is required.'),
   customerPhone: z.string().min(10, 'A valid phone number is required.'),
@@ -80,6 +72,18 @@ export default function CheckoutPage() {
     clearCart();
     router.push('/orders');
   };
+
+  const getIconForMethod = (methodValue: string) => {
+    const lowerCaseValue = methodValue.toLowerCase();
+    if (lowerCaseValue.includes('bank')) return Landmark;
+    if (lowerCaseValue.includes('card') || lowerCaseValue.includes('pay') || lowerCaseValue.includes('cash')) {
+         // This is a bit broad, but covers Jazzcash, Sadapay, Nayapay, Payoneer and Credit Card
+        if(lowerCaseValue.includes('cash on')) return Wallet;
+        return CreditCard;
+    }
+    return Wallet; // Default icon
+  }
+
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -173,17 +177,20 @@ export default function CheckoutPage() {
                                             defaultValue={field.value}
                                             className="flex flex-col space-y-1"
                                         >
-                                            {paymentMethods.map((method) => (
-                                                <FormItem key={method.value} className="flex items-center space-x-3 space-y-0 rounded-md border p-4 hover:bg-accent/50 has-[[data-state=checked]]:bg-accent/80 transition-colors">
-                                                    <FormControl>
-                                                        <RadioGroupItem value={method.value} />
-                                                    </FormControl>
-                                                    <method.icon className="h-5 w-5 text-muted-foreground" />
-                                                    <FormLabel className="font-normal flex-grow cursor-pointer">
-                                                        {method.label}
-                                                    </FormLabel>
-                                                </FormItem>
-                                            ))}
+                                            {settings.paymentMethods.map((method) => {
+                                                const Icon = getIconForMethod(method.value);
+                                                return (
+                                                    <FormItem key={method.value} className="flex items-center space-x-3 space-y-0 rounded-md border p-4 hover:bg-accent/50 has-[[data-state=checked]]:bg-accent/80 transition-colors">
+                                                        <FormControl>
+                                                            <RadioGroupItem value={method.value} />
+                                                        </FormControl>
+                                                        <Icon className="h-5 w-5 text-muted-foreground" />
+                                                        <FormLabel className="font-normal flex-grow cursor-pointer">
+                                                            {method.label}
+                                                        </FormLabel>
+                                                    </FormItem>
+                                                )
+                                            })}
                                         </RadioGroup>
                                     </FormControl>
                                     <FormMessage />
