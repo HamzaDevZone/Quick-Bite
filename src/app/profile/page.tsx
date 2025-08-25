@@ -8,11 +8,14 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import type { OrderStatus, Order } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Clock, UtensilsCrossed, Package, Check, ShoppingBag, User, Phone, MapPin, MessageSquare } from 'lucide-react';
+import { Clock, UtensilsCrossed, Package, Check, ShoppingBag, User, Phone, MapPin, MessageSquare, Mail, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import type { Timestamp } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 const statusDetails: Record<OrderStatus, { text: string; icon: React.ElementType; color: string }> = {
   Pending: { text: 'Pending', icon: Clock, color: 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30' },
@@ -22,17 +25,56 @@ const statusDetails: Record<OrderStatus, { text: string; icon: React.ElementType
 };
 
 export default function ProfilePage() {
-    const { orders, userOrderIds, loading } = useOrders();
+    const { user, loading: authLoading, logout } = useAuth();
+    const { orders, userOrderIds, loading: ordersLoading } = useOrders();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!authLoading && !user) {
+            router.replace('/login');
+        }
+    }, [user, authLoading, router]);
 
     const userOrders = orders.filter(order => userOrderIds.includes(order.id));
-    const latestOrder = userOrders.length > 0 ? userOrders[0] : null;
-
+    
     const getDate = (date: Timestamp | string) => {
         if (typeof date === 'string') {
             return new Date(date);
         }
         return date.toDate();
     };
+
+    const loading = authLoading || ordersLoading;
+
+    if (loading || !user) {
+        return (
+             <div className="min-h-screen flex flex-col">
+                <UserHeader />
+                <main className="flex-grow container mx-auto px-4 py-12">
+                     <Skeleton className="h-10 w-48 mb-8" />
+                     <div className="grid lg:grid-cols-3 gap-8 items-start">
+                        <div className="lg:col-span-1 space-y-8">
+                             <Card>
+                                <CardHeader>
+                                    <Skeleton className="h-6 w-32 mb-2" />
+                                    <Skeleton className="h-4 w-48" />
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                     <Skeleton className="h-6 w-3/4" />
+                                     <Skeleton className="h-6 w-full" />
+                                </CardContent>
+                             </Card>
+                        </div>
+                        <div className="lg:col-span-2 space-y-6">
+                            <Skeleton className="h-8 w-40 mb-4" />
+                            <OrderSkeleton />
+                            <OrderSkeleton />
+                        </div>
+                     </div>
+                </main>
+             </div>
+        );
+    }
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -45,45 +87,32 @@ export default function ProfilePage() {
                          <Card>
                             <CardHeader>
                                 <CardTitle>My Details</CardTitle>
-                                <CardDescription>This information is based on your most recent order.</CardDescription>
+                                <CardDescription>This is your account information.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                {loading ? (
-                                    <>
-                                        <Skeleton className="h-6 w-3/4" />
-                                        <Skeleton className="h-6 w-full" />
-                                        <Skeleton className="h-6 w-4/5" />
-                                    </>
-                                ) : latestOrder ? (
-                                    <>
-                                        <div className="flex items-center gap-3">
-                                            <User className="h-5 w-5 text-muted-foreground" />
-                                            <span>{latestOrder.customerName}</span>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <Phone className="h-5 w-5 text-muted-foreground" />
-                                            <span>{latestOrder.customerPhone}</span>
-                                        </div>
-                                        <div className="flex items-start gap-3">
-                                            <MapPin className="h-5 w-5 text-muted-foreground mt-1" />
-                                            <span>{latestOrder.customerAddress}</span>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <p className="text-sm text-muted-foreground">No order information available yet.</p>
-                                )}
+                                <div className="flex items-center gap-3">
+                                    <User className="h-5 w-5 text-muted-foreground" />
+                                    <span>{user.displayName || 'No name set'}</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <Mail className="h-5 w-5 text-muted-foreground" />
+                                    <span>{user.email}</span>
+                                </div>
                             </CardContent>
                         </Card>
                         <Card>
                             <CardHeader>
-                                <CardTitle>Support</CardTitle>
-                                <CardDescription>Need help with an order or have a question?</CardDescription>
+                                <CardTitle>Support & Actions</CardTitle>
+                                <CardDescription>Need help or want to sign out?</CardDescription>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="space-y-2">
                                 <Button asChild className="w-full">
                                     <Link href="/contact">
                                         <MessageSquare className="mr-2 h-4 w-4" /> Contact Support
                                     </Link>
+                                </Button>
+                                <Button variant="outline" className="w-full" onClick={logout}>
+                                    <LogOut className="mr-2 h-4 w-4" /> Logout
                                 </Button>
                             </CardContent>
                         </Card>

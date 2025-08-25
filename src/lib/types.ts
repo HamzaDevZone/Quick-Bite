@@ -47,6 +47,7 @@ export interface Admin {
 
 export interface Order {
   id: string;
+  userId?: string; // Link to the authenticated user
   customerName: string;
   customerPhone: string;
   customerAddress: string;

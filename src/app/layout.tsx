@@ -15,6 +15,7 @@ import { MessageProvider } from '@/hooks/use-messages';
 import { useEffect } from 'react';
 import { requestNotificationPermission, onMessageListener } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
+import { AuthProvider } from '@/hooks/use-auth';
 
 export default function RootLayout({
   children,
@@ -55,24 +56,26 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className="font-body antialiased">
-        <SiteSettingsProvider>
-          <ProductProvider>
-            <CategoryProvider>
-              <RiderProvider>
-                <OrderProvider>
-                  <ReviewProvider>
-                    <MessageProvider>
-                      <CartProvider>
-                        {children}
-                        <Toaster />
-                      </CartProvider>
-                    </MessageProvider>
-                  </ReviewProvider>
-                </OrderProvider>
-              </RiderProvider>
-            </CategoryProvider>
-          </ProductProvider>
-        </SiteSettingsProvider>
+        <AuthProvider>
+            <SiteSettingsProvider>
+            <ProductProvider>
+                <CategoryProvider>
+                <RiderProvider>
+                    <OrderProvider>
+                    <ReviewProvider>
+                        <MessageProvider>
+                        <CartProvider>
+                            {children}
+                            <Toaster />
+                        </CartProvider>
+                        </MessageProvider>
+                    </ReviewProvider>
+                    </OrderProvider>
+                </RiderProvider>
+                </CategoryProvider>
+            </ProductProvider>
+            </SiteSettingsProvider>
+        </AuthProvider>
       </body>
     </html>
   );

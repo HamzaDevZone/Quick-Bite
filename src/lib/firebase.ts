@@ -2,6 +2,7 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { getAuth } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -15,6 +16,8 @@ const firebaseConfig = {
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
+const auth = getAuth(app);
+
 
 const saveFCMToken = async (token: string) => {
   try {
@@ -64,4 +67,4 @@ export const onMessageListener = () => {
     return Promise.resolve(null);
 }
 
-export { app, db };
+export { app, db, auth };
