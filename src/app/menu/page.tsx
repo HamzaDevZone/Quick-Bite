@@ -94,11 +94,11 @@ export default function MenuPage() {
                 <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
             </Carousel>
             <div className="absolute inset-0 flex flex-col items-center justify-center z-10 p-4 pointer-events-none">
-                <h1 className="text-5xl font-extrabold tracking-tight text-white mb-2 font-headline drop-shadow-lg">
-                Our Menu
+                <h1 className="text-5xl font-extrabold tracking-tight text-white mb-2 font-headline uppercase drop-shadow-lg">
+                  Our Menu
                 </h1>
                 <p className="text-lg text-white/90 drop-shadow-md">
-                Delicious food, ready to be delivered fast to your door.
+                  Delicious food, ready to be delivered fast to your door.
                 </p>
             </div>
           </section>
