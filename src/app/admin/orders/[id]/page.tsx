@@ -20,6 +20,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import type { Timestamp } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const statusColors: Record<OrderStatus, string> = {
   Pending: 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30',
@@ -38,9 +42,49 @@ const statusIcons: Record<OrderStatus, React.ElementType> = {
 export default function AdminOrderDetailPage() {
     const params = useParams();
     const router = useRouter();
-    const { orders, updateOrderStatus, assignRiderToOrder } = useOrders();
+    const { updateOrderStatus, assignRiderToOrder } = useOrders();
     const { riders } = useRiders();
-    const order = orders.find(o => o.id === params.id);
+    const [order, setOrder] = useState<Order | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+      const fetchOrder = async () => {
+        if (!params.id) return;
+        setLoading(true);
+        try {
+          const docRef = doc(db, 'orders', params.id as string);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setOrder({ id: docSnap.id, ...docSnap.data() } as Order);
+          } else {
+            // Handle not found
+          }
+        } catch (error) {
+          console.error("Failed to fetch order", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchOrder();
+    }, [params.id]);
+
+
+    if (loading) {
+       return (
+        <div>
+            <Skeleton className="h-10 w-36 mb-4" />
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="md:col-span-2">
+                <Skeleton className="h-96 w-full" />
+              </div>
+              <div className="md:col-span-1 space-y-6">
+                <Skeleton className="h-48 w-full" />
+                <Skeleton className="h-48 w-full" />
+              </div>
+            </div>
+        </div>
+      );
+    }
 
     if (!order) {
         return (
@@ -65,11 +109,13 @@ export default function AdminOrderDetailPage() {
     
     const handleStatusUpdate = (status: OrderStatus) => {
         updateOrderStatus(order.id, status);
+        setOrder(prev => prev ? { ...prev, status } : null);
     };
 
     const handleRiderAssign = (riderId: string) => {
       if(riderId) {
         assignRiderToOrder(order.id, riderId)
+        setOrder(prev => prev ? { ...prev, riderId, status: 'Preparing' } : null);
       }
     }
 

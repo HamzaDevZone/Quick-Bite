@@ -1,13 +1,28 @@
+
 'use client';
 
 import { useOrders } from '@/hooks/use-orders';
 import { OrderDataTable } from '@/components/admin/OrderDataTable';
+import { useEffect, useState } from 'react';
+import { collection, onSnapshot, query } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import type { Order } from '@/lib/types';
 
 export default function AdminOrdersPage() {
-    const { orders } = useOrders();
+    const [allOrders, setAllOrders] = useState<Order[]>([]);
     
-    // Filter out delivered orders to show only "live" ones
-    const liveOrders = orders.filter(order => order.status !== 'Delivered');
+    useEffect(() => {
+        const q = query(collection(db, "orders"));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const ordersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+            ordersData.sort((a,b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime());
+            setAllOrders(ordersData);
+        });
+
+        return () => unsubscribe();
+    }, []);
+    
+    const liveOrders = allOrders.filter(order => order.status !== 'Delivered');
 
     return (
         <div>
@@ -19,7 +34,7 @@ export default function AdminOrdersPage() {
             <div className="flex items-center justify-between mt-12 mb-6">
                 <h2 className="text-2xl font-bold font-headline">Order History</h2>
             </div>
-            <OrderDataTable data={orders} />
+            <OrderDataTable data={allOrders} />
         </div>
     );
 }

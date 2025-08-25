@@ -36,73 +36,68 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const [userOrderIds, setUserOrderIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchOrders = async () => {
-    if (!user) {
-        // For admin/rider panels, fetch all orders
-        try {
-            const ordersCollection = collection(db, 'orders');
-            const querySnapshot = await getDocs(ordersCollection);
-            const ordersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
-            ordersData.sort((a, b) => {
-                const dateA = a.orderDate instanceof Timestamp ? a.orderDate.toMillis() : new Date(a.orderDate).getTime();
-                const dateB = b.orderDate instanceof Timestamp ? b.orderDate.toMillis() : new Date(b.orderDate).getTime();
-                return dateB - dateA;
-            });
-            setOrders(ordersData);
-        } catch (error) {
-            console.error("Error fetching all orders: ", error);
-        } finally {
-            setLoading(false);
-        }
-        return;
-    }
-
-    // For logged-in users, fetch only their orders
-    try {
-      const q = query(collection(db, 'orders'), where('userId', '==', user.uid));
-      const querySnapshot = await getDocs(q);
-      const ordersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
-      
-      ordersData.sort((a, b) => {
-        const dateA = a.orderDate instanceof Timestamp ? a.orderDate.toMillis() : new Date(a.orderDate).getTime();
-        const dateB = b.orderDate instanceof Timestamp ? b.orderDate.toMillis() : new Date(b.orderDate).getTime();
-        return dateB - dateA;
-      });
-      setOrders(ordersData);
-      setUserOrderIds(ordersData.map(o => o.id));
-
-    } catch (error) {
-      console.error("Error fetching user orders: ", error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch your orders.' });
-    } finally {
-      setLoading(false);
-    }
-  };
-  
   useEffect(() => {
-    // This will refetch orders when user logs in or out
-    fetchOrders();
-  }, [user]); // Dependency on user object
-  
-  useEffect(() => {
-     // This part is for non-logged-in users who place orders
-     if (!user) {
-        try {
-            const storedOrderIds = localStorage.getItem('quickbite_user_orders');
-            if (storedOrderIds) {
-                const ids = JSON.parse(storedOrderIds);
-                setUserOrderIds(ids);
-                // We still need to fetch the full order details for these IDs
-                if (ids.length > 0 && orders.length > 0) {
-                     const userPlacedOrders = orders.filter(o => ids.includes(o.id));
-                     setOrders(userPlacedOrders);
+    const fetchOrders = async () => {
+      // For admin/rider panels (and logged out users), fetch all orders
+      if (!user) {
+          try {
+              const ordersCollection = collection(db, 'orders');
+              const querySnapshot = await getDocs(ordersCollection);
+              const ordersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+              ordersData.sort((a, b) => {
+                  const dateA = a.orderDate instanceof Timestamp ? a.orderDate.toMillis() : new Date(a.orderDate).getTime();
+                  const dateB = b.orderDate instanceof Timestamp ? b.orderDate.toMillis() : new Date(b.orderDate).getTime();
+                  return dateB - dateA;
+              });
+
+              // If user is not logged in, check local storage for their guest orders
+              try {
+                const storedOrderIds = localStorage.getItem('quickbite_user_orders');
+                if (storedOrderIds) {
+                    const ids = JSON.parse(storedOrderIds);
+                    setUserOrderIds(ids);
+                    const userPlacedOrders = ordersData.filter(o => ids.includes(o.id));
+                    setOrders(userPlacedOrders);
+                } else {
+                    setOrders([]); // No guest orders found
                 }
-            }
-        } catch (error) {
-            console.error("Could not load user order IDs from localStorage", error);
-        }
-     }
-  }, [user, orders]);
+              } catch (error) {
+                  console.error("Could not load user order IDs from localStorage", error);
+                  setOrders([]);
+              }
+          } catch (error) {
+              console.error("Error fetching all orders: ", error);
+          } finally {
+              setLoading(false);
+          }
+          return;
+      }
+
+      // For logged-in users, fetch only their orders
+      try {
+        setLoading(true);
+        const q = query(collection(db, 'orders'), where('userId', '==', user.uid));
+        const querySnapshot = await getDocs(q);
+        const ordersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+        
+        ordersData.sort((a, b) => {
+          const dateA = a.orderDate instanceof Timestamp ? a.orderDate.toMillis() : new Date(a.orderDate).getTime();
+          const dateB = b.orderDate instanceof Timestamp ? b.orderDate.toMillis() : new Date(b.orderDate).getTime();
+          return dateB - dateA;
+        });
+        setOrders(ordersData);
+        setUserOrderIds(ordersData.map(o => o.id));
+
+      } catch (error) {
+        console.error("Error fetching user orders: ", error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch your orders.' });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchOrders();
+  }, [user, toast]);
 
 
   const addOrder = async (orderData: NewOrderData) => {
@@ -120,16 +115,20 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         const docRef = await addDoc(collection(db, 'orders'), newOrderData);
         
         const newOrder = { ...newOrderData, id: docRef.id } as Order;
-        setOrders(prevOrders => [newOrder, ...prevOrders]);
         
         if (!user) {
              try {
-                const updatedOrderIds = [...userOrderIds, newOrder.id];
+                const currentOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
+                const updatedOrderIds = [...currentOrderIds, newOrder.id];
                 setUserOrderIds(updatedOrderIds);
                 localStorage.setItem('quickbite_user_orders', JSON.stringify(updatedOrderIds));
+                setOrders(prevOrders => [newOrder, ...prevOrders]);
             } catch (error) {
                 console.error("Could not save user order ID to localStorage", error);
             }
+        } else {
+           setOrders(prevOrders => [newOrder, ...prevOrders]);
+           setUserOrderIds(prevIds => [...prevIds, newOrder.id]);
         }
        
     } catch (error) {
@@ -142,10 +141,26 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     try {
       const orderDoc = doc(db, 'orders', orderId);
       await updateDoc(orderDoc, { status });
-      setOrders(prevOrders =>
-        prevOrders.map(o => (o.id === orderId ? { ...o, status } : o))
-      );
-      toast({ title: 'Order Updated', description: `Order ${orderId} status has been updated to ${status}.` });
+      
+      const ordersCollection = collection(db, 'orders');
+      const querySnapshot = await getDocs(ordersCollection);
+      const ordersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+      ordersData.sort((a, b) => {
+          const dateA = a.orderDate instanceof Timestamp ? a.orderDate.toMillis() : new Date(a.orderDate).getTime();
+          const dateB = b.orderDate instanceof Timestamp ? b.orderDate.toMillis() : new Date(b.orderDate).getTime();
+          return dateB - dateA;
+      });
+
+      if(!user) {
+        const storedOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
+        const userPlacedOrders = ordersData.filter(o => storedOrderIds.includes(o.id));
+        setOrders(userPlacedOrders);
+      } else {
+        const userOrders = ordersData.filter(o => o.userId === user.uid);
+        setOrders(userOrders);
+      }
+      
+      toast({ title: 'Order Updated', description: `Order status has been updated to ${status}.` });
     } catch (error) {
       console.error("Error updating order status: ", error);
       toast({ variant: 'destructive', title: 'Error', description: 'Could not update order status.' });
@@ -156,10 +171,22 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     try {
       const orderDoc = doc(db, 'orders', orderId);
       await updateDoc(orderDoc, { riderId, status: 'Preparing' });
-      setOrders(prevOrders =>
-          prevOrders.map(o => (o.id === orderId ? { ...o, riderId, status: 'Preparing' as OrderStatus } : o))
-      );
-      toast({ title: 'Rider Assigned', description: `Rider has been assigned to order ${orderId}.`});
+
+      // Re-fetch all orders to reflect this change everywhere
+      const ordersCollection = collection(db, 'orders');
+      const querySnapshot = await getDocs(ordersCollection);
+      const ordersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+      ordersData.sort((a, b) => {
+          const dateA = a.orderDate instanceof Timestamp ? a.orderDate.toMillis() : new Date(a.orderDate).getTime();
+          const dateB = b.orderDate instanceof Timestamp ? b.orderDate.toMillis() : new Date(b.orderDate).getTime();
+          return dateB - dateA;
+      });
+      // This is a hack to get around a state update issue for now.
+      // In a real app, this should be handled more gracefully with onSnapshot.
+      window.location.reload();
+
+
+      toast({ title: 'Rider Assigned', description: `Rider has been assigned to the order.`});
     } catch (error) {
        console.error("Error assigning rider: ", error);
        toast({ variant: 'destructive', title: 'Error', description: 'Could not assign rider.' });

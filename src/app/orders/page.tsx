@@ -12,6 +12,10 @@ import { Clock, UtensilsCrossed, Package, Check, ShoppingBag } from 'lucide-reac
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import type { Timestamp } from 'firebase/firestore';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const statusDetails: Record<OrderStatus, { text: string; icon: React.ElementType; color: string }> = {
   Pending: { text: 'Pending', icon: Clock, color: 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30' },
@@ -21,10 +25,19 @@ const statusDetails: Record<OrderStatus, { text: string; icon: React.ElementType
 };
 
 export default function OrderHistoryPage() {
-    const { orders, userOrderIds } = useOrders();
+    const { user, loading: authLoading } = useAuth();
+    const { orders, loading: ordersLoading } = useOrders();
+    const router = useRouter();
 
-    const userOrders = orders
-        .filter(order => userOrderIds.includes(order.id));
+    useEffect(() => {
+        // If user is not logged in and not loading, redirect them to login
+        // as they need an account to view persistent order history.
+        // Guest orders are tracked via checkout completion but not displayed here.
+        if (!authLoading && !user) {
+            router.replace('/login');
+        }
+    }, [user, authLoading, router]);
+
 
     const getDate = (date: Timestamp | string) => {
         if (typeof date === 'string') {
@@ -33,14 +46,29 @@ export default function OrderHistoryPage() {
         return date.toDate();
     };
 
+    const isLoading = authLoading || ordersLoading;
+
+    if (isLoading || !user) {
+        return (
+             <div className="min-h-screen flex flex-col">
+                <UserHeader />
+                <main className="flex-grow container mx-auto px-4 py-12">
+                     <Skeleton className="h-10 w-48 mb-8" />
+                     <OrderSkeleton />
+                     <OrderSkeleton />
+                </main>
+             </div>
+        );
+    }
+
     return (
         <div className="min-h-screen flex flex-col">
             <UserHeader />
             <main className="flex-grow container mx-auto px-4 py-12">
                 <h1 className="text-4xl font-bold mb-8 font-headline text-primary">My Orders</h1>
-                {userOrders.length > 0 ? (
+                {orders.length > 0 ? (
                     <div className="space-y-6">
-                        {userOrders.map(order => {
+                        {orders.map(order => {
                              const StatusIcon = statusDetails[order.status].icon;
                              return (
                                 <Card key={order.id} className="bg-secondary">
@@ -91,3 +119,26 @@ export default function OrderHistoryPage() {
         </div>
     );
 }
+
+const OrderSkeleton = () => (
+    <Card className="bg-secondary mt-6">
+        <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+                <Skeleton className="h-6 w-32 mb-2" />
+                <Skeleton className="h-4 w-48" />
+            </div>
+            <Skeleton className="h-8 w-24 rounded-full" />
+        </CardHeader>
+        <CardContent>
+            <div className="space-y-2 mb-4">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-2/3" />
+            </div>
+            <Separator />
+            <div className="flex justify-between font-bold mt-4">
+                <Skeleton className="h-6 w-20" />
+                <Skeleton className="h-6 w-16" />
+            </div>
+        </CardContent>
+    </Card>
+);
