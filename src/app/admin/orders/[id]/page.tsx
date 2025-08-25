@@ -72,7 +72,10 @@ export default function AdminOrderDetailPage() {
     if (loading) {
        return (
         <div>
-            <Skeleton className="h-10 w-36 mb-4" />
+            <Button variant="ghost" disabled className="mb-4">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Orders
+            </Button>
             <div className="grid md:grid-cols-3 gap-8">
               <div className="md:col-span-2">
                 <Skeleton className="h-96 w-full" />

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useOrders } from '@/hooks/use-orders';
 import { OrderStatus, Order } from '@/lib/types';
-import { ArrowLeft, Check, Bike, Package, Wallet } from 'lucide-react';
+import { ArrowLeft, Check, Bike, Package, Wallet, User, Phone, MapPin } from 'lucide-react';
 import Image from 'next/image';
 
 export default function RiderOrderDetailPage() {
@@ -35,7 +35,7 @@ export default function RiderOrderDetailPage() {
                 <div className="md:col-span-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Order Details ({order.id})</CardTitle>
+                            <CardTitle>Order Details (#{order.id})</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
@@ -66,10 +66,10 @@ export default function RiderOrderDetailPage() {
                         <CardHeader>
                             <CardTitle>Customer Information</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-2">
-                           <p><strong>Name:</strong> {order.customerName}</p>
-                           <p><strong>Phone:</strong> {order.customerPhone}</p>
-                           <p><strong>Address:</strong> {order.customerAddress}</p>
+                         <CardContent className="space-y-3">
+                           <p className="flex items-center gap-2"><User className="w-4 h-4 text-muted-foreground"/> {order.customerName}</p>
+                           <p className="flex items-center gap-2"><Phone className="w-4 h-4 text-muted-foreground"/> {order.customerPhone}</p>
+                           <p className="flex items-start gap-2"><MapPin className="w-4 h-4 text-muted-foreground mt-1"/> {order.customerAddress}</p>
                         </CardContent>
                     </Card>
                      <Card>
