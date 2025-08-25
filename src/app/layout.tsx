@@ -1,3 +1,6 @@
+
+'use client';
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
@@ -9,17 +12,37 @@ import { CategoryProvider } from '@/hooks/use-categories';
 import { RiderProvider } from '@/hooks/use-riders';
 import { ReviewProvider } from '@/hooks/use-reviews';
 import { MessageProvider } from '@/hooks/use-messages';
-
-export const metadata: Metadata = {
-  title: 'QuickBite',
-  description: 'A modern food ordering app.',
-};
+import { useEffect } from 'react';
+import { requestNotificationPermission, onMessageListener } from '@/lib/firebase';
+import { useToast } from '@/hooks/use-toast';
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { toast } = useToast();
+
+  useEffect(() => {
+    requestNotificationPermission();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onMessageListener().then((payload: any) => {
+        if (payload) {
+            toast({
+                title: payload.notification.title,
+                description: payload.notification.body,
+            });
+        }
+    });
+    return () => {
+        // @ts-ignore
+        unsubscribe.catch(err => console.error('failed to unsubscribe', err));
+    };
+  }, [toast]);
+
+
   return (
     <html lang="en" className="dark">
       <head>
@@ -29,6 +52,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        <link rel="manifest" href="/manifest.json" />
       </head>
       <body className="font-body antialiased">
         <SiteSettingsProvider>

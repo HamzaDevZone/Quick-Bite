@@ -9,6 +9,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { useSiteSettings } from '@/hooks/use-site-settings';
 import { useEffect } from 'react';
+import { sendTestNotification } from '@/app/actions';
+import { useToast } from '@/hooks/use-toast';
+import { Bell } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 const appearanceFormSchema = z.object({
   heroImageUrl: z.string().url('Please enter a valid URL.'),
@@ -20,6 +24,7 @@ const appearanceFormSchema = z.object({
 
 export default function AdminAppearancePage() {
   const { settings, updateSettings } = useSiteSettings();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof appearanceFormSchema>>({
     resolver: zodResolver(appearanceFormSchema),
@@ -44,6 +49,16 @@ export default function AdminAppearancePage() {
 
   function onSubmit(values: z.infer<typeof appearanceFormSchema>) {
     updateSettings(values);
+  }
+
+  const handleSendTestNotification = async () => {
+    toast({ title: 'Sending...', description: 'Sending a test notification to all subscribed users.' });
+    const result = await sendTestNotification();
+     if (result.success) {
+      toast({ title: 'Success', description: result.message });
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: result.message });
+    }
   }
 
   return (
@@ -127,6 +142,25 @@ export default function AdminAppearancePage() {
           </Form>
         </CardContent>
       </Card>
+
+      <Separator className="my-8" />
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Push Notifications</CardTitle>
+          <CardDescription>Send a test notification to all subscribed users.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={handleSendTestNotification}>
+            <Bell className="mr-2 h-4 w-4" />
+            Send Test Notification
+          </Button>
+           <p className="text-xs text-muted-foreground mt-4">
+              Note: This is a developer feature. Proper notification sending requires server-side setup which is beyond the current scope. This button simulates the action and logs the intent.
+           </p>
+        </CardContent>
+      </Card>
+
     </div>
   );
 }
