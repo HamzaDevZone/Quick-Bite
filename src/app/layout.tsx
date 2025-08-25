@@ -16,6 +16,7 @@ import { useEffect } from 'react';
 import { requestNotificationPermission, onMessageListener } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { AuthProvider } from '@/hooks/use-auth';
+import { ThemeProvider } from '@/hooks/use-theme';
 
 export default function RootLayout({
   children,
@@ -45,7 +46,7 @@ export default function RootLayout({
 
 
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -56,26 +57,33 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className="font-body antialiased">
-        <AuthProvider>
-            <SiteSettingsProvider>
-            <ProductProvider>
-                <CategoryProvider>
-                <RiderProvider>
-                    <OrderProvider>
-                    <ReviewProvider>
-                        <MessageProvider>
-                        <CartProvider>
-                            {children}
-                            <Toaster />
-                        </CartProvider>
-                        </MessageProvider>
-                    </ReviewProvider>
-                    </OrderProvider>
-                </RiderProvider>
-                </CategoryProvider>
-            </ProductProvider>
-            </SiteSettingsProvider>
-        </AuthProvider>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+        >
+            <AuthProvider>
+                <SiteSettingsProvider>
+                <ProductProvider>
+                    <CategoryProvider>
+                    <RiderProvider>
+                        <OrderProvider>
+                        <ReviewProvider>
+                            <MessageProvider>
+                            <CartProvider>
+                                {children}
+                                <Toaster />
+                            </CartProvider>
+                            </MessageProvider>
+                        </ReviewProvider>
+                        </OrderProvider>
+                    </RiderProvider>
+                    </CategoryProvider>
+                </ProductProvider>
+                </SiteSettingsProvider>
+            </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

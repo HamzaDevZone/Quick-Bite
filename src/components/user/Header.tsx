@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Bike, Menu, MessageSquare, LogIn, LogOut, UserPlus } from 'lucide-react';
+import { ShoppingCart, UserCircle, Bike, Menu, MessageSquare, LogIn, LogOut, UserPlus, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/use-cart';
 import { Badge } from '../ui/badge';
@@ -10,11 +10,13 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle 
 import { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { Separator } from '../ui/separator';
+import { useTheme } from 'next-themes';
 
 export function UserHeader() {
   const { itemCount } = useCart();
   const { user, logout } = useAuth();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const navLinks = [
     { href: '/menu', label: 'Menu' },
@@ -34,6 +36,10 @@ export function UserHeader() {
       { href: '/admin/login', label: 'Admin Panel', icon: UserCircle },
       { href: '/rider/login', label: 'Rider Panel', icon: Bike },
   ]
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  }
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/20 bg-background/80 backdrop-blur-sm">
@@ -65,8 +71,14 @@ export function UserHeader() {
                 </>
             )}
 
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="ml-2">
+                <Sun className="h-6 w-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-6 w-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
+            </Button>
+
             <Link href="/cart" passHref>
-                <Button variant="ghost" size="icon" className="relative ml-2">
+                <Button variant="ghost" size="icon" className="relative">
                 <ShoppingCart className="h-6 w-6 text-foreground" />
                 {itemCount > 0 && (
                     <Badge 
@@ -82,6 +94,11 @@ export function UserHeader() {
 
         {/* Mobile Navigation */}
         <div className="md:hidden flex items-center">
+             <Button variant="ghost" size="icon" onClick={toggleTheme} className="mr-2">
+                <Sun className="h-6 w-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-6 w-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
+            </Button>
             <Link href="/cart" passHref>
                 <Button variant="ghost" size="icon" className="relative mr-2">
                     <ShoppingCart className="h-6 w-6 text-foreground" />
