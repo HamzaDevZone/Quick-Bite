@@ -7,14 +7,15 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { LayoutDashboard, Package, LogOut, UtensilsCrossed, ShoppingCart, Bike, Shapes, Palette, Users, Home, MessageSquare, Star, Wallet } from 'lucide-react';
 import { useOrders } from '@/hooks/use-orders';
+import { useMessages } from '@/hooks/use-messages';
 
 const navItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/admin/orders', label: 'Orders', icon: ShoppingCart, notificationKey: 'orders' },
+    { href: '/admin/messages', label: 'Messages', icon: MessageSquare, notificationKey: 'messages' },
     { href: '/admin/products', label: 'Products', icon: Package },
     { href: '/admin/categories', label: 'Categories', icon: Shapes },
-    { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
     { href: '/admin/riders', label: 'Riders', icon: Bike },
-    { href: '/admin/messages', label: 'Messages', icon: MessageSquare },
     { href: '/admin/reviews', label: 'Reviews', icon: Star },
     { href: '/admin/admins', label: 'Admins', icon: Users },
     { href: '/admin/appearance', label: 'Appearance', icon: Palette },
@@ -25,6 +26,7 @@ export function AdminSidebar() {
     const pathname = usePathname();
     const router = useRouter();
     const { orders } = useOrders();
+    const { conversations } = useMessages(null, 'admin');
 
     const handleLogout = () => {
         sessionStorage.removeItem('quickbite_admin_auth');
@@ -32,6 +34,12 @@ export function AdminSidebar() {
     };
     
     const hasNewOrders = orders.some(order => order.status === 'Pending');
+    const hasNewMessages = conversations.some(convo => !convo.isReadByAdmin);
+
+    const notificationStatus = {
+        orders: hasNewOrders,
+        messages: hasNewMessages,
+    }
 
     return (
         <aside className="w-64 flex-shrink-0 bg-background border-r">
@@ -55,7 +63,7 @@ export function AdminSidebar() {
                                         {item.label}
                                     </Button>
                                 </Link>
-                                {item.href === '/admin/orders' && hasNewOrders && (
+                                {item.notificationKey && notificationStatus[item.notificationKey as keyof typeof notificationStatus] && (
                                     <span className="absolute right-3 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-destructive" />
                                 )}
                             </li>

@@ -1,19 +1,21 @@
 
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import { collection, getDocs, addDoc, updateDoc, doc, Timestamp, query, where, orderBy, onSnapshot, Unsubscribe, setDoc } from 'firebase/firestore';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback, useMemo } from 'react';
+import { collection, addDoc, updateDoc, doc, Timestamp, query, where, orderBy, onSnapshot, Unsubscribe, setDoc, getDocs, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Message, Conversation, UserType } from '@/lib/types';
 import { useToast } from './use-toast';
 
 interface MessageContextType {
   conversations: Conversation[];
-  messages: Record<string, Message[]>;
+  messages: Message[];
   loadingConversations: boolean;
   loadingMessages: Record<string, boolean>;
   addMessage: (data: { userName: string; userEmail: string; text: string, userType: UserType }) => Promise<void>;
   sendMessage: (conversationId: string, text: string) => Promise<void>;
+  watchMessagesForConversation: (conversationId: string) => void;
+  conversationId: string | null;
 }
 
 const MessageContext = createContext<MessageContextType | undefined>(undefined);
@@ -24,9 +26,16 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
   const [messages, setMessages] = useState<Record<string, Message[]>>({});
   const [loadingConversations, setLoadingConversations] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState<Record<string, boolean>>({});
-  const [messageUnsubscribers, setMessageUnsubscribers] = useState<Record<string, Unsubscribe>>({});
+  const [activeUnsubscriber, setActiveUnsubscriber] = useState<Unsubscribe | null>(null);
 
   useEffect(() => {
+    // Only admins see the full list of conversations
+    const path = window.location.pathname;
+    if (!path.startsWith('/admin')) {
+      setLoadingConversations(false);
+      return;
+    }
+
     const q = query(collection(db, 'conversations'), orderBy('updatedAt', 'desc'));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const convos = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Conversation));
@@ -42,13 +51,19 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
   }, [toast]);
   
   useEffect(() => {
+    // Cleanup the active message listener on component unmount
     return () => {
-      Object.values(messageUnsubscribers).forEach(unsub => unsub());
-    }
-  }, [messageUnsubscribers]);
+      if (activeUnsubscriber) {
+        activeUnsubscriber();
+      }
+    };
+  }, [activeUnsubscriber]);
 
-  const watchMessages = useCallback((conversationId: string) => {
-    if (messageUnsubscribers[conversationId]) return;
+  const watchMessagesForConversation = useCallback((conversationId: string) => {
+    // Unsubscribe from the previous listener if there is one
+    if (activeUnsubscriber) {
+      activeUnsubscriber();
+    }
 
     setLoadingMessages(prev => ({ ...prev, [conversationId]: true }));
     const q = query(collection(db, 'messages'), where('conversationId', '==', conversationId), orderBy('createdAt', 'asc'));
@@ -58,9 +73,11 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
       setMessages(prev => ({ ...prev, [conversationId]: msgs }));
       setLoadingMessages(prev => ({ ...prev, [conversationId]: false }));
       
-      // Mark conversation as read
-      const convoDocRef = doc(db, 'conversations', conversationId);
-      updateDoc(convoDocRef, { isReadByAdmin: true }).catch(console.error);
+      // Mark conversation as read by admin if they are viewing it
+      if (window.location.pathname.startsWith('/admin')) {
+         const convoDocRef = doc(db, 'conversations', conversationId);
+         updateDoc(convoDocRef, { isReadByAdmin: true }).catch(console.error);
+      }
 
     }, (error) => {
       console.error(`Error fetching messages for ${conversationId}: `, error);
@@ -68,14 +85,13 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
       setLoadingMessages(prev => ({ ...prev, [conversationId]: false }));
     });
     
-    setMessageUnsubscribers(prev => ({ ...prev, [conversationId]: unsubscribe }));
+    setActiveUnsubscriber(() => unsubscribe);
 
-  }, [messageUnsubscribers, toast]);
+  }, [activeUnsubscriber, toast]);
 
-  const addMessage = async ({ userName, userEmail, text, userType = 'user' }: { userName: string; userEmail: string; text: string, userType: UserType }) => {
-    const conversationId = userEmail;
+  const addMessage = async ({ userName, userEmail, text, userType }: { userName: string; userEmail: string; text: string, userType: UserType }) => {
+    const conversationId = userEmail; // Use email as the unique conversation ID
     try {
-      // Add message
       await addDoc(collection(db, 'messages'), {
         conversationId,
         sender: userType,
@@ -83,7 +99,6 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
         createdAt: Timestamp.now(),
       });
       
-      // Update or create conversation
       const conversationDocRef = doc(db, 'conversations', conversationId);
       await setDoc(conversationDocRef, {
         userName,
@@ -119,59 +134,37 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  // Effect to watch messages for selected conversation
-  useEffect(() => {
-      const selectedConvo = conversations.find(c => messages[c.id]);
-      if (selectedConvo && !messageUnsubscribers[selectedConvo.id]) {
-          watchMessages(selectedConvo.id);
-      }
-  }, [conversations, messages, messageUnsubscribers, watchMessages]);
-
-  const contextValue: MessageContextType = {
-    conversations,
-    messages,
-    loadingConversations,
-    loadingMessages,
-    addMessage,
-    sendMessage,
-  };
-  
-  // Custom logic to automatically watch messages for any conversation that is selected
-  const augmentedContext: MessageContextType = {
-      ...contextValue,
-      get messages() {
-          const selectedConvoId = (Object.entries(loadingMessages).find(([id, loading]) => !loading && messages[id]) || [])[0];
-          if(selectedConvoId && !messageUnsubscribers[selectedConvoId]) {
-              watchMessages(selectedConvoId)
-          }
-          return contextValue.messages;
-      }
-  };
-
+  const value = { conversations, messages, loadingConversations, loadingMessages, addMessage, sendMessage, watchMessagesForConversation };
 
   return (
-    <MessageContext.Provider value={contextValue}>
+    <MessageContext.Provider value={value}>
       {children}
     </MessageContext.Provider>
   );
 };
 
-export const useMessages = () => {
+export const useMessages = (conversationId: string | null, userType: UserType) => {
   const context = useContext(MessageContext);
   if (context === undefined) {
     throw new Error('useMessages must be used within a MessageProvider');
   }
 
-  // This effect ensures that when a conversation is selected (i.e., its messages are requested),
-  // we start listening for real-time updates.
-  Object.keys(context.messages).forEach(convoId => {
-      // @ts-ignore - a bit of a hack to check if we are already subscribed
-      if (!context.messageUnsubscribers?.[convoId]) {
-          // @ts-ignore
-          context.watchMessages?.(convoId);
-      }
-  })
+  const { watchMessagesForConversation } = context;
 
+  useEffect(() => {
+    // If a user/rider is on the contact page, automatically watch their conversation
+    if (conversationId && userType !== 'admin') {
+      watchMessagesForConversation(conversationId);
+    }
+  }, [conversationId, userType, watchMessagesForConversation]);
 
-  return context;
+  const messagesForConversation = useMemo(() => {
+    return conversationId ? context.messages[conversationId] || [] : [];
+  }, [context.messages, conversationId]);
+
+  return {
+    ...context,
+    messages: messagesForConversation,
+    conversationId: conversationId,
+  };
 };
