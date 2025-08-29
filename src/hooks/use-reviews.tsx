@@ -48,13 +48,20 @@ export const useReviews = (productId: string | null) => {
     const fetchReviewsForProduct = async () => {
         setState(prevState => ({ ...prevState, loading: true }));
         try {
+            // Simplified query to avoid composite index requirement
             const queryTarget = productId
-                ? query(collection(db, 'reviews'), where('productId', '==', productId), orderBy('createdAt', 'desc'))
-                : query(collection(db, 'reviews'), orderBy('createdAt', 'desc'));
+                ? query(collection(db, 'reviews'), where('productId', '==', productId))
+                : query(collection(db, 'reviews'), orderBy('createdAt', 'desc')); // For all reviews, we can keep the order
 
             const querySnapshot = await getDocs(queryTarget);
             if (isMounted) {
-                const reviewsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Review));
+                let reviewsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Review));
+                
+                // Sort on the client-side if we filtered by productId
+                if (productId) {
+                   reviewsData.sort((a, b) => b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime());
+                }
+
                 setState({ reviews: reviewsData, loading: false });
             }
         } catch (error) {
