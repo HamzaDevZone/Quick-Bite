@@ -21,20 +21,16 @@ export default function LandingPage() {
         <main className="flex-1">
           {/* Hero Section */}
           <section className="relative h-[70vh] flex items-center justify-center text-center text-white bg-black/50">
-             {isLoading ? (
-                <Skeleton className="absolute inset-0 w-full h-full" />
-              ) : (
-                <Image 
-                  src={settings.heroImageUrl}
-                  alt="Delicious food background"
-                  fill
-                  priority
-                  quality={75}
-                  sizes="100vw"
-                  className="object-cover -z-10"
-                  data-ai-hint="delicious food background"
-                />
-             )}
+             <Image 
+                src={settings.heroImageUrl}
+                alt="Delicious food background"
+                fill
+                priority
+                quality={75}
+                sizes="100vw"
+                className="object-cover -z-10"
+                data-ai-hint="delicious food background"
+              />
             <div className="bg-black/60 p-8 rounded-lg z-10">
               <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-4 font-headline uppercase">
                 QuickBite Delivers

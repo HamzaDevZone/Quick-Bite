@@ -3,10 +3,9 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { useSiteSettings } from '@/hooks/use-site-settings';
-import { Skeleton } from '../ui/skeleton';
 
-// Default URLs are now hardcoded here to avoid the loading delay from localStorage.
+// The URLs are now hardcoded to ensure they load instantly without relying on localStorage.
+// This prevents the splash screen from appearing blank on the first load.
 const SPLASH_IMAGE_URL = 'https://i.ibb.co/6PzD4gQ/splash-bg.png';
 const SPLASH_LOGO_URL = 'https://i.ibb.co/P9gL6M1/logo.png';
 
