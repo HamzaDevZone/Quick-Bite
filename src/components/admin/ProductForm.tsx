@@ -43,6 +43,14 @@ export function ProductForm({ productToEdit, setFormOpen }: ProductFormProps) {
   useEffect(() => {
     if (productToEdit) {
       form.reset(productToEdit);
+    } else {
+        form.reset({
+            name: '',
+            description: '',
+            price: 0,
+            category: '',
+            imageUrl: '',
+        });
     }
   }, [productToEdit, form]);
 
@@ -103,7 +111,7 @@ export function ProductForm({ productToEdit, setFormOpen }: ProductFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Category</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a category" />
