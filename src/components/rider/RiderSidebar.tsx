@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, LogOut, Bike, History, User, Home, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, LogOut, Bike, History, User, Home } from 'lucide-react';
 import { useOrders } from '@/hooks/use-orders';
 import { useEffect, useState } from 'react';
 
@@ -33,7 +33,6 @@ export function RiderSidebar() {
         { href: '/rider', label: 'Dashboard', icon: LayoutDashboard, notification: hasAssignedOrders },
         { href: '/rider/history', label: 'Delivery History', icon: History },
         { href: '/rider/profile', label: 'Profile', icon: User },
-        { href: '/rider/contact', label: 'Contact Admin', icon: MessageSquare },
     ];
 
     return (

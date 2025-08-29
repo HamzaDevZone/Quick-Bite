@@ -5,14 +5,12 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Package, LogOut, UtensilsCrossed, ShoppingCart, Bike, Shapes, Palette, Users, Home, MessageSquare, Star, Wallet } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, UtensilsCrossed, ShoppingCart, Bike, Shapes, Palette, Users, Home, Star, Wallet } from 'lucide-react';
 import { useOrders } from '@/hooks/use-orders';
-import { useMessages } from '@/hooks/use-messages';
 
 const navItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/orders', label: 'Orders', icon: ShoppingCart, notificationKey: 'orders' },
-    { href: '/admin/messages', label: 'Messages', icon: MessageSquare, notificationKey: 'messages' },
     { href: '/admin/products', label: 'Products', icon: Package },
     { href: '/admin/categories', label: 'Categories', icon: Shapes },
     { href: '/admin/riders', label: 'Riders', icon: Bike },
@@ -26,7 +24,6 @@ export function AdminSidebar() {
     const pathname = usePathname();
     const router = useRouter();
     const { orders } = useOrders();
-    const { conversations } = useMessages(null, 'admin');
 
     const handleLogout = () => {
         sessionStorage.removeItem('quickbite_admin_auth');
@@ -34,11 +31,9 @@ export function AdminSidebar() {
     };
     
     const hasNewOrders = orders.some(order => order.status === 'Pending');
-    const hasNewMessages = conversations.some(convo => !convo.isReadByAdmin);
 
     const notificationStatus = {
         orders: hasNewOrders,
-        messages: hasNewMessages,
     }
 
     return (

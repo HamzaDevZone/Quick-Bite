@@ -11,7 +11,6 @@ import { SiteSettingsProvider } from '@/hooks/use-site-settings';
 import { CategoryProvider } from '@/hooks/use-categories';
 import { RiderProvider } from '@/hooks/use-riders';
 import { ReviewProvider } from '@/hooks/use-reviews';
-import { MessageProvider } from '@/hooks/use-messages';
 import { AuthProvider } from '@/hooks/use-auth';
 import { ThemeProvider } from '@/hooks/use-theme';
 
@@ -45,12 +44,10 @@ export default function RootLayout({
                     <RiderProvider>
                         <OrderProvider>
                         <ReviewProvider>
-                            <MessageProvider>
                             <CartProvider>
                                 {children}
                                 <Toaster />
                             </CartProvider>
-                            </MessageProvider>
                         </ReviewProvider>
                         </OrderProvider>
                     </RiderProvider>

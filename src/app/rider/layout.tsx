@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -6,7 +7,6 @@ import { RiderSidebar } from '@/components/rider/RiderSidebar';
 import { OrderProvider } from '@/hooks/use-orders';
 import { Skeleton } from '@/components/ui/skeleton';
 import { RiderProvider } from '@/hooks/use-riders';
-import { MessageProvider } from '@/hooks/use-messages';
 
 export default function RiderLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -58,14 +58,12 @@ export default function RiderLayout({ children }: { children: React.ReactNode })
     return (
         <RiderProvider>
           <OrderProvider>
-            <MessageProvider>
               <div className="flex min-h-screen">
                   <RiderSidebar />
                   <main className="flex-1 p-8 bg-secondary/40">
                       {children}
                   </main>
               </div>
-            </MessageProvider>
           </OrderProvider>
         </RiderProvider>
     );
