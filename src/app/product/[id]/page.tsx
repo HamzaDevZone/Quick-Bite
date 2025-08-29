@@ -19,7 +19,6 @@ import { ReviewForm } from '@/components/user/ReviewForm';
 import { StarRating } from '@/components/user/StarRating';
 import { format } from 'date-fns';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { AiRecommender } from '@/components/user/AiRecommender';
 
 export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
@@ -140,10 +139,6 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </div>
-
-        <Separator className="my-16" />
-        
-        <AiRecommender product={product} />
 
         <Separator className="my-16" />
 
