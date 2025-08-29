@@ -2,17 +2,21 @@
 'use server';
 import type { Product } from '@/lib/types';
 import { getDocs, collection } from 'firebase/firestore';
-import { db, firebaseConfig } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import https from 'https';
 
 async function sendNotification(token: string) {
-    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || firebaseConfig.projectId;
+    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
     const accessToken = process.env.FCM_ACCESS_TOKEN; 
 
     if (!accessToken) {
         console.error('FCM_ACCESS_TOKEN is not set in environment variables. Notification will not be sent.');
         // In a real app, you might want to throw an error or handle this more gracefully.
         // For this demo, we will just log the error and stop.
+        return;
+    }
+     if (!projectId) {
+        console.error('NEXT_PUBLIC_FIREBASE_PROJECT_ID is not set in environment variables. Notification will not be sent.');
         return;
     }
 
