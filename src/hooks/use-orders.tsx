@@ -1,8 +1,7 @@
-
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { collection, getDocs, addDoc, updateDoc, doc, Timestamp, query, where, onSnapshot, orderBy, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, updateDoc, doc, Timestamp, query, where, onSnapshot, orderBy, deleteDoc, setDoc } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
 import type { Order, OrderStatus, OrderItem } from '@/lib/types';
 import { useToast } from './use-toast';
@@ -30,6 +29,15 @@ interface OrderContextType {
 }
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
+
+function generateShortOrderId(length = 8) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
 
 export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
@@ -75,7 +83,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         const storedOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
         setUserOrderIds(storedOrderIds);
         if (storedOrderIds.length > 0) {
-          q = query(collection(db, 'orders'), where('__name__', 'in', storedOrderIds));
+          q = query(collection(db, 'orders'), where('id', 'in', storedOrderIds));
         } else {
           setOrders([]);
           setLoading(false);
@@ -90,7 +98,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const fetchedOrders = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+      const fetchedOrders = querySnapshot.docs.map(doc => ({ ...doc.data() } as Order));
       
       if (user && !path.startsWith('/admin') && !path.startsWith('/rider')) {
         setUserOrderIds(fetchedOrders.map(o => o.id));
@@ -111,13 +119,15 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => unsubscribe();
-  }, [user?.uid, toast]);
+  }, [user, toast]);
 
 
   const addOrder = async (orderData: NewOrderData) => {
     try {
+        const orderId = generateShortOrderId();
         const newOrderData: any = {
             ...orderData,
+            id: orderId,
             status: 'Pending' as OrderStatus,
             orderDate: Timestamp.now(),
         };
@@ -126,11 +136,10 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
             newOrderData.userId = user.uid;
         }
 
-        const docRef = await addDoc(collection(db, 'orders'), newOrderData);
+        const docRef = doc(db, 'orders', orderId);
+        await setDoc(docRef, newOrderData);
         
-        await updateDoc(docRef, { id: docRef.id });
-
-        const newOrder = { ...newOrderData, id: docRef.id } as Order;
+        const newOrder = { ...newOrderData } as Order;
         
         if (!user) {
              try {

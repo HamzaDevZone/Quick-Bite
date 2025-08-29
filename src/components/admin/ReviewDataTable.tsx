@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -69,7 +68,7 @@ export function ReviewDataTable({ data }: ReviewDataTableProps) {
                     <TableCell>
                         <StarRating rating={review.rating} readOnly size={18} />
                     </TableCell>
-                    <TableCell className="max-w-sm whitespace-normal">{review.feedback}</TableCell>
+                    <TableCell className="max-w-xs whitespace-normal break-words">{review.feedback}</TableCell>
                     <TableCell>{format(review.createdAt.toDate(), 'PPP')}</TableCell>
                 </TableRow>
                 ))

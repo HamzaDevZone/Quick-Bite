@@ -62,7 +62,7 @@ export function CategoryDataTable({ data }: CategoryDataTableProps) {
               <TableRow>
                 <TableHead>Icon</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

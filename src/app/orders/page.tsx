@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useOrders } from '@/hooks/use-orders';
@@ -52,12 +51,14 @@ export default function OrderHistoryPage() {
                 router.replace('/login');
              }
         }
-    }, [user, authLoading, router]);
+    }, [user, authLoading, router, userOrderIds]);
 
     const displayedOrders = useMemo(() => {
         if (user) {
-            return orders;
+            // This filters orders for the logged-in user based on what the hook provides.
+            return orders.filter(order => order.userId === user.uid);
         }
+        // For guest users, filter based on IDs stored in localStorage.
         return orders.filter(order => userOrderIds.includes(order.id));
     }, [orders, user, userOrderIds]);
 

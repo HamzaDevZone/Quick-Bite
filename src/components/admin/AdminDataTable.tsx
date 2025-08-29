@@ -62,7 +62,7 @@ export function AdminDataTable({ data }: AdminDataTableProps) {
               <TableHead>Avatar</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

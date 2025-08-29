@@ -60,7 +60,7 @@ export function RiderOrderDataTable({ data }: RiderOrderDataTableProps) {
               <TableRow key={order.id}>
                 <TableCell className="font-medium">
                   <Link href={`/rider/orders/${order.id}`} className="text-primary hover:underline">
-                      {order.id}
+                      #{order.id}
                   </Link>
                 </TableCell>
                 <TableCell>{order.customerName}</TableCell>

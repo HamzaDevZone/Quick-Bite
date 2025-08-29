@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
@@ -29,7 +28,7 @@ export default function RiderOrderDetailPage() {
           const docRef = doc(db, 'orders', params.id as string);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
-            setOrder({ id: docSnap.id, ...docSnap.data() } as Order);
+            setOrder({ ...docSnap.data() } as Order);
           } else {
             setOrder(null);
           }
