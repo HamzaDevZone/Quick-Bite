@@ -115,12 +115,17 @@ export default function AdminOrderDetailPage() {
     
     const handleStatusUpdate = (status: OrderStatus) => {
         updateOrderStatus(order.id, status);
-        setOrder(prev => prev ? { ...prev, status } : null);
+        if (status === 'Delivered') {
+            router.push('/admin/orders');
+        } else {
+            setOrder(prev => prev ? { ...prev, status } : null);
+        }
     };
 
     const handleRiderAssign = (riderId: string) => {
       if(riderId) {
         assignRiderToOrder(order.id, riderId)
+        // Optimistically update the UI to show the assigned rider and new status
         setOrder(prev => prev ? { ...prev, riderId, status: 'Preparing' } : null);
       }
     }
@@ -235,5 +240,7 @@ export default function AdminOrderDetailPage() {
         </div>
     );
 }
+
+    
 
     
