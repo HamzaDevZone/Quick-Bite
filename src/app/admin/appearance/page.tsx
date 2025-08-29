@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useSiteSettings } from '@/hooks/use-site-settings';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { sendTestNotification } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Bell } from 'lucide-react';
@@ -28,29 +28,21 @@ const appearanceFormSchema = z.object({
 });
 
 export default function AdminAppearancePage() {
-  const { settings, updateSettings } = useSiteSettings();
+  const { settings, updateSettings, isLoading } = useSiteSettings();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof appearanceFormSchema>>({
     resolver: zodResolver(appearanceFormSchema),
-    defaultValues: settings,
+    // The form values will be reset by useEffect once settings are loaded.
+    // This prevents a flash of default values if settings are loaded from localStorage.
+    defaultValues: settings, 
   });
   
   useEffect(() => {
-    if (settings) {
-        form.reset({
-            heroImageUrl: settings.heroImageUrl,
-            splashImageUrl: settings.splashImageUrl,
-            splashLogoUrl: settings.splashLogoUrl,
-            menuImageUrl: settings.menuImageUrl,
-            deliveryFee: settings.deliveryFee,
-            menuCarouselImage1: settings.menuCarouselImage1,
-            menuCarouselImage2: settings.menuCarouselImage2,
-            menuCarouselImage3: settings.menuCarouselImage3,
-            menuCarouselImage4: settings.menuCarouselImage4,
-        });
+    if (!isLoading && settings) {
+        form.reset(settings);
     }
-  }, [settings, form]);
+  }, [settings, isLoading, form]);
 
   function onSubmit(values: z.infer<typeof appearanceFormSchema>) {
     updateSettings(values);
