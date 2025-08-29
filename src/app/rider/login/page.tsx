@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -15,7 +16,7 @@ export default function RiderLoginPage() {
     const [password, setPassword] = useState('');
     const router = useRouter();
     const { toast } = useToast();
-    const { riders } = useRiders();
+    const { riders, loading } = useRiders();
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
@@ -75,8 +76,8 @@ export default function RiderLoginPage() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button type="submit" className="w-full">
-                            Login
+                        <Button type="submit" className="w-full" disabled={loading}>
+                            {loading ? 'Loading Riders...' : 'Login'}
                         </Button>
                     </CardFooter>
                 </form>

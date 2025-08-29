@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -19,24 +20,6 @@ export default function AdminLoginPage() {
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
-
-        // Special case: If no admins exist in the database, allow default login
-        if (!loading && admins.length === 0) {
-            if (email === 'gk00536789@gmail.com' && password === 'gk00536789') {
-                try {
-                    sessionStorage.setItem('quickbite_admin_auth', 'true');
-                    toast({ title: 'Login Successful (Default)', description: 'Please create your own admin account now.' });
-                    router.push('/admin/admins');
-                } catch (error) {
-                    toast({
-                        variant: 'destructive',
-                        title: 'Login Failed',
-                        description: 'Could not set session. Please enable cookies/storage and try again.',
-                    });
-                }
-                return;
-            }
-        }
 
         // Regular login check
         const adminUser = admins.find(admin => admin.email === email && admin.password === password);
