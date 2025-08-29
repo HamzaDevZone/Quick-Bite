@@ -20,6 +20,8 @@ import { StarRating } from '@/components/user/StarRating';
 import { format } from 'date-fns';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
+export const dynamic = 'force-dynamic';
+
 export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();

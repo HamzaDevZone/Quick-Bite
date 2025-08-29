@@ -12,6 +12,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Bike, Clock, Home } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 // For simplicity, using a fixed restaurant location. This could come from settings.
 const RESTAURANT_LOCATION = { lat: 33.6844, lng: 73.0479 }; // Islamabad coordinates
 

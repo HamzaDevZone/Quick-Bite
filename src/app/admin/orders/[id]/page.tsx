@@ -25,6 +25,8 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 
+export const dynamic = 'force-dynamic';
+
 const statusColors: Record<OrderStatus, string> = {
   Pending: 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30',
   Preparing: 'bg-orange-500/20 text-orange-500 border-orange-500/30',
