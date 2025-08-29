@@ -85,5 +85,24 @@ body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
   }
-  
+}
+
+@layer utilities {
+  @keyframes splash-fade-out {
+    0% { opacity: 1; visibility: visible; }
+    90% { opacity: 1; }
+    100% { opacity: 0; visibility: hidden; }
+  }
+  @keyframes splash-content-fade-in {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-splash-fade-out {
+    animation: splash-fade-out 4s forwards;
+  }
+  .animate-splash-content-fade-in {
+    animation: splash-content-fade-in 1s forwards;
+    animation-delay: 0.2s;
+  }
 }
