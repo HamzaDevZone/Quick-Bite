@@ -9,13 +9,12 @@ import { useToast } from './use-toast';
 
 interface MessageContextType {
   conversations: Conversation[];
-  messages: Message[];
+  messages: Record<string, Message[]>;
   loadingConversations: boolean;
   loadingMessages: Record<string, boolean>;
   addMessage: (data: { userName: string; userEmail: string; text: string, userType: UserType }) => Promise<void>;
   sendMessage: (conversationId: string, text: string) => Promise<void>;
   watchMessagesForConversation: (conversationId: string) => void;
-  conversationId: string | null;
 }
 
 const MessageContext = createContext<MessageContextType | undefined>(undefined);
@@ -164,7 +163,8 @@ export const useMessages = (conversationId: string | null, userType: UserType) =
   }, [conversationId, userType, watchMessagesForConversation]);
 
   const messagesForConversation = useMemo(() => {
-    return conversationId ? context.messages[conversationId] || [] : [];
+    if (!conversationId) return [];
+    return context.messages[conversationId] || [];
   }, [context.messages, conversationId]);
 
   return {

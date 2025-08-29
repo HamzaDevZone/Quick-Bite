@@ -28,7 +28,7 @@ const formSchema = z.object({
 export default function ContactPage() {
     const { toast } = useToast();
     const { user, loading: authLoading } = useAuth();
-    const { messages, loadingMessages, addMessage, sendMessage, conversationId } = useMessages(user?.email || null, 'user');
+    const { messages, loadingMessages, addMessage, conversationId } = useMessages(user?.email || null, 'user');
     const [isSending, setIsSending] = useState(false);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
@@ -61,7 +61,7 @@ export default function ContactPage() {
         form.reset();
     };
 
-    const isLoading = authLoading || (conversationId && loadingMessages[conversationId]);
+    const isLoading = authLoading || (conversationId ? loadingMessages[conversationId] : false);
 
     return (
         <div className="min-h-screen flex flex-col">
