@@ -3,26 +3,46 @@
 
 import { useOrders } from '@/hooks/use-orders';
 import { OrderDataTable } from '@/components/admin/OrderDataTable';
-import { useEffect, useState } from 'react';
-import { collection, onSnapshot, query } from 'firebase/firestore';
+import { useEffect, useState, useMemo } from 'react';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Order } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AdminOrdersPage() {
     const [allOrders, setAllOrders] = useState<Order[]>([]);
+    const [loading, setLoading] = useState(true);
     
     useEffect(() => {
-        const q = query(collection(db, "orders"));
+        const q = query(collection(db, "orders"), orderBy("orderDate", "desc"));
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const ordersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
-            ordersData.sort((a,b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime());
             setAllOrders(ordersData);
+            setLoading(false);
         });
 
         return () => unsubscribe();
     }, []);
     
-    const liveOrders = allOrders.filter(order => order.status !== 'Delivered');
+    const liveOrders = useMemo(() => {
+        return allOrders.filter(order => order.status !== 'Delivered');
+    }, [allOrders]);
+
+    if (loading) {
+        return (
+            <div>
+                <div className="flex items-center justify-between mb-6">
+                    <Skeleton className="h-10 w-48" />
+                </div>
+                <Skeleton className="h-48 w-full" />
+
+                <div className="flex items-center justify-between mt-12 mb-6">
+                    <Skeleton className="h-8 w-56" />
+                </div>
+                 <Skeleton className="h-64 w-full" />
+            </div>
+        );
+    }
 
     return (
         <div>
