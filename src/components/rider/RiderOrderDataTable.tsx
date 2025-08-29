@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useOrders } from '@/hooks/use-orders';
@@ -50,7 +51,7 @@ export function RiderOrderDataTable({ data }: RiderOrderDataTableProps) {
           </TableHeader>
           <TableBody>
             {data.length === 0 && (
-              <TableRow>
+              <TableRow key="no-orders-row">
                 <TableCell colSpan={6} className="h-24 text-center">
                   No orders found.
                 </TableCell>
