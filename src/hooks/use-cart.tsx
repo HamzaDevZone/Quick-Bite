@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
@@ -21,9 +22,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
 
   useEffect(() => {
-    const storedCart = localStorage.getItem('quickbite-cart');
-    if (storedCart) {
-      setCart(JSON.parse(storedCart));
+    try {
+        const storedCart = localStorage.getItem('quickbite-cart');
+        if (storedCart) {
+            setCart(JSON.parse(storedCart));
+        }
+    } catch (error) {
+        console.error("Could not parse cart from localStorage", error);
+        setCart([]); // Reset to empty cart on error
     }
   }, []);
 
