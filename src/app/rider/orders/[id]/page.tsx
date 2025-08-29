@@ -80,8 +80,12 @@ export default function RiderOrderDetailPage() {
     
     const handleStatusUpdate = (status: OrderStatus) => {
         updateOrderStatus(order.id, status);
-        // Optimistically update UI
-        setOrder(prev => prev ? { ...prev, status } : null);
+        if (status === 'Delivered') {
+            router.push('/rider');
+        } else {
+            // Optimistically update UI
+            setOrder(prev => prev ? { ...prev, status } : null);
+        }
     };
 
     return (
