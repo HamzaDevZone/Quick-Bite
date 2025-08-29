@@ -72,10 +72,22 @@ export default function MenuPage() {
 
 
   const sortedProducts = useMemo(() => {
-    return [...products].sort((a, b) => {
+    // We reverse the products array to get the newest products first, assuming they are added to the end.
+    // This is a simple way to sort by "creation time" without a timestamp.
+    return [...products].reverse().sort((a, b) => {
         const ratingA = productRatings[a.id]?.average || 0;
         const ratingB = productRatings[b.id]?.average || 0;
-        return ratingB - ratingA;
+        
+        // If both have ratings, sort by rating.
+        if (ratingA > 0 && ratingB > 0) {
+            return ratingB - ratingA;
+        }
+        // If one has ratings and the other doesn't, the one with ratings comes first.
+        if (ratingB > 0) return 1;
+        if (ratingA > 0) return -1;
+        
+        // If neither has ratings, their original (reversed) order is maintained, so newer items appear first.
+        return 0;
     });
   }, [products, productRatings]);
 
