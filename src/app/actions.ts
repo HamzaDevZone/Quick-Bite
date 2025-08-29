@@ -1,19 +1,27 @@
+
 'use server';
 import type { Product } from '@/lib/types';
 import { getDocs, collection } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db, firebaseConfig } from '@/lib/firebase';
 import https from 'https';
 
 async function sendNotification(token: string) {
-    const project_id = 'save-genie-video-downloader';
-    const access_token = process.env.FCM_ACCESS_TOKEN; // You need to get this
+    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || firebaseConfig.projectId;
+    const accessToken = process.env.FCM_ACCESS_TOKEN; 
+
+    if (!accessToken) {
+        console.error('FCM_ACCESS_TOKEN is not set in environment variables. Notification will not be sent.');
+        // In a real app, you might want to throw an error or handle this more gracefully.
+        // For this demo, we will just log the error and stop.
+        return;
+    }
 
     const options = {
         hostname: 'fcm.googleapis.com',
-        path: `/v1/projects/${project_id}/messages:send`,
+        path: `/v1/projects/${projectId}/messages:send`,
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${access_token}`,
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
         }
     };
@@ -29,14 +37,21 @@ async function sendNotification(token: string) {
     };
 
     const req = https.request(options, (res) => {
-        console.log(`statusCode: ${res.statusCode}`);
+        let data = '';
         res.on('data', (d) => {
-            process.stdout.write(d);
+            data += d;
+        });
+        res.on('end', () => {
+             if (res.statusCode && res.statusCode >= 400) {
+                console.error(`Error sending notification to a token. Status: ${res.statusCode}, Response: ${data}`);
+            } else {
+                console.log(`Successfully sent notification. Response: ${data}`);
+            }
         });
     });
 
     req.on('error', (error) => {
-        console.error(error);
+        console.error('Error in FCM request:', error);
     });
 
     req.write(JSON.stringify(message));
@@ -46,21 +61,21 @@ async function sendNotification(token: string) {
 export async function sendTestNotification() {
     try {
         const tokensSnapshot = await getDocs(collection(db, 'fcmTokens'));
-        const tokens = tokensSnapshot.docs.map(doc => doc.data().token);
-        
-        console.log(`Sending notifications to ${tokens.length} devices.`);
+        const tokens = tokensSnapshot.docs.map(doc => doc.data().token).filter(token => token); // ensure token is not null/undefined
 
-        // This requires server-side logic with admin privileges, which is complex here.
-        // For now, we will log the intent.
-        console.log("Intended to send notifications to tokens:", tokens);
+        if (tokens.length === 0) {
+             return { success: true, message: 'No subscribed users to send notifications to.' };
+        }
         
-        // In a real app, you would loop through tokens and call a server-side function.
-        // For demonstration, we are just logging it.
-        // await Promise.all(tokens.map(token => sendNotification(token)));
+        console.log(`Attempting to send notifications to ${tokens.length} devices.`);
+
+        // In a real production app, this should be handled by a secure backend service.
+        // For demonstration, we're calling it directly.
+        await Promise.all(tokens.map(token => sendNotification(token)));
         
-        return { success: true, message: `Attempted to send notifications to ${tokens.length} devices. Check server logs.` };
-    } catch (error) {
+        return { success: true, message: `Notification request sent for ${tokens.length} devices. Check server logs for status.` };
+    } catch (error: any) {
         console.error('Error sending test notification:', error);
-        return { success: false, message: 'Failed to send notifications.' };
+        return { success: false, message: `Failed to send notifications. Error: ${error.message}` };
     }
 }

@@ -1,11 +1,11 @@
 
-import { initializeApp, getApps, getApp } from "firebase/app";
+import { initializeApp, getApps, getApp, FirebaseOptions } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { getAuth } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore";
 
-const firebaseConfig = {
+export const firebaseConfig: FirebaseOptions = {
   apiKey: "AIzaSyD_Wjl-gchuuSc09toj1NXgZaY68gMZiNg",
   authDomain: "save-genie-video-downloader.firebaseapp.com",
   projectId: "save-genie-video-downloader",
