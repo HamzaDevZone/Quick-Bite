@@ -6,16 +6,27 @@ import { UserHeader } from '@/components/user/Header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import type { OrderStatus } from '@/lib/types';
+import type { Order, OrderStatus } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Clock, UtensilsCrossed, Package, Check, ShoppingBag, MapPin } from 'lucide-react';
+import { Clock, UtensilsCrossed, Package, Check, ShoppingBag, MapPin, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import type { Timestamp } from 'firebase/firestore';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 const statusDetails: Record<OrderStatus, { text: string; icon: React.ElementType; color: string }> = {
   Pending: { text: 'Pending', icon: Clock, color: 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30' },
@@ -26,14 +37,12 @@ const statusDetails: Record<OrderStatus, { text: string; icon: React.ElementType
 
 export default function OrderHistoryPage() {
     const { user, loading: authLoading } = useAuth();
-    const { orders, userOrderIds, loading: ordersLoading } = useOrders();
+    const { orders, userOrderIds, loading: ordersLoading, deleteOrder } = useOrders();
     const router = useRouter();
+    const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
 
     useEffect(() => {
-        // If user auth is done loading and there's no user, redirect.
         if (!authLoading && !user) {
-            // Also check if there are no guest order IDs in local storage.
-            // This prevents redirection if a guest user has placed an order and is viewing this page.
              try {
                 const storedOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
                 if(storedOrderIds.length === 0) {
@@ -47,12 +56,9 @@ export default function OrderHistoryPage() {
 
     const displayedOrders = useMemo(() => {
         if (user) {
-            // For logged-in users, the hook already filters by user ID
             return orders;
         }
-        // For guest users, we filter based on IDs stored in localStorage
         return orders.filter(order => userOrderIds.includes(order.id));
-
     }, [orders, user, userOrderIds]);
 
 
@@ -61,6 +67,13 @@ export default function OrderHistoryPage() {
             return new Date(date);
         }
         return date.toDate();
+    };
+
+    const handleDeleteConfirm = () => {
+        if (orderToDelete) {
+          deleteOrder(orderToDelete.id);
+          setOrderToDelete(null);
+        }
     };
 
     const isLoading = authLoading || ordersLoading;
@@ -88,7 +101,7 @@ export default function OrderHistoryPage() {
                         {displayedOrders.map(order => {
                              const StatusIcon = statusDetails[order.status].icon;
                              return (
-                                <Card key={order.id} className="bg-secondary">
+                                <Card key={order.id} className="bg-secondary relative">
                                     <CardHeader className="grid grid-cols-2 items-center">
                                         <div>
                                             <CardTitle>Order #{order.id}</CardTitle>
@@ -127,6 +140,30 @@ export default function OrderHistoryPage() {
                                             <span>PKR {order.total.toFixed(2)}</span>
                                         </div>
                                     </CardContent>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button 
+                                                variant="ghost" 
+                                                size="icon" 
+                                                className="absolute top-2 right-2 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                                                onClick={() => setOrderToDelete(order)}
+                                                >
+                                                <Trash2 className="w-5 h-5"/>
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This action cannot be undone. This will permanently delete your order history for order #{orderToDelete?.id}.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel onClick={() => setOrderToDelete(null)}>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={handleDeleteConfirm}>Delete</AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
                                 </Card>
                             )
                         })}

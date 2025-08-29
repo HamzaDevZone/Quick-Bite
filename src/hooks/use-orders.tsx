@@ -2,7 +2,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { collection, getDocs, addDoc, updateDoc, doc, Timestamp, query, where, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, getDocs, addDoc, updateDoc, doc, Timestamp, query, where, onSnapshot, orderBy, deleteDoc } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
 import type { Order, OrderStatus, OrderItem } from '@/lib/types';
 import { useToast } from './use-toast';
@@ -25,6 +25,7 @@ interface OrderContextType {
   addOrder: (orderData: NewOrderData) => Promise<void>;
   updateOrderStatus: (orderId: string, status: OrderStatus) => Promise<void>;
   assignRiderToOrder: (orderId: string, riderId: string) => Promise<void>;
+  deleteOrder: (orderId: string) => Promise<void>;
   loading: boolean;
 }
 
@@ -168,10 +169,36 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
        console.error("Error assigning rider: ", error);
        toast({ variant: 'destructive', title: 'Error', description: 'Could not assign rider.' });
     }
-  }
+  };
+
+  const deleteOrder = async (orderId: string) => {
+    try {
+        await deleteDoc(doc(db, 'orders', orderId));
+        
+        if (!user) {
+            try {
+                const currentOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
+                const updatedOrderIds = currentOrderIds.filter((id: string) => id !== orderId);
+                setUserOrderIds(updatedOrderIds);
+                localStorage.setItem('quickbite_user_orders', JSON.stringify(updatedOrderIds));
+            } catch (error) {
+                console.error("Could not remove order ID from localStorage", error);
+            }
+        }
+        
+        toast({
+            variant: 'destructive',
+            title: 'Order Deleted',
+            description: 'Your order has been permanently removed.',
+        });
+    } catch (error) {
+        console.error("Error deleting order: ", error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not delete the order.' });
+    }
+  };
 
   return (
-    <OrderContext.Provider value={{ orders, userOrderIds, addOrder, updateOrderStatus, assignRiderToOrder, loading }}>
+    <OrderContext.Provider value={{ orders, userOrderIds, addOrder, updateOrderStatus, assignRiderToOrder, deleteOrder, loading }}>
       {children}
     </OrderContext.Provider>
   );
