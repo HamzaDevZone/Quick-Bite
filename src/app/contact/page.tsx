@@ -28,9 +28,10 @@ const formSchema = z.object({
 export default function ContactPage() {
     const { toast } = useToast();
     const { user, loading: authLoading } = useAuth();
-    const { messages, loadingMessages, addMessage, conversationId } = useMessages(user?.email || null, 'user');
+    const { messages, loadingMessages, addMessage } = useMessages(user?.email || null, 'user');
     const [isSending, setIsSending] = useState(false);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
+    const viewportRef = useRef<HTMLDivElement>(null);
 
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -39,8 +40,8 @@ export default function ContactPage() {
     });
 
     useEffect(() => {
-        if(scrollAreaRef.current) {
-            scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
+        if (viewportRef.current) {
+            viewportRef.current.scrollTop = viewportRef.current.scrollHeight;
         }
     }, [messages]);
 
@@ -61,7 +62,7 @@ export default function ContactPage() {
         form.reset();
     };
 
-    const isLoading = authLoading || (conversationId ? loadingMessages[conversationId] : false);
+    const isLoading = authLoading || loadingMessages;
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -73,7 +74,7 @@ export default function ContactPage() {
                         <CardTitle className="text-3xl font-bold font-headline">Contact Support</CardTitle>
                         <CardDescription>We're here to help. Send us a message!</CardDescription>
                     </CardHeader>
-                    <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
+                    <ScrollArea className="flex-grow p-4" ref={scrollAreaRef} viewportRef={viewportRef}>
                         <div className="space-y-4">
                             {isLoading ? (
                                 <div className="space-y-4">

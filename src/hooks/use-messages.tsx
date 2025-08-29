@@ -29,7 +29,11 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     // Only admins see the full list of conversations
-    const path = window.location.pathname;
+    let path = '';
+    try {
+        path = window.location.pathname;
+    } catch(e) {}
+
     if (!path.startsWith('/admin')) {
       setLoadingConversations(false);
       return;
@@ -75,7 +79,12 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
       setMessages(prev => ({ ...prev, [conversationId]: msgs }));
       setLoadingMessages(prev => ({ ...prev, [conversationId]: false }));
       
-      if (window.location.pathname.startsWith('/admin')) {
+      let path = '';
+      try {
+        path = window.location.pathname;
+      } catch(e) {}
+
+      if (path.startsWith('/admin')) {
          const convoDocRef = doc(db, 'conversations', conversationId);
          updateDoc(convoDocRef, { isReadByAdmin: true }).catch(console.error);
       }
@@ -90,7 +99,7 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
 
   }, [activeUnsubscriber, toast]);
 
-  const addMessage = async ({ userName, userEmail, text, userType }: { userName: string; userEmail: string; text: string, userType: UserType }) => {
+  const addMessage = useCallback(async ({ userName, userEmail, text, userType }: { userName: string; userEmail: string; text: string, userType: UserType }) => {
     const conversationId = userEmail; // Use email as the unique conversation ID
     try {
       await addDoc(collection(db, 'messages'), {
@@ -113,9 +122,9 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
       console.error("Error sending message: ", error);
       toast({ variant: 'destructive', title: 'Error', description: 'Could not send message.' });
     }
-  };
+  }, [toast]);
 
-  const sendMessage = async (conversationId: string, text: string) => {
+  const sendMessage = useCallback(async (conversationId: string, text: string) => {
     try {
         await addDoc(collection(db, 'messages'), {
             conversationId,
@@ -133,9 +142,18 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
         console.error("Error sending admin message: ", error);
         toast({ variant: 'destructive', title: 'Error', description: 'Could not send reply.' });
     }
-  }
+  }, [toast]);
 
-  const value = { conversations, messages, loadingConversations, loadingMessages, addMessage, sendMessage, watchMessagesForConversation };
+  const value = useMemo(() => ({ 
+    conversations, 
+    messages, 
+    loadingConversations, 
+    loadingMessages, 
+    addMessage, 
+    sendMessage, 
+    watchMessagesForConversation 
+  }), [conversations, messages, loadingConversations, loadingMessages, addMessage, sendMessage, watchMessagesForConversation]);
+
 
   return (
     <MessageContext.Provider value={value}>
