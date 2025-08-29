@@ -49,12 +49,16 @@ export const useReviews = (productId: string | null) => {
         setState(prevState => ({ ...prevState, loading: true }));
         try {
             const queryTarget = productId
-                ? query(collection(db, 'reviews'), where('productId', '==', productId), orderBy('createdAt', 'desc'))
+                ? query(collection(db, 'reviews'), where('productId', '==', productId))
                 : query(collection(db, 'reviews'), orderBy('createdAt', 'desc'));
 
             const querySnapshot = await getDocs(queryTarget);
             if (isMounted) {
                 const reviewsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Review));
+                
+                // Sort reviews by date on the client side
+                reviewsData.sort((a, b) => b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime());
+
                 setState({ reviews: reviewsData, loading: false });
             }
         } catch (error) {
