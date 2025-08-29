@@ -107,3 +107,9 @@ export interface Conversation {
     updatedAt: Timestamp;
     isReadByAdmin: boolean;
 }
+
+export interface RiderLocation {
+    lat: number;
+    lng: number;
+    updatedAt: Timestamp;
+}

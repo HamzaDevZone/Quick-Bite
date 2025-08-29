@@ -39,56 +39,69 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     setLoading(true);
+    let q;
+    const path = window.location.pathname;
 
-    const q = query(collection(db, 'orders'), orderBy('orderDate', 'desc'));
+    if (path.startsWith('/admin')) {
+      // Admin gets all orders
+      q = query(collection(db, 'orders'), orderBy('orderDate', 'desc'));
+    } else if (path.startsWith('/rider')) {
+      // Rider-specific logic can also be optimized, but let's stick to the brief
+      // This will be filtered client-side for now, but secured by rules.
+      q = query(collection(db, 'orders'), orderBy('orderDate', 'desc'));
+    } else if (user) {
+      // Logged-in user gets only their orders
+      q = query(collection(db, 'orders'), where('userId', '==', user.uid), orderBy('orderDate', 'desc'));
+    } else {
+      // Guest user logic
+      try {
+        const storedOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
+        setUserOrderIds(storedOrderIds);
+        if (storedOrderIds.length > 0) {
+          // Fetch only the orders belonging to the guest
+          q = query(collection(db, 'orders'), where('id', 'in', storedOrderIds));
+        } else {
+          setOrders([]);
+          setLoading(false);
+          return; // No need to query if there are no stored IDs
+        }
+      } catch (error) {
+        console.error("Could not load guest order IDs from localStorage", error);
+        setOrders([]);
+        setLoading(false);
+        return;
+      }
+    }
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const allOrdersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
-        
-        const path = window.location.pathname;
+      const fetchedOrders = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
 
-        if (path.startsWith('/admin')) {
-             setOrders(allOrdersData);
-        } else if (path.startsWith('/rider')) {
-            try {
-                const authData = sessionStorage.getItem('quickbite_rider_auth');
-                if (authData) {
-                    const riderId = JSON.parse(authData).riderId;
-                    const riderOrders = allOrdersData.filter(o => o.riderId === riderId);
-                    setOrders(riderOrders);
-                } else {
-                    setOrders([]);
-                }
-            } catch (error) {
-                console.error("Could not load rider data from sessionStorage", error);
-                setOrders([]);
-            }
-        } else if (user) { // Logged-in customer
-            const userOrders = allOrdersData.filter(o => o.userId === user.uid);
-            setOrders(userOrders);
-            setUserOrderIds(userOrders.map(o => o.id));
-        } else { // Guest customer
-             try {
-                const storedOrderIds = localStorage.getItem('quickbite_user_orders');
-                if (storedOrderIds) {
-                    const ids = JSON.parse(storedOrderIds);
-                    setUserOrderIds(ids);
-                    const guestOrders = allOrdersData.filter(o => ids.includes(o.id));
-                    setOrders(guestOrders);
-                } else {
-                    setOrders([]);
-                }
-              } catch (error) {
-                  console.error("Could not load guest order IDs from localStorage", error);
-                  setOrders([]);
-              }
+      if (path.startsWith('/rider')) {
+        try {
+          const authData = sessionStorage.getItem('quickbite_rider_auth');
+          const riderId = authData ? JSON.parse(authData).riderId : null;
+          setOrders(riderId ? fetchedOrders.filter(o => o.riderId === riderId) : []);
+        } catch (error) {
+          console.error("Could not load rider data from sessionStorage", error);
+          setOrders([]);
         }
+      } else {
+         if (user) {
+            setUserOrderIds(fetchedOrders.map(o => o.id));
+        }
+        fetchedOrders.sort((a, b) => {
+            const dateA = typeof a.orderDate === 'string' ? new Date(a.orderDate) : a.orderDate.toDate();
+            const dateB = typeof b.orderDate === 'string' ? new Date(b.orderDate) : b.orderDate.toDate();
+            return dateB.getTime() - dateA.getTime();
+        });
+        setOrders(fetchedOrders);
+      }
 
-        setLoading(false);
+      setLoading(false);
     }, (error) => {
-        console.error("Error fetching orders in real-time: ", error);
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch orders.' });
-        setLoading(false);
+      console.error("Error fetching orders in real-time: ", error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch orders.' });
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -109,6 +122,9 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
 
         const docRef = await addDoc(collection(db, 'orders'), newOrderData);
         
+        // Add the auto-generated id to the document after creation
+        await updateDoc(docRef, { id: docRef.id });
+
         const newOrder = { ...newOrderData, id: docRef.id } as Order;
         
         if (!user) {
