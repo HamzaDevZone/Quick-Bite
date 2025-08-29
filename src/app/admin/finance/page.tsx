@@ -127,9 +127,8 @@ function PaymentMethodDialog({ isOpen, setIsOpen, methodToEdit, addPaymentMethod
     defaultValues: { label: '', details: '' },
   });
 
-  // ✅ FIXED: useEffect instead of useState to correctly reset the form
   useEffect(() => {
-    if (isOpen) { // Only reset form when dialog is opened
+    if (isOpen) {
         if (methodToEdit) {
         form.reset({
             label: methodToEdit.label,
