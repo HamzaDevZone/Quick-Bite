@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import type { Timestamp } from 'firebase/firestore';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const statusDetails: Record<OrderStatus, { text: string; icon: React.ElementType; color: string }> = {
@@ -26,17 +26,34 @@ const statusDetails: Record<OrderStatus, { text: string; icon: React.ElementType
 
 export default function OrderHistoryPage() {
     const { user, loading: authLoading } = useAuth();
-    const { orders, loading: ordersLoading } = useOrders();
+    const { orders, userOrderIds, loading: ordersLoading } = useOrders();
     const router = useRouter();
 
     useEffect(() => {
-        // If user is not logged in and not loading, redirect them to login
-        // as they need an account to view persistent order history.
-        // Guest orders are tracked via checkout completion but not displayed here.
+        // If user auth is done loading and there's no user, redirect.
         if (!authLoading && !user) {
-            router.replace('/login');
+            // Also check if there are no guest order IDs in local storage.
+            // This prevents redirection if a guest user has placed an order and is viewing this page.
+             try {
+                const storedOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
+                if(storedOrderIds.length === 0) {
+                    router.replace('/login');
+                }
+             } catch {
+                router.replace('/login');
+             }
         }
     }, [user, authLoading, router]);
+
+    const displayedOrders = useMemo(() => {
+        if (user) {
+            // For logged-in users, the hook already filters by user ID
+            return orders;
+        }
+        // For guest users, we filter based on IDs stored in localStorage
+        return orders.filter(order => userOrderIds.includes(order.id));
+
+    }, [orders, user, userOrderIds]);
 
 
     const getDate = (date: Timestamp | string) => {
@@ -48,7 +65,7 @@ export default function OrderHistoryPage() {
 
     const isLoading = authLoading || ordersLoading;
 
-    if (isLoading || !user) {
+    if (isLoading && displayedOrders.length === 0) {
         return (
              <div className="min-h-screen flex flex-col">
                 <UserHeader />
@@ -66,9 +83,9 @@ export default function OrderHistoryPage() {
             <UserHeader />
             <main className="flex-grow container mx-auto px-4 py-12">
                 <h1 className="text-4xl font-bold mb-8 font-headline text-primary">My Orders</h1>
-                {orders.length > 0 ? (
+                {displayedOrders.length > 0 ? (
                     <div className="space-y-6">
-                        {orders.map(order => {
+                        {displayedOrders.map(order => {
                              const StatusIcon = statusDetails[order.status].icon;
                              return (
                                 <Card key={order.id} className="bg-secondary">

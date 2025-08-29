@@ -49,7 +49,8 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
           const authData = sessionStorage.getItem('quickbite_rider_auth');
           const riderId = authData ? JSON.parse(authData).riderId : null;
           if (riderId) {
-             q = query(collection(db, 'orders'), where('riderId', '==', riderId), orderBy('orderDate', 'desc'));
+             // Query without orderBy to avoid composite index requirement. Sorting will be done client-side.
+             q = query(collection(db, 'orders'), where('riderId', '==', riderId));
           } else {
              setOrders([]);
              setLoading(false);
@@ -68,7 +69,9 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         const storedOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
         setUserOrderIds(storedOrderIds);
         if (storedOrderIds.length > 0) {
-          q = query(collection(db, 'orders'), where('id', 'in', storedOrderIds));
+          // Firestore 'in' queries are limited to 30 elements.
+          // For a larger number of guest orders, pagination or a different strategy would be needed.
+          q = query(collection(db, 'orders'), where('__name__', 'in', storedOrderIds));
         } else {
           setOrders([]);
           setLoading(false);
@@ -89,6 +92,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         setUserOrderIds(fetchedOrders.map(o => o.id));
       }
 
+      // Sort all fetched orders by date client-side
       fetchedOrders.sort((a, b) => {
         const dateA = typeof a.orderDate === 'string' ? new Date(a.orderDate) : a.orderDate.toDate();
         const dateB = typeof b.orderDate === 'string' ? new Date(b.orderDate) : b.orderDate.toDate();
