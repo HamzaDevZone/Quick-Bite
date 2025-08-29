@@ -65,19 +65,16 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
     }
 
     setLoadingMessages(prev => ({ ...prev, [conversationId]: true }));
-    // FIX: Removed orderBy from the query to avoid needing a composite index. Sorting is now done on the client.
     const q = query(collection(db, 'messages'), where('conversationId', '==', conversationId));
     
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const msgs = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message));
       
-      // Sort messages by date on the client-side
       msgs.sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
       
       setMessages(prev => ({ ...prev, [conversationId]: msgs }));
       setLoadingMessages(prev => ({ ...prev, [conversationId]: false }));
       
-      // Mark conversation as read by admin if they are viewing it
       if (window.location.pathname.startsWith('/admin')) {
          const convoDocRef = doc(db, 'conversations', conversationId);
          updateDoc(convoDocRef, { isReadByAdmin: true }).catch(console.error);
@@ -153,7 +150,7 @@ export const useMessages = (conversationId: string | null, userType: UserType) =
     throw new Error('useMessages must be used within a MessageProvider');
   }
 
-  const { watchMessagesForConversation } = context;
+  const { watchMessagesForConversation, addMessage, sendMessage, loadingMessages, conversations, loadingConversations } = context;
 
   useEffect(() => {
     // If a user/rider is on the contact page, automatically watch their conversation
@@ -168,8 +165,13 @@ export const useMessages = (conversationId: string | null, userType: UserType) =
   }, [context.messages, conversationId]);
 
   return {
-    ...context,
     messages: messagesForConversation,
+    addMessage,
+    sendMessage,
+    loadingMessages: conversationId ? loadingMessages[conversationId] || false : false,
     conversationId: conversationId,
+    conversations,
+    loadingConversations,
+    watchMessagesForConversation
   };
 };
