@@ -72,21 +72,16 @@ export default function MenuPage() {
 
 
   const sortedProducts = useMemo(() => {
-    // We reverse the products array to get the newest products first, assuming they are added to the end.
-    // This is a simple way to sort by "creation time" without a timestamp.
     return [...products].reverse().sort((a, b) => {
         const ratingA = productRatings[a.id]?.average || 0;
         const ratingB = productRatings[b.id]?.average || 0;
         
-        // If both have ratings, sort by rating.
         if (ratingA > 0 && ratingB > 0) {
             return ratingB - ratingA;
         }
-        // If one has ratings and the other doesn't, the one with ratings comes first.
         if (ratingB > 0) return 1;
         if (ratingA > 0) return -1;
         
-        // If neither has ratings, their original (reversed) order is maintained, so newer items appear first.
         return 0;
     });
   }, [products, productRatings]);
@@ -116,8 +111,22 @@ export default function MenuPage() {
     return (
         <div className="flex flex-col min-h-screen">
           <UserHeader />
-           <div className="flex-grow flex items-center justify-center">
-                <p>Loading...</p>
+           <div className="flex-grow">
+               <Skeleton className="w-full h-[50vh]" />
+               <div className="container mx-auto px-4 py-8">
+                <Skeleton className="h-12 w-1/2 mx-auto mb-8" />
+                <div className="flex justify-center space-x-4 p-4">
+                    <Skeleton className="h-24 w-24 rounded-full" />
+                    <Skeleton className="h-24 w-24 rounded-full" />
+                    <Skeleton className="h-24 w-24 rounded-full" />
+                    <Skeleton className="h-24 w-24 rounded-full" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-8">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                        <CardSkeleton key={i} />
+                    ))}
+                </div>
+               </div>
            </div>
         </div>
     )
