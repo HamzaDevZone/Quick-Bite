@@ -63,7 +63,8 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
           return;
        }
     } else if (user) {
-      q = query(collection(db, 'orders'), where('userId', '==', user.uid), orderBy('orderDate', 'desc'));
+      // FIX: Removed orderBy from query to prevent composite index error. Sorting is now done client-side.
+      q = query(collection(db, 'orders'), where('userId', '==', user.uid));
     } else {
       try {
         const storedOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
