@@ -19,6 +19,7 @@ import { ReviewForm } from '@/components/user/ReviewForm';
 import { StarRating } from '@/components/user/StarRating';
 import { format } from 'date-fns';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { AiRecommender } from '@/components/user/AiRecommender';
 
 export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
@@ -62,6 +63,10 @@ export default function ProductDetailPage() {
                   <Skeleton className="aspect-square rounded-lg" />
                   <div className="flex flex-col gap-6">
                       <Skeleton className="h-12 w-3/4" />
+                      <div className="flex items-center gap-2">
+                          <Skeleton className="h-6 w-32" />
+                          <Skeleton className="h-4 w-24" />
+                      </div>
                       <Skeleton className="h-20 w-full" />
                       <Skeleton className="h-12 w-1/3" />
                       <div className="flex items-center gap-4">
@@ -135,6 +140,10 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </div>
+
+        <Separator className="my-16" />
+        
+        <AiRecommender product={product} />
 
         <Separator className="my-16" />
 
