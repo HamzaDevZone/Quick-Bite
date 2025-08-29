@@ -32,7 +32,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     try {
       await firebaseSignOut(auth);
-      router.push('/login');
+      // Redirect and then force a reload to clear application state.
+      // This prevents users from using the browser's back button to see a cached, logged-in page.
+      window.location.href = '/login'; 
       toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
     } catch (error) {
       console.error('Logout Error:', error);
