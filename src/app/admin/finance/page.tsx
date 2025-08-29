@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -126,20 +127,22 @@ function PaymentMethodDialog({ isOpen, setIsOpen, methodToEdit, addPaymentMethod
     defaultValues: { label: '', details: '' },
   });
 
-  // ✅ FIXED: useEffect instead of useState
+  // ✅ FIXED: useEffect instead of useState to correctly reset the form
   useEffect(() => {
-    if (methodToEdit) {
-      form.reset({
-        label: methodToEdit.label,
-        details: methodToEdit.details,
-      });
-    } else {
-      form.reset({
-        label: '',
-        details: '',
-      });
+    if (isOpen) { // Only reset form when dialog is opened
+        if (methodToEdit) {
+        form.reset({
+            label: methodToEdit.label,
+            details: methodToEdit.details,
+        });
+        } else {
+        form.reset({
+            label: '',
+            details: '',
+        });
+        }
     }
-  }, [methodToEdit, form]);
+  }, [isOpen, methodToEdit, form]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (methodToEdit) {
