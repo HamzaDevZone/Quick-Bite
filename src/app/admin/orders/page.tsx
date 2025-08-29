@@ -1,13 +1,12 @@
 
 'use client';
 
-import { useOrders } from '@/hooks/use-orders';
 import { OrderDataTable } from '@/components/admin/OrderDataTable';
-import { useEffect, useState, useMemo } from 'react';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Order } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function AdminOrdersPage() {
     const [allOrders, setAllOrders] = useState<Order[]>([]);
@@ -27,6 +26,11 @@ export default function AdminOrdersPage() {
     const liveOrders = useMemo(() => {
         return allOrders.filter(order => order.status !== 'Delivered');
     }, [allOrders]);
+    
+    const orderHistory = useMemo(() => {
+        return allOrders;
+    }, [allOrders]);
+
 
     if (loading) {
         return (
@@ -54,7 +58,7 @@ export default function AdminOrdersPage() {
             <div className="flex items-center justify-between mt-12 mb-6">
                 <h2 className="text-2xl font-bold font-headline">Order History</h2>
             </div>
-            <OrderDataTable data={allOrders} />
+            <OrderDataTable data={orderHistory} />
         </div>
     );
 }
