@@ -43,27 +43,36 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     const path = window.location.pathname;
 
     if (path.startsWith('/admin')) {
-      // Admin gets all orders
       q = query(collection(db, 'orders'), orderBy('orderDate', 'desc'));
     } else if (path.startsWith('/rider')) {
-      // Rider-specific logic can also be optimized, but let's stick to the brief
-      // This will be filtered client-side for now, but secured by rules.
-      q = query(collection(db, 'orders'), orderBy('orderDate', 'desc'));
+       try {
+          const authData = sessionStorage.getItem('quickbite_rider_auth');
+          const riderId = authData ? JSON.parse(authData).riderId : null;
+          if (riderId) {
+             q = query(collection(db, 'orders'), where('riderId', '==', riderId), orderBy('orderDate', 'desc'));
+          } else {
+             setOrders([]);
+             setLoading(false);
+             return;
+          }
+       } catch (error) {
+          console.error("Could not load rider data from sessionStorage", error);
+          setOrders([]);
+          setLoading(false);
+          return;
+       }
     } else if (user) {
-      // Logged-in user gets only their orders
       q = query(collection(db, 'orders'), where('userId', '==', user.uid), orderBy('orderDate', 'desc'));
     } else {
-      // Guest user logic
       try {
         const storedOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
         setUserOrderIds(storedOrderIds);
         if (storedOrderIds.length > 0) {
-          // Fetch only the orders belonging to the guest
           q = query(collection(db, 'orders'), where('id', 'in', storedOrderIds));
         } else {
           setOrders([]);
           setLoading(false);
-          return; // No need to query if there are no stored IDs
+          return;
         }
       } catch (error) {
         console.error("Could not load guest order IDs from localStorage", error);
@@ -75,27 +84,17 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const fetchedOrders = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
-
-      if (path.startsWith('/rider')) {
-        try {
-          const authData = sessionStorage.getItem('quickbite_rider_auth');
-          const riderId = authData ? JSON.parse(authData).riderId : null;
-          setOrders(riderId ? fetchedOrders.filter(o => o.riderId === riderId) : []);
-        } catch (error) {
-          console.error("Could not load rider data from sessionStorage", error);
-          setOrders([]);
-        }
-      } else {
-         if (user) {
-            setUserOrderIds(fetchedOrders.map(o => o.id));
-        }
-        fetchedOrders.sort((a, b) => {
-            const dateA = typeof a.orderDate === 'string' ? new Date(a.orderDate) : a.orderDate.toDate();
-            const dateB = typeof b.orderDate === 'string' ? new Date(b.orderDate) : b.orderDate.toDate();
-            return dateB.getTime() - dateA.getTime();
-        });
-        setOrders(fetchedOrders);
+      
+      if (user && !path.startsWith('/admin') && !path.startsWith('/rider')) {
+        setUserOrderIds(fetchedOrders.map(o => o.id));
       }
+
+      fetchedOrders.sort((a, b) => {
+        const dateA = typeof a.orderDate === 'string' ? new Date(a.orderDate) : a.orderDate.toDate();
+        const dateB = typeof b.orderDate === 'string' ? new Date(b.orderDate) : b.orderDate.toDate();
+        return dateB.getTime() - dateA.getTime();
+      });
+      setOrders(fetchedOrders);
 
       setLoading(false);
     }, (error) => {
@@ -122,7 +121,6 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
 
         const docRef = await addDoc(collection(db, 'orders'), newOrderData);
         
-        // Add the auto-generated id to the document after creation
         await updateDoc(docRef, { id: docRef.id });
 
         const newOrder = { ...newOrderData, id: docRef.id } as Order;
