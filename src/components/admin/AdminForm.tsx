@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -38,6 +39,12 @@ export function AdminForm({ adminToEdit, setFormOpen }: AdminFormProps) {
         ...adminToEdit,
         password: '', // Don't pre-fill password
       });
+    } else {
+        form.reset({
+            name: '',
+            email: '',
+            password: '',
+        });
     }
   }, [adminToEdit, form]);
 
@@ -46,17 +53,18 @@ export function AdminForm({ adminToEdit, setFormOpen }: AdminFormProps) {
     
     if (adminToEdit && !submissionValues.password) {
       delete submissionValues.password;
-    } else if (!adminToEdit && !submissionValues.password) {
-      // Handle case where new admin form is submitted without a password
-      form.setError("password", { type: "manual", message: "Password is required for new admins." });
+      updateAdmin({ ...adminToEdit, ...submissionValues });
+    } else if (submissionValues.password && submissionValues.password.length >= 8) {
+        if (adminToEdit) {
+            updateAdmin({ ...adminToEdit, ...submissionValues });
+        } else {
+            addAdmin(submissionValues);
+        }
+    } else {
+      form.setError("password", { type: "manual", message: adminToEdit ? "Password must be at least 8 characters." : "Password is required for new admins." });
       return;
     }
-
-    if (adminToEdit) {
-      updateAdmin({ ...adminToEdit, ...submissionValues });
-    } else {
-      addAdmin(submissionValues);
-    }
+    
     setFormOpen(false);
     form.reset();
   }
@@ -111,3 +119,5 @@ export function AdminForm({ adminToEdit, setFormOpen }: AdminFormProps) {
     </Form>
   );
 }
+
+    

@@ -57,10 +57,11 @@ export default function AdminOrderDetailPage() {
           if (docSnap.exists()) {
             setOrder({ id: docSnap.id, ...docSnap.data() } as Order);
           } else {
-            // Handle not found
+            setOrder(null);
           }
         } catch (error) {
           console.error("Failed to fetch order", error);
+          setOrder(null);
         } finally {
           setLoading(false);
         }
@@ -232,3 +233,5 @@ export default function AdminOrderDetailPage() {
         </div>
     );
 }
+
+    

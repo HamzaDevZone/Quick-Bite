@@ -74,7 +74,7 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
     const newMethod = { ...method, id: new Date().getTime().toString() };
     const updatedMethods = [...(settings.paymentMethods || []), newMethod];
     saveSettings({ ...settings, paymentMethods: updatedMethods });
-    toast({ title: 'Payment Method Added' });
+    toast({ title: 'Payment Method Added', description: `${method.label} has been added.` });
   };
   
   const updatePaymentMethod = (methodToUpdate: PaymentMethod) => {
@@ -82,13 +82,14 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
       m.id === methodToUpdate.id ? methodToUpdate : m
     );
     saveSettings({ ...settings, paymentMethods: updatedMethods });
-    toast({ title: 'Payment Method Updated' });
+    toast({ title: 'Payment Method Updated', description: `${methodToUpdate.label} has been updated.` });
   };
   
   const deletePaymentMethod = (methodId: string) => {
+    const methodToDelete = settings.paymentMethods.find(m => m.id === methodId);
     const updatedMethods = (settings.paymentMethods || []).filter(m => m.id !== methodId);
     saveSettings({ ...settings, paymentMethods: updatedMethods });
-    toast({ title: 'Payment Method Deleted', variant: 'destructive' });
+    toast({ title: 'Payment Method Deleted', description: `${methodToDelete?.label} has been deleted.`, variant: 'destructive' });
   };
 
   return (
@@ -105,3 +106,5 @@ export const useSiteSettings = () => {
   }
   return context;
 };
+
+    
