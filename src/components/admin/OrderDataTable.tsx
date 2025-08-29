@@ -103,16 +103,16 @@ export function OrderDataTable({ data }: OrderDataTableProps) {
                               </DropdownMenuSubContent>
                           </DropdownMenuPortal>
                       </DropdownMenuSub>
-                      <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Pending')}>
+                      <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Pending')} disabled={order.status === 'Pending'}>
                         Mark as Pending
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Preparing')}>
+                      <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Preparing')} disabled={order.status === 'Preparing'}>
                         Mark as Preparing
                       </DropdownMenuItem>
-                       <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Picked')}>
+                       <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Picked')} disabled={order.status === 'Picked'}>
                         Mark as Picked
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Delivered')}>
+                      <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Delivered')} disabled={order.status === 'Delivered'}>
                         Mark as Delivered
                       </DropdownMenuItem>
                     </DropdownMenuContent>
