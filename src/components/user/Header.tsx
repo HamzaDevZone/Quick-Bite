@@ -93,7 +93,7 @@ export function UserHeader() {
         </nav>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden flex items-center">
+        <div className="flex items-center md:hidden">
              <Button variant="ghost" size="icon" onClick={toggleTheme} className="mr-2">
                 <Sun className="h-6 w-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                 <Moon className="absolute h-6 w-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
