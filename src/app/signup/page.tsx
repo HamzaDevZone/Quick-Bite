@@ -42,9 +42,9 @@ export default function SignupPage() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       
-      // Update user's profile with their name
-      if (auth.currentUser) {
-        await updateProfile(auth.currentUser, {
+      // Update user's profile with their name and wait for it to complete
+      if (userCredential.user) {
+        await updateProfile(userCredential.user, {
           displayName: values.name,
         });
       }
