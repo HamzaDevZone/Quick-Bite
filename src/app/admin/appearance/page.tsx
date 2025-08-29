@@ -184,7 +184,7 @@ export default function AdminAppearancePage() {
                   <FormItem>
                     <FormLabel>Restaurant WhatsApp URL</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://wa.me/..." {...field} />
+                      <Input placeholder="https://wa.me/923001234567" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
