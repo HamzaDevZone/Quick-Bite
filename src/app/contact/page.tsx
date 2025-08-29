@@ -2,7 +2,7 @@
 'use client';
 
 import { UserHeader } from '@/components/user/Header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { UtensilsCrossed, Facebook, Instagram } from 'lucide-react';
 import { useSiteSettings } from '@/hooks/use-site-settings';
 import { Button } from '@/components/ui/button';
@@ -50,6 +50,12 @@ export default function ContactPage() {
                            )}
                        </div>
                     </CardContent>
+                    <CardFooter className="flex-col items-center justify-center text-center p-6 border-t">
+                        <p className="text-sm font-semibold text-foreground">Developed by Huzaifa</p>
+                        <p className="text-xs text-muted-foreground mt-1 max-w-md">
+                          This application was brought to life by a passionate developer, Huzaifa, who specializes in creating custom web solutions. For inquiries about getting your own website, feel free to reach out.
+                        </p>
+                    </CardFooter>
                 </Card>
             </main>
         </div>
