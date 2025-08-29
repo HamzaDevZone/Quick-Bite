@@ -7,21 +7,81 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useOrders } from '@/hooks/use-orders';
 import { OrderStatus, Order } from '@/lib/types';
-import { ArrowLeft, Check, Bike, Package, Wallet, User, Phone, MapPin, StickyNote } from 'lucide-react';
+import { ArrowLeft, Check, Bike, Package, Wallet, User, Phone, MapPin, StickyNote, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function RiderOrderDetailPage() {
     const params = useParams();
     const router = useRouter();
-    const { orders, updateOrderStatus } = useOrders();
-    const order = orders.find(o => o.id === params.id);
+    const { updateOrderStatus } = useOrders();
+    const [order, setOrder] = useState<Order | null>(null);
+    const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+      const fetchOrder = async () => {
+        if (!params.id) return;
+        setLoading(true);
+        try {
+          const docRef = doc(db, 'orders', params.id as string);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setOrder({ id: docSnap.id, ...docSnap.data() } as Order);
+          } else {
+            setOrder(null);
+          }
+        } catch (error) {
+          console.error("Failed to fetch order", error);
+          setOrder(null);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchOrder();
+    }, [params.id]);
+
+
+    if (loading) {
+       return (
+        <div>
+            <Button variant="ghost" disabled className="mb-4">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Orders
+            </Button>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="md:col-span-2">
+                <Skeleton className="h-96 w-full" />
+              </div>
+              <div className="md:col-span-1 space-y-6">
+                <Skeleton className="h-48 w-full" />
+                <Skeleton className="h-48 w-full" />
+              </div>
+            </div>
+        </div>
+      );
+    }
+    
     if (!order) {
-        return <div className="text-center p-8">Order not found.</div>;
+        return (
+            <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+                 <ShoppingCart className="w-16 h-16 mb-4 text-muted-foreground" />
+                <h2 className="text-2xl font-bold">Order Not Found</h2>
+                <p className="text-muted-foreground">The requested order could not be found.</p>
+                <Button variant="outline" onClick={() => router.back()} className="mt-4">
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back to Orders
+                </Button>
+            </div>
+        );
     }
     
     const handleStatusUpdate = (status: OrderStatus) => {
         updateOrderStatus(order.id, status);
+        // Optimistically update UI
+        setOrder(prev => prev ? { ...prev, status } : null);
     };
 
     return (
