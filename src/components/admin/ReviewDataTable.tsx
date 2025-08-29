@@ -1,39 +1,22 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { Review, Product } from '@/lib/types';
 import { StarRating } from '@/components/user/StarRating';
 import { format } from 'date-fns';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 import Link from 'next/link';
 import { ScrollArea } from '../ui/scroll-area';
+import { useProducts } from '@/hooks/use-products';
+import { Skeleton } from '../ui/skeleton';
 
 interface ReviewDataTableProps {
   data: Review[];
 }
 
-const ProductCell = ({ productId }: { productId: string }) => {
-    const [productName, setProductName] = useState('Loading...');
-
-    useEffect(() => {
-        const fetchProduct = async () => {
-            try {
-                const docRef = doc(db, 'products', productId);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    setProductName((docSnap.data() as Product).name);
-                } else {
-                    setProductName('Product not found');
-                }
-            } catch {
-                setProductName('Error loading product');
-            }
-        };
-        fetchProduct();
-    }, [productId]);
+const ProductCell = ({ productId, productsMap }: { productId: string, productsMap: Map<string, Product> }) => {
+    const productName = productsMap.get(productId)?.name || 'Product not found';
 
     return (
         <Link href={`/product/${productId}`} className="text-primary hover:underline" target="_blank">
@@ -44,6 +27,15 @@ const ProductCell = ({ productId }: { productId: string }) => {
 
 
 export function ReviewDataTable({ data }: ReviewDataTableProps) {
+  const { products, loading: productsLoading } = useProducts();
+
+  const productsMap = useMemo(() => {
+    const map = new Map<string, Product>();
+    products.forEach(product => {
+      map.set(product.id, product);
+    });
+    return map;
+  }, [products]);
 
   return (
     <div className="rounded-md border bg-card">
@@ -59,21 +51,30 @@ export function ReviewDataTable({ data }: ReviewDataTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map(review => (
-              <TableRow key={review.id}>
-                <TableCell className="font-medium">
-                    <ProductCell productId={review.productId} />
-                </TableCell>
-                <TableCell>{review.customerName}</TableCell>
-                <TableCell>
-                    <StarRating rating={review.rating} readOnly size={18} />
-                </TableCell>
-                <TableCell className="max-w-sm whitespace-normal">{review.feedback}</TableCell>
-                <TableCell>{format(review.createdAt.toDate(), 'PPP')}</TableCell>
-              </TableRow>
-            ))}
-             {data.length === 0 && (
-                 <TableRow>
+            {productsLoading ? (
+                <TableRow>
+                    <TableCell colSpan={5}>
+                        <div className="flex items-center justify-center p-8">
+                             <p>Loading review data...</p>
+                        </div>
+                    </TableCell>
+                </TableRow>
+            ) : data.length > 0 ? (
+                data.map(review => (
+                <TableRow key={review.id}>
+                    <TableCell className="font-medium">
+                        <ProductCell productId={review.productId} productsMap={productsMap} />
+                    </TableCell>
+                    <TableCell>{review.customerName}</TableCell>
+                    <TableCell>
+                        <StarRating rating={review.rating} readOnly size={18} />
+                    </TableCell>
+                    <TableCell className="max-w-sm whitespace-normal">{review.feedback}</TableCell>
+                    <TableCell>{format(review.createdAt.toDate(), 'PPP')}</TableCell>
+                </TableRow>
+                ))
+            ) : (
+                <TableRow>
                     <TableCell colSpan={5} className="h-24 text-center">
                         No reviews found.
                     </TableCell>
