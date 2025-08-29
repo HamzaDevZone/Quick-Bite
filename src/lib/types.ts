@@ -78,6 +78,7 @@ export interface SiteSettings {
   menuCarouselImage3: string;
   menuCarouselImage4: string;
   paymentMethods: PaymentMethod[];
+  whatsappUrl?: string;
   facebookUrl?: string;
   instagramUrl?: string;
 }

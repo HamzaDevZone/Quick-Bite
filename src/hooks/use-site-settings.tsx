@@ -31,6 +31,7 @@ const defaultSettings: SiteSettings = {
     { id: '1', label: 'Cash on Delivery', details: 'Please have the exact amount ready.' },
     { id: '2', label: 'Jazzcash/Easypaisa', details: 'Account: 0300-1234567, Name: John Doe' },
   ],
+  whatsappUrl: 'https://wa.me/923001234567',
   facebookUrl: 'https://facebook.com',
   instagramUrl: 'https://instagram.com',
 };

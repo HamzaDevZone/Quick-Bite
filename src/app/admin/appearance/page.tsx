@@ -22,6 +22,7 @@ const appearanceFormSchema = z.object({
   menuCarouselImage2: z.string().url('Please enter a valid URL.'),
   menuCarouselImage3: z.string().url('Please enter a valid URL.'),
   menuCarouselImage4: z.string().url('Please enter a valid URL.'),
+  whatsappUrl: z.string().url('Please enter a valid WhatsApp URL.').optional().or(z.literal('')),
   facebookUrl: z.string().url('Please enter a valid URL.').optional().or(z.literal('')),
   instagramUrl: z.string().url('Please enter a valid URL.').optional().or(z.literal('')),
 });
@@ -175,13 +176,26 @@ export default function AdminAppearancePage() {
                 )}
               />
               <Separator />
-              <h3 className="text-lg font-medium pt-4">Social Media Links</h3>
+              <h3 className="text-lg font-medium pt-4">Contact & Social Media Links</h3>
+              <FormField
+                control={form.control}
+                name="whatsappUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Restaurant WhatsApp URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://wa.me/..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="facebookUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Facebook Profile URL</FormLabel>
+                    <FormLabel>Developer's Facebook Profile URL</FormLabel>
                     <FormControl>
                       <Input placeholder="https://facebook.com/your-page" {...field} />
                     </FormControl>
@@ -194,7 +208,7 @@ export default function AdminAppearancePage() {
                 name="instagramUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Instagram Profile URL</FormLabel>
+                    <FormLabel>Developer's Instagram Profile URL</FormLabel>
                     <FormControl>
                       <Input placeholder="https://instagram.com/your-profile" {...field} />
                     </FormControl>

@@ -3,10 +3,29 @@
 
 import { UserHeader } from '@/components/user/Header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { UtensilsCrossed, Facebook, Instagram } from 'lucide-react';
+import { UtensilsCrossed, Facebook, Instagram, MessageCircle } from 'lucide-react';
 import { useSiteSettings } from '@/hooks/use-site-settings';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { Separator } from '@/components/ui/separator';
+
+const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    {...props}
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+  </svg>
+);
+
 
 export default function ContactPage() {
     const { settings, isLoading } = useSiteSettings();
@@ -29,22 +48,14 @@ export default function ContactPage() {
                            Founded with a passion for food and technology, QuickBite has come a long way from its beginnings. We now serve customers all over the city and are thrilled to be a part of the fast-paced wing of the food industry.
                        </p>
                        <p>
-                          We hope you enjoy our service as much as we enjoy offering it to you. If you have any questions or comments, please don't hesitate to follow us on our social channels!
+                          For any questions or comments about your order, please don't hesitate to reach out to us directly.
                        </p>
-                       <div className="flex justify-center gap-4 pt-4">
-                           {settings.facebookUrl && (
-                                <Button asChild variant="outline" size="icon" className="rounded-full h-12 w-12">
-                                   <Link href={settings.facebookUrl} target="_blank" rel="noopener noreferrer">
-                                       <Facebook className="h-6 w-6" />
-                                       <span className="sr-only">Facebook</span>
-                                   </Link>
-                                </Button>
-                           )}
-                           {settings.instagramUrl && (
-                                <Button asChild variant="outline" size="icon" className="rounded-full h-12 w-12">
-                                   <Link href={settings.instagramUrl} target="_blank" rel="noopener noreferrer">
-                                       <Instagram className="h-6 w-6" />
-                                       <span className="sr-only">Instagram</span>
+                       <div className="flex justify-center pt-4">
+                           {settings.whatsappUrl && (
+                                <Button asChild size="lg" className="rounded-full">
+                                   <Link href={settings.whatsappUrl} target="_blank" rel="noopener noreferrer">
+                                       <WhatsAppIcon className="mr-2 h-6 w-6" />
+                                       Contact us on WhatsApp
                                    </Link>
                                 </Button>
                            )}
@@ -53,8 +64,26 @@ export default function ContactPage() {
                     <CardFooter className="flex-col items-center justify-center text-center p-6 border-t">
                         <p className="text-sm font-semibold text-foreground">Developed by Huzaifa</p>
                         <p className="text-xs text-muted-foreground mt-1 max-w-md">
-                          This application was brought to life by a passionate developer, Huzaifa, who specializes in creating custom web solutions. For inquiries about getting your own website, feel free to reach out.
+                          This application was brought to life by a passionate developer. For inquiries about getting your own custom web solution, feel free to connect via social media.
                         </p>
+                         <div className="flex justify-center gap-4 pt-4">
+                           {settings.facebookUrl && (
+                                <Button asChild variant="outline" size="icon" className="rounded-full h-10 w-10">
+                                   <Link href={settings.facebookUrl} target="_blank" rel="noopener noreferrer">
+                                       <Facebook className="h-5 w-5" />
+                                       <span className="sr-only">Facebook</span>
+                                   </Link>
+                                </Button>
+                           )}
+                           {settings.instagramUrl && (
+                                <Button asChild variant="outline" size="icon" className="rounded-full h-10 w-10">
+                                   <Link href={settings.instagramUrl} target="_blank" rel="noopener noreferrer">
+                                       <Instagram className="h-5 w-5" />
+                                       <span className="sr-only">Instagram</span>
+                                   </Link>
+                                </Button>
+                           )}
+                       </div>
                     </CardFooter>
                 </Card>
             </main>
