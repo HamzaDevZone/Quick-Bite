@@ -89,7 +89,7 @@ export default function OrderHistoryPage() {
                              const StatusIcon = statusDetails[order.status].icon;
                              return (
                                 <Card key={order.id} className="bg-secondary">
-                                    <CardHeader className="flex flex-row items-center justify-between">
+                                    <CardHeader className="grid grid-cols-2 items-center">
                                         <div>
                                             <CardTitle>Order #{order.id}</CardTitle>
                                             <CardDescription>
@@ -98,10 +98,19 @@ export default function OrderHistoryPage() {
                                                 })}
                                             </CardDescription>
                                         </div>
-                                        <Badge className={cn("text-base", statusDetails[order.status].color)}>
-                                            <StatusIcon className="mr-2 h-4 w-4" />
-                                            {statusDetails[order.status].text}
-                                        </Badge>
+                                        <div className="flex justify-end items-center gap-4">
+                                            <Badge className={cn("text-base", statusDetails[order.status].color)}>
+                                                <StatusIcon className="mr-2 h-4 w-4" />
+                                                {statusDetails[order.status].text}
+                                            </Badge>
+                                            {order.status === 'Picked' && (
+                                                <Button asChild size="sm">
+                                                    <Link href={`/track/${order.id}`}>
+                                                        <MapPin className="mr-2 h-4 w-4"/> Track
+                                                    </Link>
+                                                </Button>
+                                            )}
+                                        </div>
                                     </CardHeader>
                                     <CardContent>
                                         <div className="space-y-2 mb-4">

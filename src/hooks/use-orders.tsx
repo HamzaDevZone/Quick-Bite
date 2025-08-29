@@ -72,7 +72,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         if (storedOrderIds.length > 0) {
           // Firestore 'in' queries are limited to 30 elements.
           // For a larger number of guest orders, pagination or a different strategy would be needed.
-          q = query(collection(db, 'orders'), where('__name__', 'in', storedOrderIds));
+          q = query(collection(db, 'orders'), where('id', 'in', storedOrderIds));
         } else {
           setOrders([]);
           setLoading(false);
