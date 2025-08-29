@@ -91,9 +91,3 @@ export interface Review {
   feedback: string;
   createdAt: Timestamp;
 }
-
-export interface RiderLocation {
-    lat: number;
-    lng: number;
-    updatedAt: Timestamp;
-}

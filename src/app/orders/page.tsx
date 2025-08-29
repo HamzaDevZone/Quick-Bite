@@ -116,13 +116,6 @@ export default function OrderHistoryPage() {
                                                 <StatusIcon className="mr-2 h-4 w-4" />
                                                 {statusDetails[order.status].text}
                                             </Badge>
-                                            {order.status === 'Picked' && (
-                                                <Button asChild size="sm">
-                                                    <Link href={`/track/${order.id}`}>
-                                                        <MapPin className="mr-2 h-4 w-4"/> Track
-                                                    </Link>
-                                                </Button>
-                                            )}
                                         </div>
                                     </CardHeader>
                                     <CardContent>
