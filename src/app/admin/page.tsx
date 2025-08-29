@@ -30,7 +30,7 @@ export default function AdminDashboardPage() {
     // Prepare data for the last 7 days
     const salesData: { date: string; revenue: number }[] = [];
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setHours(23, 59, 59, 999); // Set to end of today for correct range
 
     for (let i = 6; i >= 0; i--) {
         const date = new Date(today);
@@ -38,16 +38,17 @@ export default function AdminDashboardPage() {
         const dateString = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         salesData.push({ date: dateString, revenue: 0 });
     }
+    
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 6);
+    sevenDaysAgo.setHours(0, 0, 0, 0); // Set to start of the 7th day
 
     deliveredOrders.forEach(order => {
         const orderDateObj = (order.orderDate && typeof (order.orderDate as any).toDate === 'function') 
             ? (order.orderDate as Timestamp).toDate() 
             : new Date(order.orderDate);
         
-        const todayMinus7 = new Date(today);
-        todayMinus7.setDate(today.getDate() - 6);
-
-        if (orderDateObj >= todayMinus7 && orderDateObj <= today) {
+        if (orderDateObj >= sevenDaysAgo && orderDateObj <= today) {
             const dateString = orderDateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             const index = salesData.findIndex(d => d.date === dateString);
             if (index !== -1) {
