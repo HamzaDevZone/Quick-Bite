@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useOrders } from '@/hooks/use-orders';
@@ -105,7 +106,7 @@ export default function OrderHistoryPage() {
                                 <Card key={order.id} className="bg-secondary relative">
                                     <CardHeader className="grid grid-cols-2 items-center">
                                         <div>
-                                            <CardTitle>Order #{order.id}</CardTitle>
+                                            <CardTitle className="break-all">Order #{order.id}</CardTitle>
                                             <CardDescription>
                                                 {getDate(order.orderDate).toLocaleDateString('en-US', {
                                                     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
