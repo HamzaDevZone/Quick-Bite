@@ -6,16 +6,28 @@ import Image from 'next/image';
 import { useSiteSettings } from '@/hooks/use-site-settings';
 import { Skeleton } from '../ui/skeleton';
 
+// Default URLs are now hardcoded here to avoid the loading delay from localStorage.
+const SPLASH_IMAGE_URL = 'https://i.ibb.co/6PzD4gQ/splash-bg.png';
+const SPLASH_LOGO_URL = 'https://i.ibb.co/P9gL6M1/logo.png';
+
+
 export function SplashScreen() {
   const [isVisible, setIsVisible] = useState(true);
-  const { settings } = useSiteSettings();
 
   useEffect(() => {
+    // Attempt to hide body overflow to prevent scrolling during splash
+    document.body.style.overflow = 'hidden';
+    
     const timer = setTimeout(() => {
       setIsVisible(false);
-    }, 6000); // Show for 6 seconds
+       // Restore body overflow after splash
+      document.body.style.overflow = 'auto';
+    }, 4000); // Show for 4 seconds
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      document.body.style.overflow = 'auto'; // Ensure overflow is restored on component unmount
+    };
   }, []);
 
   return (
@@ -28,9 +40,10 @@ export function SplashScreen() {
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background"
         >
           <Image 
-              src={settings.splashImageUrl} 
+              src={SPLASH_IMAGE_URL} 
               alt="Splash background"
               fill
+              priority
               className="object-cover -z-10"
               data-ai-hint="restaurant food background"
             />
@@ -44,9 +57,10 @@ export function SplashScreen() {
               className="relative w-40 h-40"
             >
               <Image 
-                  src={settings.splashLogoUrl}
+                  src={SPLASH_LOGO_URL}
                   alt="QuickBite Logo"
                   fill
+                  priority
                   className="object-contain"
                   data-ai-hint="app logo"
                 />
