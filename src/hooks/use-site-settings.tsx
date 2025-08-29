@@ -30,7 +30,9 @@ const defaultSettings: SiteSettings = {
   paymentMethods: [
     { id: '1', label: 'Cash on Delivery', details: 'Please have the exact amount ready.' },
     { id: '2', label: 'Jazzcash/Easypaisa', details: 'Account: 0300-1234567, Name: John Doe' },
-  ]
+  ],
+  facebookUrl: 'https://facebook.com',
+  instagramUrl: 'https://instagram.com',
 };
 
 export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
@@ -106,5 +108,3 @@ export const useSiteSettings = () => {
   }
   return context;
 };
-
-    

@@ -1,126 +1,55 @@
 
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { UserHeader } from '@/components/user/Header';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { UtensilsCrossed, Facebook, Instagram } from 'lucide-react';
+import { useSiteSettings } from '@/hooks/use-site-settings';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { useToast } from '@/hooks/use-toast';
-import { MessageSquare, Send } from 'lucide-react';
-import { useMessages } from '@/hooks/use-messages';
-import { useAuth } from '@/hooks/use-auth';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import type { Message as MessageType } from '@/lib/types';
-
-const formSchema = z.object({
-  message: z.string().min(1, 'Message cannot be empty.'),
-});
+import Link from 'next/link';
 
 export default function ContactPage() {
-    const { toast } = useToast();
-    const { user, loading: authLoading } = useAuth();
-    const { messages, loadingMessages, addMessage } = useMessages(user?.email || null, 'user');
-    const [isSending, setIsSending] = useState(false);
-    const scrollAreaRef = useRef<HTMLDivElement>(null);
-    const viewportRef = useRef<HTMLDivElement>(null);
-
-
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: { message: '' },
-    });
-
-    useEffect(() => {
-        if (viewportRef.current) {
-            viewportRef.current.scrollTop = viewportRef.current.scrollHeight;
-        }
-    }, [messages]);
-
-    const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-        if (!user) {
-            toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to send a message.' });
-            return;
-        }
-
-        setIsSending(true);
-        await addMessage({
-            userName: user.displayName || 'Unknown User',
-            userEmail: user.email!,
-            text: values.message,
-            userType: 'user'
-        });
-        setIsSending(false);
-        form.reset();
-    };
-
-    const isLoading = authLoading || loadingMessages;
+    const { settings, isLoading } = useSiteSettings();
 
     return (
         <div className="min-h-screen flex flex-col">
             <UserHeader />
             <main className="flex-grow container mx-auto px-4 py-12 flex items-center justify-center">
-                <Card className="w-full max-w-2xl h-[70vh] flex flex-col">
+                <Card className="w-full max-w-3xl">
                     <CardHeader className="text-center">
-                        <MessageSquare className="mx-auto h-10 w-10 text-primary mb-2" />
-                        <CardTitle className="text-3xl font-bold font-headline">Contact Support</CardTitle>
-                        <CardDescription>We're here to help. Send us a message!</CardDescription>
+                        <UtensilsCrossed className="mx-auto h-12 w-12 text-primary mb-4" />
+                        <CardTitle className="text-3xl font-bold font-headline">About QuickBite</CardTitle>
+                        <CardDescription>Your favorite meals, delivered fast.</CardDescription>
                     </CardHeader>
-                    <ScrollArea className="flex-grow p-4" ref={scrollAreaRef} viewportRef={viewportRef}>
-                        <div className="space-y-4">
-                            {isLoading ? (
-                                <div className="space-y-4">
-                                    <Skeleton className="h-16 w-3/4" />
-                                    <Skeleton className="h-16 w-3/4 ml-auto" />
-                                </div>
-                            ) : messages.length > 0 ? (
-                                messages.map((msg: MessageType) => (
-                                    <div key={msg.id} className={cn("flex items-end gap-2", msg.sender === 'user' ? 'justify-end' : 'justify-start')}>
-                                         {msg.sender === 'admin' && (
-                                            <Avatar className="h-8 w-8">
-                                                <AvatarFallback>A</AvatarFallback>
-                                            </Avatar>
-                                         )}
-                                         <div className={cn("max-w-xs md:max-w-md p-3 rounded-lg", msg.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary')}>
-                                             <p>{msg.text}</p>
-                                             <p className={cn("text-xs mt-1",  msg.sender === 'user' ? 'text-primary-foreground/70' : 'text-muted-foreground')}>{format(msg.createdAt.toDate(), 'p')}</p>
-                                         </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className="text-center text-muted-foreground">No messages yet. Start the conversation!</p>
-                            )}
-                        </div>
-                    </ScrollArea>
-                    <CardFooter className="p-4 border-t">
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(handleSubmit)} className="w-full flex gap-2 items-center">
-                                <FormField
-                                control={form.control}
-                                name="message"
-                                render={({ field }) => (
-                                    <FormItem className="flex-grow">
-                                        <FormControl>
-                                            <Textarea placeholder="Type your message..." {...field} rows={1} className="min-h-0 resize-none" disabled={!user || isSending}/>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                                />
-                                <Button type="submit" disabled={!user || isSending}>
-                                    <Send className="h-4 w-4" />
+                    <CardContent className="text-center text-lg text-muted-foreground space-y-6 px-8 py-10">
+                       <p>
+                          Welcome to QuickBite, your number one source for fast and delicious food delivery. We're dedicated to giving you the very best of local cuisine, with a focus on speed, customer service, and quality.
+                       </p>
+                       <p>
+                           Founded with a passion for food and technology, QuickBite has come a long way from its beginnings. We now serve customers all over the city and are thrilled to be a part of the fast-paced wing of the food industry.
+                       </p>
+                       <p>
+                          We hope you enjoy our service as much as we enjoy offering it to you. If you have any questions or comments, please don't hesitate to follow us on our social channels!
+                       </p>
+                       <div className="flex justify-center gap-4 pt-4">
+                           {settings.facebookUrl && (
+                                <Button asChild variant="outline" size="icon" className="rounded-full h-12 w-12">
+                                   <Link href={settings.facebookUrl} target="_blank" rel="noopener noreferrer">
+                                       <Facebook className="h-6 w-6" />
+                                       <span className="sr-only">Facebook</span>
+                                   </Link>
                                 </Button>
-                            </form>
-                        </Form>
-                    </CardFooter>
+                           )}
+                           {settings.instagramUrl && (
+                                <Button asChild variant="outline" size="icon" className="rounded-full h-12 w-12">
+                                   <Link href={settings.instagramUrl} target="_blank" rel="noopener noreferrer">
+                                       <Instagram className="h-6 w-6" />
+                                       <span className="sr-only">Instagram</span>
+                                   </Link>
+                                </Button>
+                           )}
+                       </div>
+                    </CardContent>
                 </Card>
             </main>
         </div>

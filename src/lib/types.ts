@@ -78,6 +78,8 @@ export interface SiteSettings {
   menuCarouselImage3: string;
   menuCarouselImage4: string;
   paymentMethods: PaymentMethod[];
+  facebookUrl?: string;
+  instagramUrl?: string;
 }
 
 export interface Review {
