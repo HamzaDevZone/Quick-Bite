@@ -66,10 +66,15 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
     }
 
     setLoadingMessages(prev => ({ ...prev, [conversationId]: true }));
-    const q = query(collection(db, 'messages'), where('conversationId', '==', conversationId), orderBy('createdAt', 'asc'));
+    // FIX: Removed orderBy from the query to avoid needing a composite index. Sorting is now done on the client.
+    const q = query(collection(db, 'messages'), where('conversationId', '==', conversationId));
     
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const msgs = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message));
+      
+      // Sort messages by date on the client-side
+      msgs.sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
+      
       setMessages(prev => ({ ...prev, [conversationId]: msgs }));
       setLoadingMessages(prev => ({ ...prev, [conversationId]: false }));
       
