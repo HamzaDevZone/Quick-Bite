@@ -12,9 +12,6 @@ import { CategoryProvider } from '@/hooks/use-categories';
 import { RiderProvider } from '@/hooks/use-riders';
 import { ReviewProvider } from '@/hooks/use-reviews';
 import { MessageProvider } from '@/hooks/use-messages';
-import { useEffect } from 'react';
-import { requestNotificationPermission, onMessageListener } from '@/lib/firebase';
-import { useToast } from '@/hooks/use-toast';
 import { AuthProvider } from '@/hooks/use-auth';
 import { ThemeProvider } from '@/hooks/use-theme';
 
@@ -23,27 +20,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { toast } = useToast();
-
-  useEffect(() => {
-    requestNotificationPermission();
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = onMessageListener().then((payload: any) => {
-        if (payload) {
-            toast({
-                title: payload.notification.title,
-                description: payload.notification.body,
-            });
-        }
-    });
-    return () => {
-        // @ts-ignore
-        unsubscribe.catch(err => console.error('failed to unsubscribe', err));
-    };
-  }, [toast]);
-
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -54,7 +30,6 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap"
           rel="stylesheet"
         />
-        <link rel="manifest" href="/manifest.json" />
       </head>
       <body className="font-body antialiased">
         <ThemeProvider
