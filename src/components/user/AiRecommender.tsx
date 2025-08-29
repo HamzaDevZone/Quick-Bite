@@ -27,6 +27,8 @@ export function AiRecommender({ product }: AiRecommenderProps) {
         setRecommendations(result);
       } catch (error) {
         console.error("Failed to get AI recommendations:", error);
+        // Set recommendations to empty array on error to avoid crash
+        setRecommendations([]);
       } finally {
         setLoading(false);
       }
@@ -47,7 +49,7 @@ export function AiRecommender({ product }: AiRecommenderProps) {
             <CardSkeleton />
             <CardSkeleton />
         </div>
-      ) : recommendations.length > 0 ? (
+      ) : recommendations && recommendations.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
           {recommendations.map(recProduct => (
             <ProductCard key={recProduct.id} product={recProduct} />
