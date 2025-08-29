@@ -40,7 +40,13 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     setLoading(true);
     let q;
-    const path = window.location.pathname;
+    let path = '';
+    try {
+      path = window.location.pathname;
+    } catch (e) {
+      // window is not available in server-side rendering
+    }
+    
 
     if (path.startsWith('/admin')) {
       q = query(collection(db, 'orders'), orderBy('orderDate', 'desc'));
@@ -49,7 +55,6 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
           const authData = sessionStorage.getItem('quickbite_rider_auth');
           const riderId = authData ? JSON.parse(authData).riderId : null;
           if (riderId) {
-             // Query without orderBy to avoid composite index requirement. Sorting will be done client-side.
              q = query(collection(db, 'orders'), where('riderId', '==', riderId));
           } else {
              setOrders([]);
@@ -63,16 +68,13 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
           return;
        }
     } else if (user) {
-      // FIX: Removed orderBy from query to prevent composite index error. Sorting is now done client-side.
       q = query(collection(db, 'orders'), where('userId', '==', user.uid));
     } else {
       try {
         const storedOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
         setUserOrderIds(storedOrderIds);
         if (storedOrderIds.length > 0) {
-          // Firestore 'in' queries are limited to 30 elements.
-          // For a larger number of guest orders, pagination or a different strategy would be needed.
-          q = query(collection(db, 'orders'), where('id', 'in', storedOrderIds));
+          q = query(collection(db, 'orders'), where('__name__', 'in', storedOrderIds));
         } else {
           setOrders([]);
           setLoading(false);
@@ -93,7 +95,6 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         setUserOrderIds(fetchedOrders.map(o => o.id));
       }
 
-      // Sort all fetched orders by date client-side
       fetchedOrders.sort((a, b) => {
         const dateA = typeof a.orderDate === 'string' ? new Date(a.orderDate) : a.orderDate.toDate();
         const dateB = typeof b.orderDate === 'string' ? new Date(b.orderDate) : b.orderDate.toDate();
@@ -109,7 +110,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => unsubscribe();
-  }, [user, toast]);
+  }, [user?.uid, toast]);
 
 
   const addOrder = async (orderData: NewOrderData) => {
