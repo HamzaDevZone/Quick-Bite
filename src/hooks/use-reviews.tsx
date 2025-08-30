@@ -45,13 +45,24 @@ export const useReviews = (productId: string | null) => {
     setLoading(true);
     const reviewsCollection = collection(db, 'reviews');
     
-    // If productId is null, we fetch all reviews. Otherwise, we filter by productId.
+    // If productId is null, fetch all reviews sorted by date.
+    // If productId is provided, filter by it. Sorting will be done client-side to avoid composite index.
     const q = productId 
-              ? query(reviewsCollection, where('productId', '==', productId), orderBy('createdAt', 'desc'))
+              ? query(reviewsCollection, where('productId', '==', productId))
               : query(reviewsCollection, orderBy('createdAt', 'desc'));
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const reviewsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Review));
+        
+        // Sort client-side if we filtered by productId
+        if (productId) {
+            reviewsData.sort((a, b) => {
+                const dateA = a.createdAt instanceof Timestamp ? a.createdAt.toMillis() : new Date(a.createdAt).getTime();
+                const dateB = b.createdAt instanceof Timestamp ? b.createdAt.toMillis() : new Date(b.createdAt).getTime();
+                return dateB - dateA;
+            });
+        }
+        
         setReviews(reviewsData);
         setLoading(false);
     }, (error) => {
