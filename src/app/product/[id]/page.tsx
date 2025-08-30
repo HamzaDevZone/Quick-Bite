@@ -59,7 +59,10 @@ export default function ProductDetailPage() {
        <div className="min-h-screen flex flex-col">
           <UserHeader />
           <main className="flex-grow container mx-auto px-4 py-12">
-              <Skeleton className="h-10 w-36 mb-8" />
+              <Button variant="ghost" disabled className="mb-8">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to Menu
+              </Button>
               <div className="grid md:grid-cols-2 gap-12 items-start">
                   <Skeleton className="aspect-square rounded-lg" />
                   <div className="flex flex-col gap-6">
