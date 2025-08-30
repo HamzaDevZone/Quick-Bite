@@ -7,7 +7,6 @@ import { db } from '@/lib/firebase';
 import type { Order, OrderStatus, OrderItem, ServiceType } from '@/lib/types';
 import { useToast } from './use-toast';
 import { useAuth } from './use-auth';
-import { useCategories } from './use-categories'; // Import useCategories
 
 interface NewOrderData {
     customerName: string;
@@ -95,41 +94,41 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     }
     
     // For admin and rider panels, we fetch all orders and filter client-side.
-    // This is simpler than multiple listeners, especially for the new tabbed view.
     if (path.startsWith('/admin') || path.startsWith('/rider')) {
       q = query(collection(db, 'orders'), orderBy('orderDate', 'desc'));
     } else if (user) {
-      q = query(collection(db, 'orders'), where('userId', '==', user.uid), orderBy('orderDate', 'desc'));
+      // To prevent the composite index error, we will only query by userId
+      // and perform the sorting on the client-side.
+      q = query(collection(db, 'orders'), where('userId', '==', user.uid));
     } else {
       try {
         const storedOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
         setUserOrderIds(storedOrderIds);
         if (storedOrderIds.length > 0) {
-          // Firestore 'in' queries are limited to 10 items. For a guest with many orders, this could break.
-          // A better long-term solution would be a different guest order tracking mechanism.
-          // For now, this works for a reasonable number of guest orders.
           q = query(collection(db, 'orders'), where('id', 'in', storedOrderIds));
         } else {
           setOrders([]);
           setLoading(false);
-          return; // Guard clause to exit if no orders for guest
+          return;
         }
       } catch (error) {
         console.error("Could not load guest order IDs from localStorage", error);
         setOrders([]);
         setLoading(false);
-        return; // Guard clause on error
+        return;
       }
     }
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const fetchedOrders = querySnapshot.docs.map(doc => ({ ...doc.data() } as Order));
       
+      // Sort on the client side to avoid needing a composite index
       fetchedOrders.sort((a, b) => {
         const dateA = a.orderDate instanceof Timestamp ? a.orderDate.toDate() : new Date(a.orderDate);
         const dateB = b.orderDate instanceof Timestamp ? b.orderDate.toDate() : new Date(b.orderDate);
         return dateB.getTime() - dateA.getTime();
       });
+
       setOrders(fetchedOrders);
       if (user && !path.startsWith('/admin') && !path.startsWith('/rider')) {
         setUserOrderIds(fetchedOrders.map(o => o.id));
