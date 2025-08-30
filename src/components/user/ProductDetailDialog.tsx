@@ -35,8 +35,26 @@ export function ProductDetailDialog({ product, isOpen, onOpenChange }: ProductDe
     onOpenChange(false); // Close dialog after adding to cart
   };
 
-  const inquiryLink = settings.productInquiryLink;
+  const baseInquiryLink = settings.productInquiryLink;
   const inquiryLogo = settings.productInquiryLogoUrl;
+
+  const getInquiryLink = () => {
+    if (!baseInquiryLink) return '#';
+
+    const message = `Hello, I'd like to know more about this product:\n\n*${product.name}*\nPrice: *PKR ${product.price.toFixed(2)}*`;
+    const encodedMessage = encodeURIComponent(message);
+    
+    // This is a common pattern for WhatsApp links
+    if (baseInquiryLink.includes('wa.me')) {
+      return `${baseInquiryLink}?text=${encodedMessage}`;
+    }
+    
+    // For other links, we can't reliably add a message, so we return the base link.
+    return baseInquiryLink;
+  }
+
+  const inquiryLink = getInquiryLink();
+
 
   return (
      <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -89,7 +107,7 @@ export function ProductDetailDialog({ product, isOpen, onOpenChange }: ProductDe
                     </Button>
                 </div>
 
-                {inquiryLink && (
+                {baseInquiryLink && (
                     <>
                     <div className="flex items-center gap-4 my-4">
                         <Separator className="flex-1" />
@@ -111,3 +129,4 @@ export function ProductDetailDialog({ product, isOpen, onOpenChange }: ProductDe
      </Dialog>
   );
 }
+
