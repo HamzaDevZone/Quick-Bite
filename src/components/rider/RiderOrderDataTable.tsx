@@ -11,11 +11,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { TableCell, TableRow } from '@/components/ui/table';
 import { MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { ScrollArea } from '../ui/scroll-area';
 
 interface RiderOrderDataTableProps {
   data: Order[];
@@ -36,72 +35,52 @@ export function RiderOrderDataTable({ data }: RiderOrderDataTableProps) {
   };
   
   if (data.length === 0) {
-    return (
-        <div className="rounded-md border bg-card flex items-center justify-center h-48">
-            <p className="text-muted-foreground">No orders found.</p>
-        </div>
-    );
+    return null; // Return nothing if there is no data, the parent will show a message.
   }
 
   return (
-    <div className="rounded-md border bg-card">
-      <ScrollArea className="w-full whitespace-nowrap">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Order ID</TableHead>
-              <TableHead>Customer</TableHead>
-              <TableHead>Address</TableHead>
-              <TableHead className="text-right">Total</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-              {data.map(order => (
-                <TableRow key={order.id}>
-                  <TableCell className="font-medium">
-                    <Link href={`/rider/orders/${order.id}`} className="text-primary hover:underline">
-                        #{order.id}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{order.customerName}</TableCell>
-                  <TableCell>{order.customerAddress}</TableCell>
-                  <TableCell className="text-right">PKR {order.total.toFixed(2)}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
-                      {order.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0" disabled={order.status === 'Delivered' || order.status === 'Pending'}>
-                          <span className="sr-only">Open menu</span>
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem 
-                          onClick={() => handleStatusChange(order.id, 'Picked')}
-                          disabled={order.status !== 'Preparing'}
-                        >
-                          Mark as Picked
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => handleStatusChange(order.id, 'Delivered')}
-                          disabled={order.status !== 'Picked'}
-                        >
-                          Mark as Delivered
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </ScrollArea>
-    </div>
+    <>
+      {data.map(order => (
+        <TableRow key={order.id}>
+          <TableCell className="font-medium">
+            <Link href={`/rider/orders/${order.id}`} className="text-primary hover:underline">
+                #{order.id}
+            </Link>
+          </TableCell>
+          <TableCell>{order.customerName}</TableCell>
+          <TableCell>{order.customerAddress}</TableCell>
+          <TableCell className="text-right">PKR {order.total.toFixed(2)}</TableCell>
+          <TableCell>
+            <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
+              {order.status}
+            </Badge>
+          </TableCell>
+          <TableCell className="text-right">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0" disabled={order.status === 'Delivered' || order.status === 'Pending'}>
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem 
+                  onClick={() => handleStatusChange(order.id, 'Picked')}
+                  disabled={order.status !== 'Preparing'}
+                >
+                  Mark as Picked
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => handleStatusChange(order.id, 'Delivered')}
+                  disabled={order.status !== 'Picked'}
+                >
+                  Mark as Delivered
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </TableCell>
+        </TableRow>
+      ))}
+    </>
   );
 }
