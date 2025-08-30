@@ -39,20 +39,20 @@ export default function RootLayout({
         >
             <AuthProvider>
                 <SiteSettingsProvider>
-                <ProductProvider>
-                    <CategoryProvider>
-                    <RiderProvider>
-                        <OrderProvider>
-                        <ReviewProvider>
-                            <CartProvider>
-                                {children}
-                                <Toaster />
-                            </CartProvider>
-                        </ReviewProvider>
-                        </OrderProvider>
-                    </RiderProvider>
-                    </CategoryProvider>
-                </ProductProvider>
+                  <ProductProvider>
+                      <CategoryProvider>
+                        <RiderProvider>
+                            <OrderProvider>
+                              <ReviewProvider>
+                                  <CartProvider>
+                                      {children}
+                                      <Toaster />
+                                  </CartProvider>
+                              </ReviewProvider>
+                            </OrderProvider>
+                        </RiderProvider>
+                      </CategoryProvider>
+                  </ProductProvider>
                 </SiteSettingsProvider>
             </AuthProvider>
         </ThemeProvider>

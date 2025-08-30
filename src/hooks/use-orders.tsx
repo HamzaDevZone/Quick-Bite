@@ -1,12 +1,13 @@
 
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import { collection, getDocs, addDoc, updateDoc, doc, Timestamp, query, where, onSnapshot, orderBy, deleteDoc, setDoc } from 'firebase/firestore';
-import { db, auth } from '@/lib/firebase';
-import type { Order, OrderStatus, OrderItem } from '@/lib/types';
+import { db } from '@/lib/firebase';
+import type { Order, OrderStatus, OrderItem, ServiceType } from '@/lib/types';
 import { useToast } from './use-toast';
 import { useAuth } from './use-auth';
+import { useCategories } from './use-categories'; // Import useCategories
 
 interface NewOrderData {
     customerName: string;
@@ -17,6 +18,7 @@ interface NewOrderData {
     paymentMethod: string;
     deliveryFee: number;
     orderNotes?: string;
+    serviceType: ServiceType; // Add serviceType here
 }
 
 interface OrderContextType {
@@ -46,84 +48,8 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [userOrderIds, setUserOrderIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setLoading(true);
-    let q;
-    let path = '';
-    try {
-      path = window.location.pathname;
-    } catch (e) {
-      // window is not available in server-side rendering
-    }
-    
-
-    if (path.startsWith('/admin')) {
-      q = query(collection(db, 'orders'), orderBy('orderDate', 'desc'));
-    } else if (path.startsWith('/rider')) {
-       try {
-          const authData = sessionStorage.getItem('quickbite_rider_auth');
-          const riderId = authData ? JSON.parse(authData).riderId : null;
-          if (riderId) {
-             q = query(collection(db, 'orders'), where('riderId', '==', riderId));
-          } else {
-             setOrders([]);
-             setLoading(false);
-             return;
-          }
-       } catch (error) {
-          console.error("Could not load rider data from sessionStorage", error);
-          setOrders([]);
-          setLoading(false);
-          return;
-       }
-    } else if (user) {
-      q = query(collection(db, 'orders'), where('userId', '==', user.uid));
-    } else {
-      try {
-        const storedOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
-        setUserOrderIds(storedOrderIds);
-        if (storedOrderIds.length > 0) {
-          q = query(collection(db, 'orders'), where('__name__', 'in', storedOrderIds));
-        } else {
-          setOrders([]);
-          setLoading(false);
-          return; // Guard clause to exit if no orders for guest
-        }
-      } catch (error) {
-        console.error("Could not load guest order IDs from localStorage", error);
-        setOrders([]);
-        setLoading(false);
-        return; // Guard clause on error
-      }
-    }
-
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const fetchedOrders = querySnapshot.docs.map(doc => ({ ...doc.data() } as Order));
-      
-      if (user && !path.startsWith('/admin') && !path.startsWith('/rider')) {
-        setUserOrderIds(fetchedOrders.map(o => o.id));
-      }
-
-      fetchedOrders.sort((a, b) => {
-        const dateA = typeof a.orderDate === 'string' ? new Date(a.orderDate) : a.orderDate.toDate();
-        const dateB = typeof b.orderDate === 'string' ? new Date(b.orderDate) : b.orderDate.toDate();
-        return dateB.getTime() - dateA.getTime();
-      });
-      setOrders(fetchedOrders);
-
-      setLoading(false);
-    }, (error) => {
-      console.error("Error fetching orders in real-time: ", error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch orders.' });
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [user, toast]);
-
-
-  const addOrder = async (orderData: NewOrderData) => {
+  
+  const addOrder = useCallback(async (orderData: NewOrderData) => {
     try {
         const orderId = generateShortOrderId();
         const newOrderData: any = {
@@ -140,12 +66,10 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         const docRef = doc(db, 'orders', orderId);
         await setDoc(docRef, newOrderData);
         
-        const newOrder = { ...newOrderData } as Order;
-        
         if (!user) {
              try {
                 const currentOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
-                const updatedOrderIds = [...currentOrderIds, newOrder.id];
+                const updatedOrderIds = [...currentOrderIds, orderId];
                 setUserOrderIds(updatedOrderIds);
                 localStorage.setItem('quickbite_user_orders', JSON.stringify(updatedOrderIds));
             } catch (error) {
@@ -157,7 +81,69 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
       console.error("Error adding order: ", error);
       toast({ variant: 'destructive', title: 'Error', description: 'Could not place order.' });
     }
-  };
+  }, [user, toast]);
+
+
+  useEffect(() => {
+    setLoading(true);
+    let q;
+    let path = '';
+    try {
+      path = window.location.pathname;
+    } catch (e) {
+      // window is not available in server-side rendering
+    }
+    
+    // For admin and rider panels, we fetch all orders and filter client-side.
+    // This is simpler than multiple listeners, especially for the new tabbed view.
+    if (path.startsWith('/admin') || path.startsWith('/rider')) {
+      q = query(collection(db, 'orders'), orderBy('orderDate', 'desc'));
+    } else if (user) {
+      q = query(collection(db, 'orders'), where('userId', '==', user.uid), orderBy('orderDate', 'desc'));
+    } else {
+      try {
+        const storedOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
+        setUserOrderIds(storedOrderIds);
+        if (storedOrderIds.length > 0) {
+          // Firestore 'in' queries are limited to 10 items. For a guest with many orders, this could break.
+          // A better long-term solution would be a different guest order tracking mechanism.
+          // For now, this works for a reasonable number of guest orders.
+          q = query(collection(db, 'orders'), where('id', 'in', storedOrderIds));
+        } else {
+          setOrders([]);
+          setLoading(false);
+          return; // Guard clause to exit if no orders for guest
+        }
+      } catch (error) {
+        console.error("Could not load guest order IDs from localStorage", error);
+        setOrders([]);
+        setLoading(false);
+        return; // Guard clause on error
+      }
+    }
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const fetchedOrders = querySnapshot.docs.map(doc => ({ ...doc.data() } as Order));
+      
+      fetchedOrders.sort((a, b) => {
+        const dateA = a.orderDate instanceof Timestamp ? a.orderDate.toDate() : new Date(a.orderDate);
+        const dateB = b.orderDate instanceof Timestamp ? b.orderDate.toDate() : new Date(b.orderDate);
+        return dateB.getTime() - dateA.getTime();
+      });
+      setOrders(fetchedOrders);
+      if (user && !path.startsWith('/admin') && !path.startsWith('/rider')) {
+        setUserOrderIds(fetchedOrders.map(o => o.id));
+      }
+
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching orders in real-time: ", error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch orders.' });
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [user, toast]);
 
   const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
     try {

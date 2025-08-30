@@ -1,7 +1,8 @@
 
 import type { Timestamp } from 'firebase/firestore';
 
-export type ServiceType = 'Food' | 'Grocery';
+export const serviceTypes = ['Food', 'Grocery', 'Electronics'] as const;
+export type ServiceType = typeof serviceTypes[number];
 
 export interface Product {
   id: string;
@@ -62,6 +63,7 @@ export interface Order {
   paymentMethod: string;
   deliveryFee: number;
   orderNotes?: string;
+  serviceType: ServiceType;
 }
 
 export interface PaymentMethod {

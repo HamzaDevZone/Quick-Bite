@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -6,14 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/hooks/use-cart';
-import { useOrders } from '@/hooks/use-orders';
 import { UserHeader } from '@/components/user/Header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Separator } from '@/components/ui/separator';
-import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { CreditCard, Landmark, Wallet } from 'lucide-react';
@@ -21,8 +18,8 @@ import { useEffect, useState } from 'react';
 import { useSiteSettings } from '@/hooks/use-site-settings';
 import { Textarea } from '@/components/ui/textarea';
 import type { PaymentMethod } from '@/lib/types';
-import { cn } from '@/lib/utils';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useCheckout } from '@/hooks/use-checkout';
 
 const checkoutSchema = z.object({
   customerName: z.string().min(2, 'Name is required.'),
@@ -33,12 +30,11 @@ const checkoutSchema = z.object({
 });
 
 export default function CheckoutPage() {
-  const { cart, cartTotal, itemCount, clearCart } = useCart();
-  const { addOrder } = useOrders();
+  const { cart, cartTotal, itemCount } = useCart();
+  const { handleCheckout } = useCheckout();
   const { settings } = useSiteSettings();
   const deliveryFee = settings.deliveryFee;
   const router = useRouter();
-  const { toast } = useToast();
   const [selectedMethodDetails, setSelectedMethodDetails] = useState<string | undefined>(undefined);
 
   const form = useForm<z.infer<typeof checkoutSchema>>({
@@ -62,26 +58,13 @@ export default function CheckoutPage() {
   }
 
   const onSubmit = async (values: z.infer<typeof checkoutSchema>) => {
-    const orderData = {
-      ...values,
-      items: cart,
-      total: cartTotal + deliveryFee,
-      deliveryFee: deliveryFee,
-    };
-    await addOrder(orderData);
-    toast({
-      title: 'Order Placed!',
-      description: 'Thank you for your order. We have started processing it.',
-    });
-    clearCart();
-    router.push('/orders');
+    await handleCheckout(values);
   };
 
   const getIconForMethod = (methodValue: string) => {
     const lowerCaseValue = methodValue.toLowerCase();
     if (lowerCaseValue.includes('bank')) return Landmark;
     if (lowerCaseValue.includes('card') || lowerCaseValue.includes('pay') || lowerCaseValue.includes('cash')) {
-         // This is a bit broad, but covers Jazzcash, Sadapay, Nayapay, Payoneer and Credit Card
         if(lowerCaseValue.includes('cash on')) return Wallet;
         return CreditCard;
     }

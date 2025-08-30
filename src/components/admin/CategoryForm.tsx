@@ -6,7 +6,7 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import type { Category } from '@/lib/types';
+import { Category, ServiceType, serviceTypes } from '@/lib/types';
 import { useCategories } from '@/hooks/use-categories';
 import { useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   iconUrl: z.string().url('Please enter a valid URL.'),
-  serviceType: z.enum(['Food', 'Grocery'], { required_error: 'Please select a service type.'}),
+  serviceType: z.enum(serviceTypes, { required_error: 'Please select a service type.'}),
 });
 
 interface CategoryFormProps {
@@ -96,8 +96,9 @@ export function CategoryForm({ categoryToEdit, setFormOpen }: CategoryFormProps)
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="Food">Food</SelectItem>
-                  <SelectItem value="Grocery">Grocery</SelectItem>
+                  {serviceTypes.map(type => (
+                     <SelectItem key={type} value={type}>{type}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />

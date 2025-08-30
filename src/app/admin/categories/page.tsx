@@ -7,10 +7,23 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useCategories } from '@/hooks/use-categories';
 import { CategoryDataTable } from '@/components/admin/CategoryDataTable';
 import { CategoryForm } from '@/components/admin/CategoryForm';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AdminCategoriesPage() {
-    const { categories } = useCategories();
+    const { categories, loading } = useCategories();
     const [isFormOpen, setIsFormOpen] = useState(false);
+
+    if (loading) {
+        return (
+            <div>
+                <div className="flex items-center justify-between mb-6">
+                    <Skeleton className="h-10 w-48" />
+                    <Skeleton className="h-10 w-32" />
+                </div>
+                <Skeleton className="h-64 w-full" />
+            </div>
+        )
+    }
 
     return (
         <div>

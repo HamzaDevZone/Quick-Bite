@@ -4,7 +4,7 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
-import { Search, Utensils, ShoppingBasket } from 'lucide-react';
+import { Search, Utensils, ShoppingBasket, HardDrive } from 'lucide-react';
 import { ProductCard } from '@/components/user/ProductCard';
 import { CategoryTabs } from '@/components/user/CategoryTabs';
 import { UserHeader } from '@/components/user/Header';
@@ -114,6 +114,12 @@ export default function MenuPage() {
       setCurrentPage(pageNumber);
     }
   };
+
+  const handleServiceTypeChange = (serviceType: ServiceType) => {
+    setActiveServiceType(serviceType);
+    setActiveCategory('all');
+    setCurrentPage(1);
+  }
   
   if (isLoading || !user) {
     return (
@@ -206,11 +212,7 @@ export default function MenuPage() {
               <Button 
                 size="lg"
                 variant={activeServiceType === 'Food' ? 'default' : 'outline'}
-                onClick={() => {
-                  setActiveServiceType('Food');
-                  setActiveCategory('all');
-                  setCurrentPage(1);
-                }}
+                onClick={() => handleServiceTypeChange('Food')}
                 className="rounded-full gap-2 transition-all duration-300"
               >
                 <Utensils className="w-5 h-5"/>
@@ -219,15 +221,20 @@ export default function MenuPage() {
                <Button 
                 size="lg"
                 variant={activeServiceType === 'Grocery' ? 'default' : 'outline'}
-                onClick={() => {
-                  setActiveServiceType('Grocery');
-                  setActiveCategory('all');
-                  setCurrentPage(1);
-                }}
+                onClick={() => handleServiceTypeChange('Grocery')}
                 className="rounded-full gap-2 transition-all duration-300"
               >
                 <ShoppingBasket className="w-5 h-5"/>
                 Grocery
+              </Button>
+               <Button 
+                size="lg"
+                variant={activeServiceType === 'Electronics' ? 'default' : 'outline'}
+                onClick={() => handleServiceTypeChange('Electronics')}
+                className="rounded-full gap-2 transition-all duration-300"
+              >
+                <HardDrive className="w-5 h-5"/>
+                Electronics
               </Button>
             </div>
             
@@ -355,5 +362,3 @@ const CardSkeleton = () => (
     </div>
   </div>
 );
-
-    
