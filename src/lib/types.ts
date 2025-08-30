@@ -11,12 +11,9 @@ export interface Product {
   imageUrl: string;
 }
 
-export type ServiceType = 'Food' | 'Grocery' | 'Electronics';
-
 export interface MainCategory {
   id: string;
   name: string;
-  serviceType: ServiceType;
 }
 
 export interface SubCategory {
@@ -70,7 +67,6 @@ export interface Order {
   deliveryFee: number;
   orderNotes?: string;
   mainCategoryId: string;
-  serviceType: ServiceType;
 }
 
 export interface PaymentMethod {
