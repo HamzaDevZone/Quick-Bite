@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useState } from 'react';
-import { MoreHorizontal, Pencil, Trash2, PlusCircle } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
@@ -10,7 +10,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
     AlertDialog,
@@ -28,32 +27,38 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import type { MainCategory } from '@/lib/types';
+import type { SubCategory, MainCategory } from '@/lib/types';
 import { useCategories } from '@/hooks/use-categories';
 import { CategoryForm, FormType } from './CategoryForm';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { ScrollArea } from '../ui/scroll-area';
+import { Badge } from '../ui/badge';
 
-interface CategoryDataTableProps {
-  data: MainCategory[];
-  onAddSubCategory: (mainCategoryId: string) => void;
+interface SubCategoryDataTableProps {
+  data: SubCategory[];
+  mainCategories: MainCategory[];
 }
 
-export function CategoryDataTable({ data, onAddSubCategory }: CategoryDataTableProps) {
-  const { deleteMainCategory } = useCategories();
+export function SubCategoryDataTable({ data, mainCategories }: SubCategoryDataTableProps) {
+  const { deleteSubCategory } = useCategories();
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [formType, setFormType] = useState<FormType>('main');
-  const [categoryToEdit, setCategoryToEdit] = useState<MainCategory | null>(null);
-  const [categoryToDelete, setCategoryToDelete] = useState<MainCategory | null>(null);
+  const [formType, setFormType] = useState<FormType>('sub');
+  const [categoryToEdit, setCategoryToEdit] = useState<SubCategory | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<SubCategory | null>(null);
+  
+  const mainCategoryMap = useMemo(() => {
+    return new Map(mainCategories.map(mc => [mc.id, mc.name]));
+  }, [mainCategories]);
 
-  const handleEdit = (category: MainCategory) => {
-    setFormType('main');
+  const handleEdit = (category: SubCategory) => {
+    setFormType('sub');
     setCategoryToEdit(category);
     setIsFormOpen(true);
   };
 
   const handleDeleteConfirm = () => {
     if (categoryToDelete) {
-      deleteMainCategory(categoryToDelete.id);
+      deleteSubCategory(categoryToDelete.id);
       setCategoryToDelete(null);
     }
   };
@@ -65,14 +70,27 @@ export function CategoryDataTable({ data, onAddSubCategory }: CategoryDataTableP
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Icon</TableHead>
                 <TableHead>Name</TableHead>
+                <TableHead>Main Category</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {data.map(category => (
                 <TableRow key={category.id}>
+                  <TableCell>
+                    <Avatar>
+                      <AvatarImage src={category.iconUrl} alt={category.name} data-ai-hint="category icon"/>
+                      <AvatarFallback>{category.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                  </TableCell>
                   <TableCell className="font-medium">{category.name}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">
+                      {mainCategoryMap.get(category.mainCategoryId) || 'N/A'}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -82,11 +100,6 @@ export function CategoryDataTable({ data, onAddSubCategory }: CategoryDataTableP
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => onAddSubCategory(category.id)}>
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            Add Sub Category
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => handleEdit(category)}>
                           <Pencil className="mr-2 h-4 w-4" />
                           Edit
@@ -108,11 +121,12 @@ export function CategoryDataTable({ data, onAddSubCategory }: CategoryDataTableP
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Edit Main Category</DialogTitle>
+            <DialogTitle>Edit Sub Category</DialogTitle>
           </DialogHeader>
           <CategoryForm
             formType={formType}
             categoryToEdit={categoryToEdit}
+            mainCategories={mainCategories}
             setFormOpen={setIsFormOpen}
           />
         </DialogContent>
@@ -123,7 +137,7 @@ export function CategoryDataTable({ data, onAddSubCategory }: CategoryDataTableP
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the category "{categoryToDelete?.name}" and all its sub-categories.
+              This action cannot be undone. This will permanently delete the category "{categoryToDelete?.name}".
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -135,4 +149,3 @@ export function CategoryDataTable({ data, onAddSubCategory }: CategoryDataTableP
     </>
   );
 }
-

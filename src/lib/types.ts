@@ -1,23 +1,26 @@
 
 import type { Timestamp } from 'firebase/firestore';
 
-export const serviceTypes = ['Food', 'Grocery', 'Electronics'] as const;
-export type ServiceType = typeof serviceTypes[number];
-
 export interface Product {
   id: string;
   name: string;
   description: string;
   price: number;
-  category: string;
+  mainCategoryId: string;
+  subCategoryId: string;
   imageUrl: string;
 }
 
-export interface Category {
-  id:string;
+export interface MainCategory {
+  id: string;
+  name: string;
+}
+
+export interface SubCategory {
+  id: string;
   name: string;
   iconUrl: string;
-  serviceType: ServiceType;
+  mainCategoryId: string;
 }
 
 export interface CartItem {
@@ -63,7 +66,7 @@ export interface Order {
   paymentMethod: string;
   deliveryFee: number;
   orderNotes?: string;
-  serviceType: ServiceType;
+  mainCategoryId: string;
 }
 
 export interface PaymentMethod {

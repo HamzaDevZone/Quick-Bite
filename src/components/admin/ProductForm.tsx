@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -17,7 +18,8 @@ const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
   price: z.coerce.number().positive('Price must be a positive number.'),
-  category: z.string().min(1, 'Please select a category.'),
+  mainCategoryId: z.string().min(1, 'Please select a main category.'),
+  subCategoryId: z.string().min(1, 'Please select a sub category.'),
   imageUrl: z.string().url('Please enter a valid URL.'),
 });
 
@@ -28,28 +30,32 @@ interface ProductFormProps {
 
 export function ProductForm({ productToEdit, setFormOpen }: ProductFormProps) {
   const { addProduct, updateProduct } = useProducts();
-  const { categories } = useCategories();
+  const { mainCategories, subCategories } = useCategories();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
       description: '',
       price: 0,
-      category: '',
+      mainCategoryId: '',
+      subCategoryId: '',
       imageUrl: '',
     },
   });
+
+  const watchMainCategory = form.watch("mainCategoryId");
 
   useEffect(() => {
     if (productToEdit) {
       form.reset(productToEdit);
     } else {
         form.reset({
-            name: '',
-            description: '',
-            price: 0,
-            category: '',
-            imageUrl: '',
+          name: '',
+          description: '',
+          price: 0,
+          mainCategoryId: '',
+          subCategoryId: '',
+          imageUrl: '',
         });
     }
   }, [productToEdit, form]);
@@ -62,6 +68,8 @@ export function ProductForm({ productToEdit, setFormOpen }: ProductFormProps) {
     }
     setFormOpen(false);
   }
+
+  const filteredSubcategories = subCategories.filter(sc => sc.mainCategoryId === watchMainCategory);
 
   return (
     <Form {...form}>
@@ -107,19 +115,41 @@ export function ProductForm({ productToEdit, setFormOpen }: ProductFormProps) {
         />
         <FormField
           control={form.control}
-          name="category"
+          name="mainCategoryId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category</FormLabel>
+              <FormLabel>Main Category</FormLabel>
               <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a category" />
+                    <SelectValue placeholder="Select a main category" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {categories.map(cat => (
-                    <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>
+                  {mainCategories.map(cat => (
+                    <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="subCategoryId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Sub Category</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value} disabled={!watchMainCategory}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a sub category" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {filteredSubcategories.map(cat => (
+                    <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

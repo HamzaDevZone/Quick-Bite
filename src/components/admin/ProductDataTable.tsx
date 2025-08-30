@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -29,8 +30,10 @@ import {
 } from '@/components/ui/dialog';
 import type { Product } from '@/lib/types';
 import { useProducts } from '@/hooks/use-products';
+import { useCategories } from '@/hooks/use-categories';
 import { ProductForm } from './ProductForm';
 import { ScrollArea } from '../ui/scroll-area';
+import { Badge } from '../ui/badge';
 
 interface ProductDataTableProps {
   data: Product[];
@@ -38,8 +41,12 @@ interface ProductDataTableProps {
 
 export function ProductDataTable({ data }: ProductDataTableProps) {
   const { deleteProduct } = useProducts();
+  const { mainCategories, subCategories } = useCategories();
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+
+  const mainCategoryMap = useMemo(() => new Map(mainCategories.map(c => [c.id, c.name])), [mainCategories]);
+  const subCategoryMap = useMemo(() => new Map(subCategories.map(c => [c.id, c.name])), [subCategories]);
 
   const handleEdit = (product: Product) => {
     setProductToEdit(product);
@@ -61,7 +68,8 @@ export function ProductDataTable({ data }: ProductDataTableProps) {
               <TableRow>
                 <TableHead>Image</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
+                <TableHead>Main Category</TableHead>
+                <TableHead>Sub Category</TableHead>
                 <TableHead className="text-right">Price</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -80,7 +88,12 @@ export function ProductDataTable({ data }: ProductDataTableProps) {
                     />
                   </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>{product.category}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">{mainCategoryMap.get(product.mainCategoryId) || 'N/A'}</Badge>
+                  </TableCell>
+                   <TableCell>
+                    <Badge variant="outline">{subCategoryMap.get(product.subCategoryId) || 'N/A'}</Badge>
+                  </TableCell>
                   <TableCell className="text-right">PKR {product.price.toFixed(2)}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>

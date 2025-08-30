@@ -1,12 +1,11 @@
+
 'use client';
 
 import { useCart } from '@/hooks/use-cart';
 import { useOrders } from '@/hooks/use-orders';
 import { useSiteSettings } from '@/hooks/use-site-settings';
 import { useToast } from '@/hooks/use-toast';
-import type { ServiceType } from '@/lib/types';
 import { useRouter } from 'next/navigation';
-import { useCategories } from './use-categories';
 
 interface CheckoutValues {
   customerName: string;
@@ -20,7 +19,6 @@ export function useCheckout() {
   const { cart, cartTotal, clearCart } = useCart();
   const { addOrder } = useOrders();
   const { settings } = useSiteSettings();
-  const { categories } = useCategories();
   const deliveryFee = settings.deliveryFee;
   const router = useRouter();
   const { toast } = useToast();
@@ -35,17 +33,23 @@ export function useCheckout() {
       return;
     }
 
-    // Determine the service type from the first item in the cart
-    const firstItemCategoryName = cart[0].product.category;
-    const firstItemCategory = categories.find(c => c.name === firstItemCategoryName);
-    const serviceType: ServiceType = firstItemCategory?.serviceType || 'Food'; // Default to 'Food' if not found
+    // Determine the main category from the first item in the cart
+    const mainCategoryId = cart[0].product.mainCategoryId;
+    if (!mainCategoryId) {
+       toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Could not determine order category. Please try again.',
+      });
+      return;
+    }
 
     const orderData = {
       ...values,
       items: cart,
       total: cartTotal + deliveryFee,
       deliveryFee: deliveryFee,
-      serviceType: serviceType,
+      mainCategoryId: mainCategoryId,
     };
     
     await addOrder(orderData);

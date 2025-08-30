@@ -4,7 +4,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import { collection, getDocs, addDoc, updateDoc, doc, Timestamp, query, where, onSnapshot, orderBy, deleteDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { Order, OrderStatus, OrderItem, ServiceType } from '@/lib/types';
+import type { Order, OrderStatus, OrderItem } from '@/lib/types';
 import { useToast } from './use-toast';
 import { useAuth } from './use-auth';
 
@@ -17,7 +17,7 @@ interface NewOrderData {
     paymentMethod: string;
     deliveryFee: number;
     orderNotes?: string;
-    serviceType: ServiceType; // Add serviceType here
+    mainCategoryId: string;
 }
 
 interface OrderContextType {

@@ -1,5 +1,4 @@
 
-
 "use client"
 import { useState, useRef, useMemo, useEffect } from 'react';
 import Image from 'next/image';
@@ -17,19 +16,20 @@ import Autoplay from "embla-carousel-autoplay"
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useReviews } from '@/hooks/use-reviews';
-import type { Review, Product, ServiceType } from '@/lib/types';
+import type { Review, Product, MainCategory, SubCategory } from '@/lib/types';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { ProductDetailDialog } from '@/components/user/ProductDetailDialog';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 export default function MenuPage() {
-  const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [activeServiceType, setActiveServiceType] = useState<ServiceType>('Food');
+  const [activeMainCategory, setActiveMainCategory] = useState<string | null>(null);
+  const [activeSubCategory, setActiveSubCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { products, loading: productsLoading } = useProducts();
-  const { categories, loading: categoriesLoading } = useCategories();
+  const { mainCategories, subCategories, loading: categoriesLoading } = useCategories();
   const { settings, isLoading: settingsLoading } = useSiteSettings();
   const { reviews: allReviews, loading: reviewsLoading } = useReviews(null);
   const { user, loading: authLoading } = useAuth();
@@ -40,6 +40,13 @@ export default function MenuPage() {
       router.replace('/login');
     }
   }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (!categoriesLoading && mainCategories.length > 0 && !activeMainCategory) {
+      setActiveMainCategory(mainCategories[0].id);
+    }
+  }, [categoriesLoading, mainCategories, activeMainCategory]);
+
 
   const productsPerPage = 8;
 
@@ -89,20 +96,19 @@ export default function MenuPage() {
     });
   }, [products, productRatings]);
 
-  const categoriesForServiceType = useMemo(() => {
-    return categories.filter(c => c.serviceType === activeServiceType);
-  }, [categories, activeServiceType]);
+  const filteredSubCategories = useMemo(() => {
+    if (!activeMainCategory) return [];
+    return subCategories.filter(sc => sc.mainCategoryId === activeMainCategory);
+  }, [subCategories, activeMainCategory]);
 
   const filteredProducts = useMemo(() => {
-    if (categoriesLoading) return []; // Don't filter until categories are loaded
     return sortedProducts.filter(product => {
-      const productCategoryInfo = categories.find(c => c.name === product.category);
-      const serviceTypeMatch = productCategoryInfo?.serviceType === activeServiceType;
-      const categoryMatch = activeCategory === 'all' || product.category.toLowerCase().replace(/\s+/g, '-') === activeCategory;
+      const mainCategoryMatch = product.mainCategoryId === activeMainCategory;
+      const subCategoryMatch = activeSubCategory === 'all' || product.subCategoryId === activeSubCategory;
       const searchMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-      return serviceTypeMatch && categoryMatch && searchMatch;
+      return mainCategoryMatch && subCategoryMatch && searchMatch;
     });
-  }, [sortedProducts, categories, activeServiceType, activeCategory, searchTerm, categoriesLoading]);
+  }, [sortedProducts, activeMainCategory, activeSubCategory, searchTerm]);
 
   const isLoading = productsLoading || categoriesLoading || settingsLoading || reviewsLoading || authLoading;
 
@@ -118,9 +124,9 @@ export default function MenuPage() {
     }
   };
 
-  const handleServiceTypeChange = (serviceType: ServiceType) => {
-    setActiveServiceType(serviceType);
-    setActiveCategory('all');
+  const handleMainCategoryChange = (mainCategoryId: string) => {
+    setActiveMainCategory(mainCategoryId);
+    setActiveSubCategory('all');
     setCurrentPage(1);
   }
   
@@ -211,53 +217,34 @@ export default function MenuPage() {
                 </div>
             </div>
 
-            <div className="flex justify-center gap-2 mb-8 border-b-2 border-primary/20 pb-4">
-              <Button 
-                size="lg"
-                variant={activeServiceType === 'Food' ? 'default' : 'outline'}
-                onClick={() => handleServiceTypeChange('Food')}
-                className="rounded-full gap-2 transition-all duration-300"
-              >
-                <Utensils className="w-5 h-5"/>
-                Food
-              </Button>
-               <Button 
-                size="lg"
-                variant={activeServiceType === 'Grocery' ? 'default' : 'outline'}
-                onClick={() => handleServiceTypeChange('Grocery')}
-                className="rounded-full gap-2 transition-all duration-300"
-              >
-                <ShoppingBasket className="w-5 h-5"/>
-                Grocery
-              </Button>
-               <Button 
-                size="lg"
-                variant={activeServiceType === 'Electronics' ? 'default' : 'outline'}
-                onClick={() => handleServiceTypeChange('Electronics')}
-                className="rounded-full gap-2 transition-all duration-300"
-              >
-                <HardDrive className="w-5 h-5"/>
-                Electronics
-              </Button>
+            <div className="mb-4">
+                <ScrollArea className="w-full whitespace-nowrap">
+                    <div className="flex justify-center gap-2 pb-4">
+                    {mainCategories.map(mc => (
+                        <Button 
+                            key={mc.id}
+                            size="lg"
+                            variant={activeMainCategory === mc.id ? 'default' : 'outline'}
+                            onClick={() => handleMainCategoryChange(mc.id)}
+                            className="rounded-full gap-2 transition-all duration-300"
+                        >
+                            <Utensils className="w-5 h-5"/>
+                            {mc.name}
+                        </Button>
+                    ))}
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
             </div>
             
-            {isLoading ? (
-                <div className="flex justify-center space-x-4 p-4">
-                    <Skeleton className="h-24 w-24 rounded-full" />
-                    <Skeleton className="h-24 w-24 rounded-full" />
-                    <Skeleton className="h-24 w-24 rounded-full" />
-                    <Skeleton className="h-24 w-24 rounded-full" />
-                </div>
-            ) : (
-                <CategoryTabs 
-                categories={categoriesForServiceType}
-                activeCategory={activeCategory}
-                setActiveCategory={(category) => {
-                  setActiveCategory(category);
-                  setCurrentPage(1); // Reset to first page on category change
-                }}
-                />
-            )}
+            <CategoryTabs 
+              categories={filteredSubCategories}
+              activeCategory={activeSubCategory}
+              setActiveCategory={(category) => {
+                setActiveSubCategory(category);
+                setCurrentPage(1);
+              }}
+            />
 
             <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-8 min-h-[500px]">
                 {isLoading ? (
