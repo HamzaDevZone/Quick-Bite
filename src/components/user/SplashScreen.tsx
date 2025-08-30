@@ -18,7 +18,7 @@ export function SplashScreen() {
           className="text-4xl md:text-5xl font-bold text-foreground mt-6 font-headline"
           style={{textShadow: '2px 2px 8px hsl(var(--background))'}}
         >
-          QuickBite
+          NexusMart
         </h1>
       </div>
     </div>

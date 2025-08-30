@@ -40,8 +40,8 @@ export function ProductDetailDialog({ product, isOpen, onOpenChange }: ProductDe
 
   return (
      <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-md max-h-[90vh] flex flex-col p-0">
-            <DialogHeader className="p-6 pb-0">
+        <DialogContent className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0">
+            <DialogHeader className="p-6 pb-0 relative">
                 <DialogTitle className="sr-only">{product.name}</DialogTitle>
                 <DialogDescription className="sr-only">{product.description}</DialogDescription>
                  <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground z-10">
@@ -49,64 +49,64 @@ export function ProductDetailDialog({ product, isOpen, onOpenChange }: ProductDe
                     <span className="sr-only">Close</span>
                 </DialogClose>
             </DialogHeader>
+            <div className="relative aspect-video rounded-lg overflow-hidden shadow-lg mt-0">
+                <Image
+                src={product.imageUrl}
+                alt={product.name}
+                fill
+                quality={75}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                style={{ objectFit: 'cover' }}
+                className="transition-transform duration-500 hover:scale-105"
+                data-ai-hint="food item detail"
+                />
+            </div>
             <ScrollArea className="flex-grow">
-                <div className="flex flex-col gap-4 px-6 pb-6">
-                    <div className="relative aspect-video rounded-lg overflow-hidden shadow-lg -mx-6 mt-0">
-                        <Image
-                        src={product.imageUrl}
-                        alt={product.name}
-                        fill
-                        quality={75}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        style={{ objectFit: 'cover' }}
-                        className="transition-transform duration-500 hover:scale-105"
-                        data-ai-hint="food item detail"
-                        />
-                    </div>
-                    <div className="flex flex-col gap-4 p-1">
-                        <h1 className="text-3xl font-bold font-headline text-primary">{product.name}</h1>
-                        <p className="text-md text-muted-foreground">{product.description}</p>
-                        <p className="text-3xl font-extrabold text-accent">PKR {product.price.toFixed(2)}</p>
-                        <div className="flex items-center gap-4 pt-4">
-                        <div className="flex items-center border rounded-md">
-                            <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(-1)}>
-                            <Minus className="w-4 h-4" />
-                            </Button>
-                            <Input
-                            type="number"
-                            value={quantity}
-                            readOnly
-                            className="w-16 text-center border-0 bg-transparent focus-visible:ring-0"
-                            />
-                            <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(1)}>
-                            <Plus className="w-4 h-4" />
-                            </Button>
-                        </div>
-                        <Button size="lg" className="flex-grow rounded-full" onClick={handleAddToCart}>
-                            Add to Cart
-                        </Button>
-                        </div>
-
-                         {inquiryLink && (
-                          <>
-                            <div className="flex items-center gap-4 my-2">
-                                <Separator className="flex-1" />
-                                <span className="text-xs text-muted-foreground">OR</span>
-                                <Separator className="flex-1" />
-                            </div>
-                            <Button variant="outline" asChild className="w-full rounded-full">
-                                <Link href={inquiryLink} target="_blank" rel="noopener noreferrer">
-                                  {inquiryLogo && (
-                                    <Image src={inquiryLogo} alt="Inquiry" width={20} height={20} className="mr-2 rounded-sm" data-ai-hint="chat logo"/>
-                                  )}
-                                  Contact for Details
-                                </Link>
-                            </Button>
-                          </>
-                        )}
-                    </div>
+                 <div className="p-6 pt-4 flex flex-col gap-4">
+                    <h1 className="text-3xl font-bold font-headline text-primary">{product.name}</h1>
+                    <p className="text-md text-muted-foreground">{product.description}</p>
+                    <p className="text-3xl font-extrabold text-accent">PKR {product.price.toFixed(2)}</p>
                 </div>
             </ScrollArea>
+             <div className="p-6 pt-2 border-t mt-auto">
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center border rounded-full">
+                        <Button variant="ghost" size="icon" className="rounded-full" onClick={() => handleQuantityChange(-1)}>
+                        <Minus className="w-4 h-4" />
+                        </Button>
+                        <Input
+                        type="number"
+                        value={quantity}
+                        readOnly
+                        className="w-12 text-center border-0 bg-transparent focus-visible:ring-0"
+                        />
+                        <Button variant="ghost" size="icon" className="rounded-full" onClick={() => handleQuantityChange(1)}>
+                        <Plus className="w-4 h-4" />
+                        </Button>
+                    </div>
+                    <Button size="lg" className="flex-grow rounded-full" onClick={handleAddToCart}>
+                        Add to Cart
+                    </Button>
+                </div>
+
+                {inquiryLink && (
+                    <>
+                    <div className="flex items-center gap-4 my-4">
+                        <Separator className="flex-1" />
+                        <span className="text-xs text-muted-foreground">OR</span>
+                        <Separator className="flex-1" />
+                    </div>
+                    <Button variant="outline" asChild className="w-full rounded-full">
+                        <Link href={inquiryLink} target="_blank" rel="noopener noreferrer">
+                            {inquiryLogo && (
+                            <Image src={inquiryLogo} alt="Inquiry" width={20} height={20} className="mr-2 rounded-sm" data-ai-hint="chat logo"/>
+                            )}
+                            Contact for Details
+                        </Link>
+                    </Button>
+                    </>
+                )}
+            </div>
         </DialogContent>
      </Dialog>
   );
