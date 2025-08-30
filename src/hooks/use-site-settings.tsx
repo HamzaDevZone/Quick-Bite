@@ -34,6 +34,8 @@ const defaultSettings: SiteSettings = {
   whatsappUrl: 'https://wa.me/923001234567',
   facebookUrl: 'https://facebook.com',
   instagramUrl: 'https://instagram.com',
+  productInquiryLink: 'https://wa.me/923001234567',
+  productInquiryLogoUrl: 'https://i.ibb.co/6yZ2rLw/whatsapp-logo.png',
 };
 
 export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {

@@ -10,6 +10,9 @@ import { Minus, Plus, X } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { ScrollArea } from '../ui/scroll-area';
+import { useSiteSettings } from '@/hooks/use-site-settings';
+import Link from 'next/link';
+import { Separator } from '../ui/separator';
 
 
 interface ProductDetailDialogProps {
@@ -21,6 +24,7 @@ interface ProductDetailDialogProps {
 export function ProductDetailDialog({ product, isOpen, onOpenChange }: ProductDetailDialogProps) {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
+  const { settings } = useSiteSettings();
 
   const handleQuantityChange = (amount: number) => {
     setQuantity(prev => Math.max(1, prev + amount));
@@ -30,6 +34,9 @@ export function ProductDetailDialog({ product, isOpen, onOpenChange }: ProductDe
     addToCart(product, quantity);
     onOpenChange(false); // Close dialog after adding to cart
   };
+
+  const inquiryLink = settings.productInquiryLink;
+  const inquiryLogo = settings.productInquiryLogoUrl;
 
   return (
      <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -75,6 +82,24 @@ export function ProductDetailDialog({ product, isOpen, onOpenChange }: ProductDe
                             Add to Cart
                         </Button>
                         </div>
+
+                         {inquiryLink && (
+                          <>
+                            <div className="flex items-center gap-4 my-2">
+                                <Separator className="flex-1" />
+                                <span className="text-xs text-muted-foreground">OR</span>
+                                <Separator className="flex-1" />
+                            </div>
+                            <Button variant="outline" asChild className="w-full rounded-full">
+                                <Link href={inquiryLink} target="_blank" rel="noopener noreferrer">
+                                  {inquiryLogo && (
+                                    <Image src={inquiryLogo} alt="Inquiry" width={20} height={20} className="mr-2 rounded-sm" data-ai-hint="chat logo"/>
+                                  )}
+                                  Contact for Details
+                                </Link>
+                            </Button>
+                          </>
+                        )}
                     </div>
                 </div>
             </ScrollArea>

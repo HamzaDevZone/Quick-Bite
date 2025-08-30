@@ -25,6 +25,8 @@ const appearanceFormSchema = z.object({
   whatsappUrl: z.string().url('Please enter a valid WhatsApp URL.').optional().or(z.literal('')),
   facebookUrl: z.string().url('Please enter a valid URL.').optional().or(z.literal('')),
   instagramUrl: z.string().url('Please enter a valid URL.').optional().or(z.literal('')),
+  productInquiryLink: z.string().url('Please enter a valid URL.').optional().or(z.literal('')),
+  productInquiryLogoUrl: z.string().url('Please enter a valid URL.').optional().or(z.literal('')),
 });
 
 export default function AdminAppearancePage() {
@@ -211,6 +213,34 @@ export default function AdminAppearancePage() {
                     <FormLabel>Developer's Instagram Profile URL</FormLabel>
                     <FormControl>
                       <Input placeholder="https://instagram.com/your-profile" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Separator />
+              <h3 className="text-lg font-medium pt-4">Product Inquiry</h3>
+               <FormField
+                control={form.control}
+                name="productInquiryLink"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Product Inquiry Link</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. https://wa.me/your-number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="productInquiryLogoUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Product Inquiry Logo URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. https://example.com/logo.png" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

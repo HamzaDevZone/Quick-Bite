@@ -89,4 +89,6 @@ export interface SiteSettings {
   whatsappUrl?: string;
   facebookUrl?: string;
   instagramUrl?: string;
+  productInquiryLink?: string;
+  productInquiryLogoUrl?: string;
 }
