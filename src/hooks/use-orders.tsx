@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
@@ -83,17 +84,17 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         const storedOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
         setUserOrderIds(storedOrderIds);
         if (storedOrderIds.length > 0) {
-          q = query(collection(db, 'orders'), where('id', 'in', storedOrderIds));
+          q = query(collection(db, 'orders'), where('__name__', 'in', storedOrderIds));
         } else {
           setOrders([]);
           setLoading(false);
-          return;
+          return; // Guard clause to exit if no orders for guest
         }
       } catch (error) {
         console.error("Could not load guest order IDs from localStorage", error);
         setOrders([]);
         setLoading(false);
-        return;
+        return; // Guard clause on error
       }
     }
 
