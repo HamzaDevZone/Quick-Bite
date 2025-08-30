@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import Image from 'next/image';
@@ -8,15 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Product } from '@/lib/types';
 import { useCart } from '@/hooks/use-cart';
-import { StarRating } from './StarRating';
 
 interface ProductCardProps {
   product: Product;
-  rating: number;
-  reviewCount: number;
 }
 
-export function ProductCard({ product, rating, reviewCount }: ProductCardProps) {
+export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -44,10 +40,6 @@ export function ProductCard({ product, rating, reviewCount }: ProductCardProps) 
       <CardContent className="p-4 flex-grow flex flex-col">
           <CardTitle className="text-lg font-bold mb-1 leading-tight text-foreground">{product.name}</CardTitle>
           <p className="text-sm text-muted-foreground flex-grow line-clamp-2">{product.description}</p>
-          <div className="flex items-center gap-2 mt-2">
-            <StarRating rating={rating} readOnly size={16} />
-            <span className="text-xs text-muted-foreground">({reviewCount})</span>
-          </div>
       </CardContent>
       <CardFooter className="p-4 flex items-center justify-between">
         <span className="text-xl font-bold text-primary">PKR {product.price.toFixed(2)}</span>
@@ -58,5 +50,3 @@ export function ProductCard({ product, rating, reviewCount }: ProductCardProps) 
     </Card>
   );
 }
-
-    

@@ -15,15 +15,20 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import Autoplay from "embla-carousel-autoplay"
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useReviews } from '@/hooks/use-reviews';
-import type { Review, Product, MainCategory, SubCategory } from '@/lib/types';
+import type { Product, MainCategory, SubCategory, ServiceType } from '@/lib/types';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { ProductDetailDialog } from '@/components/user/ProductDetailDialog';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
+const serviceTypes: { id: ServiceType, name: string, icon: React.ElementType }[] = [
+    { id: 'Food', name: 'Food', icon: Utensils },
+    { id: 'Grocery', name: 'Grocery', icon: ShoppingBasket },
+    { id: 'Electronics', name: 'Electronics', icon: HardDrive },
+];
+
 export default function MenuPage() {
-  const [activeMainCategory, setActiveMainCategory] = useState<string | null>(null);
+  const [activeServiceType, setActiveServiceType] = useState<ServiceType>('Food');
   const [activeSubCategory, setActiveSubCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,7 +36,6 @@ export default function MenuPage() {
   const { products, loading: productsLoading } = useProducts();
   const { mainCategories, subCategories, loading: categoriesLoading } = useCategories();
   const { settings, isLoading: settingsLoading } = useSiteSettings();
-  const { reviews: allReviews, loading: reviewsLoading } = useReviews(null);
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
@@ -40,13 +44,6 @@ export default function MenuPage() {
       router.replace('/login');
     }
   }, [user, authLoading, router]);
-
-  useEffect(() => {
-    if (!categoriesLoading && mainCategories.length > 0 && !activeMainCategory) {
-      setActiveMainCategory(mainCategories[0].id);
-    }
-  }, [categoriesLoading, mainCategories, activeMainCategory]);
-
 
   const productsPerPage = 8;
 
@@ -61,56 +58,26 @@ export default function MenuPage() {
       { src: settings.menuCarouselImage4, alt: 'Spicy chicken wings', hint: 'chicken wings' },
   ]
 
-  const productRatings = useMemo(() => {
-    if (reviewsLoading) return {};
-    const ratings: Record<string, { total: number; count: number; average: number }> = {};
-
-    allReviews.forEach((review: Review) => {
-      if (!ratings[review.productId]) {
-        ratings[review.productId] = { total: 0, count: 0, average: 0 };
-      }
-      ratings[review.productId].total += review.rating;
-      ratings[review.productId].count++;
-    });
-    
-    for (const productId in ratings) {
-        ratings[productId].average = ratings[productId].total / ratings[productId].count;
-    }
-
-    return ratings;
-  }, [allReviews, reviewsLoading]);
-
-
-  const sortedProducts = useMemo(() => {
-    return [...products].reverse().sort((a, b) => {
-        const ratingA = productRatings[a.id]?.average || 0;
-        const ratingB = productRatings[b.id]?.average || 0;
-        
-        if (ratingA > 0 && ratingB > 0) {
-            return ratingB - ratingA;
-        }
-        if (ratingB > 0) return 1;
-        if (ratingA > 0) return -1;
-        
-        return 0;
-    });
-  }, [products, productRatings]);
+  const filteredMainCategories = useMemo(() => {
+    return mainCategories.filter(mc => mc.serviceType === activeServiceType);
+  }, [mainCategories, activeServiceType]);
 
   const filteredSubCategories = useMemo(() => {
-    if (!activeMainCategory) return [];
-    return subCategories.filter(sc => sc.mainCategoryId === activeMainCategory);
-  }, [subCategories, activeMainCategory]);
+    const mainCategoryIds = filteredMainCategories.map(mc => mc.id);
+    return subCategories.filter(sc => mainCategoryIds.includes(sc.mainCategoryId));
+  }, [subCategories, filteredMainCategories]);
 
   const filteredProducts = useMemo(() => {
-    return sortedProducts.filter(product => {
-      const mainCategoryMatch = product.mainCategoryId === activeMainCategory;
+    const mainCategoryIds = filteredMainCategories.map(mc => mc.id);
+    return products.filter(product => {
+      const serviceMatch = mainCategoryIds.includes(product.mainCategoryId);
       const subCategoryMatch = activeSubCategory === 'all' || product.subCategoryId === activeSubCategory;
       const searchMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-      return mainCategoryMatch && subCategoryMatch && searchMatch;
+      return serviceMatch && subCategoryMatch && searchMatch;
     });
-  }, [sortedProducts, activeMainCategory, activeSubCategory, searchTerm]);
+  }, [products, filteredMainCategories, activeSubCategory, searchTerm]);
 
-  const isLoading = productsLoading || categoriesLoading || settingsLoading || reviewsLoading || authLoading;
+  const isLoading = productsLoading || categoriesLoading || settingsLoading || authLoading;
 
   // Pagination Logic
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -124,9 +91,14 @@ export default function MenuPage() {
     }
   };
 
-  const handleMainCategoryChange = (mainCategoryId: string) => {
-    setActiveMainCategory(mainCategoryId);
+  const handleServiceTypeChange = (service: ServiceType) => {
+    setActiveServiceType(service);
     setActiveSubCategory('all');
+    setCurrentPage(1);
+  }
+
+  const handleSubCategoryChange = (subCategoryId: string) => {
+    setActiveSubCategory(subCategoryId);
     setCurrentPage(1);
   }
   
@@ -220,18 +192,21 @@ export default function MenuPage() {
             <div className="mb-4">
                 <ScrollArea className="w-full whitespace-nowrap">
                     <div className="flex justify-center gap-2 pb-4">
-                    {mainCategories.map(mc => (
-                        <Button 
-                            key={mc.id}
-                            size="lg"
-                            variant={activeMainCategory === mc.id ? 'default' : 'outline'}
-                            onClick={() => handleMainCategoryChange(mc.id)}
-                            className="rounded-full gap-2 transition-all duration-300"
-                        >
-                            <Utensils className="w-5 h-5"/>
-                            {mc.name}
-                        </Button>
-                    ))}
+                    {serviceTypes.map(st => {
+                        const Icon = st.icon;
+                        return (
+                            <Button 
+                                key={st.id}
+                                size="lg"
+                                variant={activeServiceType === st.id ? 'default' : 'outline'}
+                                onClick={() => handleServiceTypeChange(st.id)}
+                                className="rounded-full gap-2 transition-all duration-300"
+                            >
+                                <Icon className="w-5 h-5"/>
+                                {st.name}
+                            </Button>
+                        )
+                    })}
                     </div>
                     <ScrollBar orientation="horizontal" />
                 </ScrollArea>
@@ -240,10 +215,7 @@ export default function MenuPage() {
             <CategoryTabs 
               categories={filteredSubCategories}
               activeCategory={activeSubCategory}
-              setActiveCategory={(category) => {
-                setActiveSubCategory(category);
-                setCurrentPage(1);
-              }}
+              setActiveCategory={handleSubCategoryChange}
             />
 
             <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-8 min-h-[500px]">
@@ -256,8 +228,6 @@ export default function MenuPage() {
                       <div key={product.id} onClick={() => setSelectedProduct(product)} className="cursor-pointer">
                         <ProductCard 
                           product={product} 
-                          rating={productRatings[product.id]?.average || 0}
-                          reviewCount={productRatings[product.id]?.count || 0}
                         />
                       </div>
                     ))

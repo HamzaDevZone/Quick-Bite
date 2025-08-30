@@ -11,9 +11,12 @@ export interface Product {
   imageUrl: string;
 }
 
+export type ServiceType = 'Food' | 'Grocery' | 'Electronics';
+
 export interface MainCategory {
   id: string;
   name: string;
+  serviceType: ServiceType;
 }
 
 export interface SubCategory {
@@ -67,6 +70,7 @@ export interface Order {
   deliveryFee: number;
   orderNotes?: string;
   mainCategoryId: string;
+  serviceType: ServiceType;
 }
 
 export interface PaymentMethod {
@@ -89,13 +93,4 @@ export interface SiteSettings {
   whatsappUrl?: string;
   facebookUrl?: string;
   instagramUrl?: string;
-}
-
-export interface Review {
-  id: string;
-  productId: string;
-  customerName: string;
-  rating: number; // 1 to 5
-  feedback: string;
-  createdAt: Timestamp;
 }
