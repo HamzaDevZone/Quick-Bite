@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation';
 import { ProductDetailClient } from './ProductDetailClient';
 
 // This function tells Next.js not to pre-render any product pages at build time.
-// They will be rendered on-demand on the client-side.
+// They will be rendered on-demand when the user visits them. This is required for "output: export".
 export async function generateStaticParams() {
   return [];
 }
