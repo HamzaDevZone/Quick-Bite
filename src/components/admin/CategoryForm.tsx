@@ -36,7 +36,11 @@ export function CategoryForm({ categoryToEdit, setFormOpen }: CategoryFormProps)
 
   useEffect(() => {
     if (categoryToEdit) {
-      form.reset(categoryToEdit);
+      form.reset({
+        name: categoryToEdit.name,
+        iconUrl: categoryToEdit.iconUrl,
+        serviceType: categoryToEdit.serviceType,
+      });
     } else {
         form.reset({
             name: '',
