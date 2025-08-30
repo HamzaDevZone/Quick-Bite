@@ -14,8 +14,6 @@ import { Separator } from '@/components/ui/separator';
 
 const appearanceFormSchema = z.object({
   heroImageUrl: z.string().url('Please enter a valid URL.'),
-  splashImageUrl: z.string().url('Please enter a valid URL.'),
-  splashLogoUrl: z.string().url('Please enter a valid URL.'),
   menuImageUrl: z.string().url('Please enter a valid URL.'),
   deliveryFee: z.coerce.number().min(0, 'Delivery fee cannot be negative.'),
   menuCarouselImage1: z.string().url('Please enter a valid URL.'),
@@ -66,32 +64,6 @@ export default function AdminAppearancePage() {
                     <FormLabel>Home Page Hero Image URL</FormLabel>
                     <FormControl>
                       <Input placeholder="https://example.com/your-image.png" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-               <FormField
-                control={form.control}
-                name="splashImageUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Splash Screen Background URL</FormLabel>
-                    <FormControl>
-                      <Input placeholder="https://example.com/splash-bg.png" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-               <FormField
-                control={form.control}
-                name="splashLogoUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Splash Screen Logo URL</FormLabel>
-                    <FormControl>
-                      <Input placeholder="https://example.com/splash-logo.png" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

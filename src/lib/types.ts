@@ -77,10 +77,8 @@ export interface PaymentMethod {
 
 export interface SiteSettings {
   heroImageUrl: string;
-  splashImageUrl: string;
   menuImageUrl: string;
   deliveryFee: number;
-  splashLogoUrl: string;
   menuCarouselImage1: string;
   menuCarouselImage2: string;
   menuCarouselImage3: string;

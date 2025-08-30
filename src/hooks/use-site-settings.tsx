@@ -19,9 +19,7 @@ const SiteSettingsContext = createContext<SiteSettingsContextType | undefined>(u
 // Default settings
 const defaultSettings: SiteSettings = {
   heroImageUrl: 'https://i.ibb.co/qCXJ4tM/hero-bg.png',
-  splashImageUrl: 'https://i.ibb.co/6PzD4gQ/splash-bg.png',
   menuImageUrl: 'https://i.ibb.co/M5pS1sV/menu-bg.png',
-  splashLogoUrl: 'https://i.ibb.co/P9gL6M1/logo.png',
   deliveryFee: 150,
   menuCarouselImage1: 'https://picsum.photos/1200/500',
   menuCarouselImage2: 'https://picsum.photos/1200/501',
