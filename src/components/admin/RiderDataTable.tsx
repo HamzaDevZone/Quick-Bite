@@ -30,7 +30,7 @@ import {
 import type { Rider } from '@/lib/types';
 import { useRiders } from '@/hooks/use-riders';
 import { RiderForm } from './RiderForm';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 import { ScrollArea } from '../ui/scroll-area';
 
 interface RiderDataTableProps {
