@@ -14,6 +14,11 @@ interface CategoryTabsProps {
 }
 
 export function CategoryTabs({ categories, activeCategory, setActiveCategory }: CategoryTabsProps) {
+  // If there are no categories for the selected service type, don't render anything.
+  if (categories.length === 0) {
+    return null;
+  }
+
   return (
     <div className="relative">
       <ScrollArea className="w-full whitespace-nowrap">

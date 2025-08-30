@@ -93,13 +93,16 @@ export default function MenuPage() {
     return categories.filter(c => c.serviceType === activeServiceType);
   }, [categories, activeServiceType]);
 
-  const filteredProducts = sortedProducts.filter(product => {
-    const productCategory = categories.find(c => c.name === product.category);
-    const serviceTypeMatch = productCategory?.serviceType === activeServiceType;
-    const categoryMatch = activeCategory === 'all' || product.category.toLowerCase().replace(/\s+/g, '-') === activeCategory;
-    const searchMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return serviceTypeMatch && categoryMatch && searchMatch;
-  });
+  const filteredProducts = useMemo(() => {
+    if (categoriesLoading) return []; // Don't filter until categories are loaded
+    return sortedProducts.filter(product => {
+      const productCategoryInfo = categories.find(c => c.name === product.category);
+      const serviceTypeMatch = productCategoryInfo?.serviceType === activeServiceType;
+      const categoryMatch = activeCategory === 'all' || product.category.toLowerCase().replace(/\s+/g, '-') === activeCategory;
+      const searchMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+      return serviceTypeMatch && categoryMatch && searchMatch;
+    });
+  }, [sortedProducts, categories, activeServiceType, activeCategory, searchTerm, categoriesLoading]);
 
   const isLoading = productsLoading || categoriesLoading || settingsLoading || reviewsLoading || authLoading;
 
