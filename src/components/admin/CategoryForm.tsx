@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -47,7 +48,7 @@ export function CategoryForm({ categoryToEdit, setFormOpen }: CategoryFormProps)
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (categoryToEdit) {
-      updateCategory({ ...categoryToEdit, ...values });
+      updateCategory(categoryToEdit.id, values);
     } else {
       addCategory(values);
     }
@@ -89,7 +90,7 @@ export function CategoryForm({ categoryToEdit, setFormOpen }: CategoryFormProps)
           render={({ field }) => (
             <FormItem>
               <FormLabel>Service Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a service type" />
