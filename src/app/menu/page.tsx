@@ -222,7 +222,11 @@ export default function MenuPage() {
                 ) : currentProducts.length > 0 ? (
                     currentProducts.map(product => (
                       <div key={product.id} onClick={() => setSelectedProduct(product)} className="cursor-pointer">
-                        <ProductCard product={product} />
+                        <ProductCard 
+                          product={product} 
+                          rating={productRatings[product.id]?.average || 0}
+                          reviewCount={productRatings[product.id]?.count || 0}
+                        />
                       </div>
                     ))
                 ) : (
@@ -316,3 +320,5 @@ const CardSkeleton = () => (
     </div>
   </div>
 );
+
+    
