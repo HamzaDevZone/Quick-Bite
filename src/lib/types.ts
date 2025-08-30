@@ -1,6 +1,8 @@
 
 import type { Timestamp } from 'firebase/firestore';
 
+export type ServiceType = 'Food' | 'Grocery';
+
 export interface Product {
   id: string;
   name: string;
@@ -14,6 +16,7 @@ export interface Category {
   id:string;
   name: string;
   iconUrl: string;
+  serviceType: ServiceType;
 }
 
 export interface CartItem {

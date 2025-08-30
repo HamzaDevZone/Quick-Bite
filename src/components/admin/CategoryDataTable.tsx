@@ -32,6 +32,7 @@ import { useCategories } from '@/hooks/use-categories';
 import { CategoryForm } from './CategoryForm';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { ScrollArea } from '../ui/scroll-area';
+import { Badge } from '../ui/badge';
 
 interface CategoryDataTableProps {
   data: Category[];
@@ -62,6 +63,7 @@ export function CategoryDataTable({ data }: CategoryDataTableProps) {
               <TableRow>
                 <TableHead>Icon</TableHead>
                 <TableHead>Name</TableHead>
+                <TableHead>Service Type</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -75,6 +77,11 @@ export function CategoryDataTable({ data }: CategoryDataTableProps) {
                     </Avatar>
                   </TableCell>
                   <TableCell className="font-medium">{category.name}</TableCell>
+                  <TableCell>
+                    <Badge variant={category.serviceType === 'Food' ? 'default' : 'secondary'}>
+                      {category.serviceType}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

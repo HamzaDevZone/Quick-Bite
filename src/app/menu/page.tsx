@@ -4,7 +4,7 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
-import { Search, Utensils } from 'lucide-react';
+import { Search, Utensils, ShoppingBasket } from 'lucide-react';
 import { ProductCard } from '@/components/user/ProductCard';
 import { CategoryTabs } from '@/components/user/CategoryTabs';
 import { UserHeader } from '@/components/user/Header';
@@ -17,13 +17,14 @@ import Autoplay from "embla-carousel-autoplay"
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useReviews } from '@/hooks/use-reviews';
-import type { Review, Product } from '@/lib/types';
+import type { Review, Product, ServiceType } from '@/lib/types';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { ProductDetailDialog } from '@/components/user/ProductDetailDialog';
 
 export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [activeServiceType, setActiveServiceType] = useState<ServiceType>('Food');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -88,11 +89,16 @@ export default function MenuPage() {
     });
   }, [products, productRatings]);
 
+  const categoriesForServiceType = useMemo(() => {
+    return categories.filter(c => c.serviceType === activeServiceType);
+  }, [categories, activeServiceType]);
 
   const filteredProducts = sortedProducts.filter(product => {
+    const productCategory = categories.find(c => c.name === product.category);
+    const serviceTypeMatch = productCategory?.serviceType === activeServiceType;
     const categoryMatch = activeCategory === 'all' || product.category.toLowerCase().replace(/\s+/g, '-') === activeCategory;
     const searchMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return categoryMatch && searchMatch;
+    return serviceTypeMatch && categoryMatch && searchMatch;
   });
 
   const isLoading = productsLoading || categoriesLoading || settingsLoading || reviewsLoading || authLoading;
@@ -174,7 +180,7 @@ export default function MenuPage() {
                   Our Menu
                 </h1>
                 <p className="text-lg text-white/90 drop-shadow-md">
-                  Delicious food, ready to be delivered fast to your door.
+                  Delicious food, groceries, and more, delivered fast to your door.
                 </p>
             </div>
           </section>
@@ -195,6 +201,35 @@ export default function MenuPage() {
                 />
                 </div>
             </div>
+
+            <div className="flex justify-center gap-2 mb-8 border-b-2 border-primary/20 pb-4">
+              <Button 
+                size="lg"
+                variant={activeServiceType === 'Food' ? 'default' : 'outline'}
+                onClick={() => {
+                  setActiveServiceType('Food');
+                  setActiveCategory('all');
+                  setCurrentPage(1);
+                }}
+                className="rounded-full gap-2 transition-all duration-300"
+              >
+                <Utensils className="w-5 h-5"/>
+                Food
+              </Button>
+               <Button 
+                size="lg"
+                variant={activeServiceType === 'Grocery' ? 'default' : 'outline'}
+                onClick={() => {
+                  setActiveServiceType('Grocery');
+                  setActiveCategory('all');
+                  setCurrentPage(1);
+                }}
+                className="rounded-full gap-2 transition-all duration-300"
+              >
+                <ShoppingBasket className="w-5 h-5"/>
+                Grocery
+              </Button>
+            </div>
             
             {isLoading ? (
                 <div className="flex justify-center space-x-4 p-4">
@@ -205,7 +240,7 @@ export default function MenuPage() {
                 </div>
             ) : (
                 <CategoryTabs 
-                categories={categories}
+                categories={categoriesForServiceType}
                 activeCategory={activeCategory}
                 setActiveCategory={(category) => {
                   setActiveCategory(category);

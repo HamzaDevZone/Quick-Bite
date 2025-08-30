@@ -9,10 +9,12 @@ import { Input } from '@/components/ui/input';
 import type { Category } from '@/lib/types';
 import { useCategories } from '@/hooks/use-categories';
 import { useEffect } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   iconUrl: z.string().url('Please enter a valid URL.'),
+  serviceType: z.enum(['Food', 'Grocery'], { required_error: 'Please select a service type.'}),
 });
 
 interface CategoryFormProps {
@@ -27,12 +29,19 @@ export function CategoryForm({ categoryToEdit, setFormOpen }: CategoryFormProps)
     defaultValues: {
       name: '',
       iconUrl: '',
+      serviceType: 'Food',
     },
   });
 
   useEffect(() => {
     if (categoryToEdit) {
       form.reset(categoryToEdit);
+    } else {
+        form.reset({
+            name: '',
+            iconUrl: '',
+            serviceType: 'Food'
+        });
     }
   }, [categoryToEdit, form]);
 
@@ -70,6 +79,27 @@ export function CategoryForm({ categoryToEdit, setFormOpen }: CategoryFormProps)
               <FormControl>
                 <Input placeholder="https://example.com/icon.png" {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="serviceType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Service Type</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a service type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="Food">Food</SelectItem>
+                  <SelectItem value="Grocery">Grocery</SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
