@@ -35,7 +35,7 @@ export function RiderOrderDataTable({ data }: RiderOrderDataTableProps) {
   };
   
   if (data.length === 0) {
-    return null; // Return nothing if there is no data, the parent will show a message.
+    return null; // The parent component will show a message if there's no data.
   }
 
   return (

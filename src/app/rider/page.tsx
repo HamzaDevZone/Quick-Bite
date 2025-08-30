@@ -4,12 +4,12 @@
 import { RiderOrderDataTable } from '@/components/rider/RiderOrderDataTable';
 import { useOrders } from '@/hooks/use-orders';
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCaption } from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function RiderDashboardPage() {
-    const { orders } = useOrders();
+    const { orders, loading: ordersLoading } = useOrders();
     const [riderId, setRiderId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -24,8 +24,16 @@ export default function RiderDashboardPage() {
     const assignedOrders = orders.filter(order => order.riderId === riderId && order.status !== 'Delivered');
     const completedOrders = orders.filter(order => order.riderId === riderId && order.status === 'Delivered');
 
-    if (isLoading) {
-        return <div>Loading...</div>;
+    const totalLoading = ordersLoading || isLoading;
+
+    if (totalLoading) {
+        return (
+             <div>
+                <h1 className="text-3xl font-bold mb-6 font-headline">Rider Dashboard</h1>
+                <Skeleton className="h-48 w-full" />
+                <Skeleton className="h-48 w-full mt-8" />
+            </div>
+        )
     }
 
     return (

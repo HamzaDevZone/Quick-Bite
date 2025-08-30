@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
@@ -6,10 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useOrders } from '@/hooks/use-orders';
 import { OrderStatus, Order } from '@/lib/types';
-import { ArrowLeft, Check, Bike, Package, Wallet, User, Phone, MapPin, StickyNote, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Check, Package, Wallet, User, Phone, MapPin, StickyNote, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -21,25 +22,24 @@ export default function RiderOrderDetailPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-      const fetchOrder = async () => {
-        if (!params.id) return;
-        setLoading(true);
-        try {
-          const docRef = doc(db, 'orders', params.id as string);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            setOrder({ ...docSnap.data() } as Order);
-          } else {
-            setOrder(null);
-          }
-        } catch (error) {
-          console.error("Failed to fetch order", error);
+      if (!params.id) return;
+      setLoading(true);
+      const docRef = doc(db, 'orders', params.id as string);
+      
+      const unsubscribe = onSnapshot(docRef, (docSnap) => {
+        if (docSnap.exists()) {
+          setOrder({ id: docSnap.id, ...docSnap.data() } as Order);
+        } else {
           setOrder(null);
-        } finally {
-          setLoading(false);
         }
-      };
-      fetchOrder();
+        setLoading(false);
+      }, (error) => {
+        console.error("Failed to fetch order in real-time", error);
+        setOrder(null);
+        setLoading(false);
+      });
+
+      return () => unsubscribe();
     }, [params.id]);
 
 
@@ -81,9 +81,6 @@ export default function RiderOrderDetailPage() {
         updateOrderStatus(order.id, status);
         if (status === 'Delivered') {
             router.push('/rider');
-        } else {
-            // Optimistically update UI
-            setOrder(prev => prev ? { ...prev, status } : null);
         }
     };
 

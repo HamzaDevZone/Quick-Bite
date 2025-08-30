@@ -50,7 +50,7 @@ export function RiderSidebar() {
                             <li key={item.href} className="relative">
                                 <Link href={item.href}>
                                     <Button
-                                        variant={pathname.startsWith(item.href) && (item.href !== '/rider' || pathname === '/rider') ? 'secondary' : 'ghost'}
+                                        variant={pathname === item.href ? 'secondary' : 'ghost'}
                                         className="w-full justify-start"
                                     >
                                         <item.icon className="mr-2 h-5 w-5" />
