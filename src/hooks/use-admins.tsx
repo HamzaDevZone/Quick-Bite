@@ -1,7 +1,8 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Admin } from '@/lib/types';
 import { useToast } from './use-toast';
@@ -21,29 +22,25 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchAdmins = async () => {
+  useEffect(() => {
     setLoading(true);
-    try {
-      const adminsCollection = collection(db, 'admins');
-      const querySnapshot = await getDocs(adminsCollection);
+    const q = query(collection(db, 'admins'), orderBy('name'));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const adminsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Admin));
       setAdmins(adminsData);
-    } catch (error) {
+      setLoading(false);
+    }, (error) => {
       console.error("Error fetching admins: ", error);
       toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch admins.' });
-    } finally {
       setLoading(false);
-    }
-  };
+    });
 
-  useEffect(() => {
-    fetchAdmins();
-  }, []);
+    return () => unsubscribe();
+  }, [toast]);
 
   const addAdmin = async (admin: Omit<Admin, 'id'>) => {
     try {
-      const docRef = await addDoc(collection(db, 'admins'), admin);
-      setAdmins(prevAdmins => [{ ...admin, id: docRef.id }, ...prevAdmins]);
+      await addDoc(collection(db, 'admins'), admin);
       toast({ title: 'Admin Added', description: `${admin.name} has been successfully added.` });
     } catch (error) {
       console.error("Error adding admin: ", error);
@@ -53,11 +50,9 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
 
   const updateAdmin = async (updatedAdmin: Admin) => {
     try {
-      const adminDoc = doc(db, 'admins', updatedAdmin.id);
-      await updateDoc(adminDoc, updatedAdmin);
-      setAdmins(prevAdmins =>
-        prevAdmins.map(a => (a.id === updatedAdmin.id ? updatedAdmin : a))
-      );
+      const { id, ...adminData } = updatedAdmin;
+      const adminDoc = doc(db, 'admins', id);
+      await updateDoc(adminDoc, adminData);
       toast({ title: 'Admin Updated', description: `${updatedAdmin.name} has been successfully updated.` });
     } catch (error) {
       console.error("Error updating admin: ", error);
@@ -72,7 +67,6 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
     }
     try {
       await deleteDoc(doc(db, 'admins', adminId));
-      setAdmins(prevAdmins => prevAdmins.filter(a => a.id !== adminId));
       toast({ variant: 'destructive', title: 'Admin Deleted', description: 'The admin has been successfully deleted.' });
     } catch (error) {
       console.error("Error deleting admin: ", error);
