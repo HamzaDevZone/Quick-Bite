@@ -2,7 +2,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { onAuthStateChanged, User, signOut as firebaseSignOut, UserCredential } from 'firebase/auth';
+import { onAuthStateChanged, User, signOut as firebaseSignOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useToast } from './use-toast';
 import { useRouter } from 'next/navigation';
@@ -32,10 +32,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     try {
       await firebaseSignOut(auth);
-      // Redirect and then force a reload to clear application state.
-      // This prevents users from using the browser's back button to see a cached, logged-in page.
-      window.location.href = '/login'; 
+      // Redirect to a neutral page. Using window.location.href helps ensure
+      // a full page reload, clearing all state.
       toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
+      window.location.href = '/login'; 
     } catch (error) {
       console.error('Logout Error:', error);
       toast({ variant: 'destructive', title: 'Logout Failed', description: 'Could not log you out. Please try again.' });
