@@ -40,14 +40,18 @@ export function ProductDetailDialog({ product, isOpen, onOpenChange }: ProductDe
 
   return (
      <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-md max-h-[90vh] flex flex-col">
-            <DialogHeader>
+        <DialogContent className="max-w-md max-h-[90vh] flex flex-col p-0">
+            <DialogHeader className="p-6 pb-0">
                 <DialogTitle className="sr-only">{product.name}</DialogTitle>
                 <DialogDescription className="sr-only">{product.description}</DialogDescription>
+                 <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground z-10">
+                    <X className="h-4 w-4" />
+                    <span className="sr-only">Close</span>
+                </DialogClose>
             </DialogHeader>
-            <ScrollArea className="h-full">
-                <div className="flex flex-col gap-4 pr-4">
-                    <div className="relative aspect-video rounded-lg overflow-hidden shadow-lg">
+            <ScrollArea className="flex-grow">
+                <div className="flex flex-col gap-4 px-6 pb-6">
+                    <div className="relative aspect-video rounded-lg overflow-hidden shadow-lg -mx-6 mt-0">
                         <Image
                         src={product.imageUrl}
                         alt={product.name}
@@ -103,10 +107,6 @@ export function ProductDetailDialog({ product, isOpen, onOpenChange }: ProductDe
                     </div>
                 </div>
             </ScrollArea>
-            <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-                <X className="h-4 w-4" />
-                <span className="sr-only">Close</span>
-            </DialogClose>
         </DialogContent>
      </Dialog>
   );
