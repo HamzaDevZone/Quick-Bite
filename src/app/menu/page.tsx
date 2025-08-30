@@ -17,14 +17,16 @@ import Autoplay from "embla-carousel-autoplay"
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useReviews } from '@/hooks/use-reviews';
-import type { Review } from '@/lib/types';
+import type { Review, Product } from '@/lib/types';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
+import { ProductDetailDialog } from '@/components/user/ProductDetailDialog';
 
 export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { products, loading: productsLoading } = useProducts();
   const { categories, loading: categoriesLoading } = useCategories();
   const { settings, isLoading: settingsLoading } = useSiteSettings();
@@ -219,7 +221,9 @@ export default function MenuPage() {
                 ))
                 ) : currentProducts.length > 0 ? (
                     currentProducts.map(product => (
-                    <ProductCard key={product.id} product={product} />
+                      <div key={product.id} onClick={() => setSelectedProduct(product)} className="cursor-pointer">
+                        <ProductCard product={product} />
+                      </div>
                     ))
                 ) : (
                 <div className="col-span-full text-center py-16">
@@ -283,6 +287,18 @@ export default function MenuPage() {
             </p>
           </div>
         </footer>
+
+        {selectedProduct && (
+          <ProductDetailDialog 
+            product={selectedProduct} 
+            isOpen={!!selectedProduct}
+            onOpenChange={(isOpen) => {
+              if (!isOpen) {
+                setSelectedProduct(null);
+              }
+            }}
+          />
+        )}
       </div>
   );
 }

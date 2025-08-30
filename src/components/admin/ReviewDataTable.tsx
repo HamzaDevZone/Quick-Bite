@@ -5,22 +5,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import type { Review, Product } from '@/lib/types';
 import { StarRating } from '@/components/user/StarRating';
 import { format } from 'date-fns';
-import Link from 'next/link';
 import { ScrollArea } from '../ui/scroll-area';
 import { useProducts } from '@/hooks/use-products';
-import { Skeleton } from '../ui/skeleton';
 
-interface ReviewDataTableProps {
-  data: Review[];
-}
-
+// This component is simpler now as we don't link to a separate product page.
 const ProductCell = ({ productId, productsMap }: { productId: string, productsMap: Map<string, Product> }) => {
     const productName = productsMap.get(productId)?.name || 'Product not found';
 
     return (
-        <Link href={`/product/${productId}`} className="text-primary hover:underline" target="_blank">
-            {productName}
-        </Link>
+        <span>{productName}</span>
     );
 };
 
