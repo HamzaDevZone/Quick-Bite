@@ -41,7 +41,7 @@ export function SplashScreen() {
           {splashLogoUrl ? (
              <Image 
                 src={splashLogoUrl}
-                alt="QuickBite Logo"
+                alt="NexusMart Logo"
                 fill
                 priority
                 className="object-contain"
@@ -55,7 +55,7 @@ export function SplashScreen() {
           className="text-4xl md:text-5xl font-bold text-white mt-6 font-headline"
           style={{textShadow: '2px 2px 4px rgba(0,0,0,0.7)'}}
         >
-          QuickBite
+          NexusMart
         </h1>
       </div>
     </div>

@@ -25,7 +25,7 @@ export function AdminSidebar() {
     const { orders } = useOrders();
 
     const handleLogout = () => {
-        sessionStorage.removeItem('quickbite_admin_auth');
+        sessionStorage.removeItem('nexusmart_admin_auth');
         router.push('/admin/login');
     };
     
@@ -41,7 +41,7 @@ export function AdminSidebar() {
                 <div className="p-4 border-b">
                     <Link href="/admin" className="flex items-center gap-2">
                         <UtensilsCrossed className="h-8 w-8 text-primary" />
-                        <h1 className="text-xl font-bold font-headline">QuickBite Admin</h1>
+                        <h1 className="text-xl font-bold font-headline">NexusMart Admin</h1>
                     </Link>
                 </div>
                 <nav className="flex-grow p-4">

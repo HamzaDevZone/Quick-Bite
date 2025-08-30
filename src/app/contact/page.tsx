@@ -37,15 +37,15 @@ export default function ContactPage() {
                 <Card className="w-full max-w-3xl">
                     <CardHeader className="text-center">
                         <UtensilsCrossed className="mx-auto h-12 w-12 text-primary mb-4" />
-                        <CardTitle className="text-3xl font-bold font-headline">About QuickBite</CardTitle>
-                        <CardDescription>Your favorite meals, delivered fast.</CardDescription>
+                        <CardTitle className="text-3xl font-bold font-headline">About NexusMart</CardTitle>
+                        <CardDescription>Your favorite items, delivered fast.</CardDescription>
                     </CardHeader>
                     <CardContent className="text-center text-lg text-muted-foreground space-y-6 px-8 py-10">
                        <p>
-                          Welcome to QuickBite, your number one source for fast and delicious food delivery. We're dedicated to giving you the very best of local cuisine, with a focus on speed, customer service, and quality.
+                          Welcome to NexusMart, your number one source for fast and reliable local delivery. We're dedicated to giving you the very best of local commerce, with a focus on speed, customer service, and quality.
                        </p>
                        <p>
-                           Founded with a passion for food and technology, QuickBite has come a long way from its beginnings. We now serve customers all over the city and are thrilled to be a part of the fast-paced wing of the food industry.
+                           Founded with a passion for connecting communities with technology, NexusMart has come a long way from its beginnings. We now serve customers all over the city and are thrilled to be a part of the fast-paced wing of the e-commerce industry.
                        </p>
                        <p>
                           For any questions or comments about your order, please don't hesitate to reach out to us directly.

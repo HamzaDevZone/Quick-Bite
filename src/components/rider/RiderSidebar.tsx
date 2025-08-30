@@ -16,14 +16,14 @@ export function RiderSidebar() {
     const [riderId, setRiderId] = useState<string | null>(null);
 
      useEffect(() => {
-        const authData = sessionStorage.getItem('quickbite_rider_auth');
+        const authData = sessionStorage.getItem('nexusmart_rider_auth');
         if (authData) {
             setRiderId(JSON.parse(authData).riderId);
         }
     }, []);
 
     const handleLogout = () => {
-        sessionStorage.removeItem('quickbite_rider_auth');
+        sessionStorage.removeItem('nexusmart_rider_auth');
         router.push('/rider/login');
     };
 
@@ -41,7 +41,7 @@ export function RiderSidebar() {
                 <div className="p-4 border-b">
                     <Link href="/rider" className="flex items-center gap-2">
                         <Bike className="h-8 w-8 text-primary" />
-                        <h1 className="text-xl font-bold font-headline">QuickBite Rider</h1>
+                        <h1 className="text-xl font-bold font-headline">NexusMart Rider</h1>
                     </Link>
                 </div>
                 <nav className="flex-grow p-4">

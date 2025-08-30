@@ -44,7 +44,7 @@ export default function OrderHistoryPage() {
     useEffect(() => {
         if (!authLoading && !user) {
              try {
-                const storedOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
+                const storedOrderIds = JSON.parse(localStorage.getItem('nexusmart_user_orders') || '[]');
                 if(storedOrderIds.length === 0) {
                     router.replace('/login');
                 }

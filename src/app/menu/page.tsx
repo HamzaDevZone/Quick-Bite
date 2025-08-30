@@ -171,7 +171,7 @@ export default function MenuPage() {
             </Carousel>
             <div className="absolute inset-0 flex flex-col items-center justify-center z-10 p-4 pointer-events-none">
                 <h1 className="text-5xl font-extrabold tracking-tight text-white mb-2 font-headline uppercase drop-shadow-lg">
-                  Our Menu
+                  Explore Our Marketplace
                 </h1>
                 <p className="text-lg text-white/90 drop-shadow-md">
                   Delicious food, groceries, and more, delivered fast to your door.
@@ -185,7 +185,7 @@ export default function MenuPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                     type="search"
-                    placeholder="Search for pizza, burgers, and more..."
+                    placeholder="Search for pizza, groceries, and more..."
                     className="pl-10 w-full h-12 text-base rounded-full bg-secondary border-transparent focus:border-primary focus:ring-primary"
                     value={searchTerm}
                     onChange={(e) => {
@@ -294,7 +294,7 @@ export default function MenuPage() {
         </main>
         <footer className="bg-secondary py-4 mt-12">
           <div className="container mx-auto text-center text-muted-foreground text-sm">
-            <p>&copy; 2024 QuickBite. All Rights Reserved.</p>
+            <p>&copy; 2024 NexusMart. All Rights Reserved.</p>
             <p className="text-xs mt-1">
               Developed by Huzaifa. To get your own website, feel free to reach out.
             </p>

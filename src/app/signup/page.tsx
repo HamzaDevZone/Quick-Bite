@@ -80,7 +80,7 @@ export default function SignupPage() {
                     <CardHeader className="text-center">
                         <UserPlus className="mx-auto h-12 w-12 text-primary mb-4" />
                         <CardTitle className="text-2xl font-bold">Create an Account</CardTitle>
-                        <CardDescription>Join QuickBite to start ordering your favorite food.</CardDescription>
+                        <CardDescription>Join NexusMart to start ordering your favorite items.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                        <Form {...form}>

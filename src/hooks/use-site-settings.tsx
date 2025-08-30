@@ -43,7 +43,7 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     try {
-      const storedSettings = localStorage.getItem('quickbite-site-settings');
+      const storedSettings = localStorage.getItem('nexusmart-site-settings');
       if (storedSettings) {
         // Merge stored settings with defaults to ensure new fields are present
         const parsed = JSON.parse(storedSettings);
@@ -59,7 +59,7 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
   const saveSettings = (newSettings: SiteSettings) => {
     try {
         setSettings(newSettings);
-        localStorage.setItem('quickbite-site-settings', JSON.stringify(newSettings));
+        localStorage.setItem('nexusmart-site-settings', JSON.stringify(newSettings));
     } catch (error) {
          console.error("Could not save site settings to localStorage", error);
          toast({ variant: 'destructive', title: 'Error', description: 'Could not save settings.' });

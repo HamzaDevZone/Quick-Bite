@@ -67,10 +67,10 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         
         if (!user) {
              try {
-                const currentOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
+                const currentOrderIds = JSON.parse(localStorage.getItem('nexusmart_user_orders') || '[]');
                 const updatedOrderIds = [...currentOrderIds, orderId];
                 setUserOrderIds(updatedOrderIds);
-                localStorage.setItem('quickbite_user_orders', JSON.stringify(updatedOrderIds));
+                localStorage.setItem('nexusmart_user_orders', JSON.stringify(updatedOrderIds));
             } catch (error) {
                 console.error("Could not save user order ID to localStorage", error);
             }
@@ -102,7 +102,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
       q = query(collection(db, 'orders'), where('userId', '==', user.uid));
     } else {
       try {
-        const storedOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
+        const storedOrderIds = JSON.parse(localStorage.getItem('nexusmart_user_orders') || '[]');
         setUserOrderIds(storedOrderIds);
         if (storedOrderIds.length > 0) {
           q = query(collection(db, 'orders'), where('id', 'in', storedOrderIds));
@@ -172,10 +172,10 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         
         if (!user) {
             try {
-                const currentOrderIds = JSON.parse(localStorage.getItem('quickbite_user_orders') || '[]');
+                const currentOrderIds = JSON.parse(localStorage.getItem('nexusmart_user_orders') || '[]');
                 const updatedOrderIds = currentOrderIds.filter((id: string) => id !== orderId);
                 setUserOrderIds(updatedOrderIds);
-                localStorage.setItem('quickbite_user_orders', JSON.stringify(updatedOrderIds));
+                localStorage.setItem('nexusmart_user_orders', JSON.stringify(updatedOrderIds));
             } catch (error) {
                 console.error("Could not remove order ID from localStorage", error);
             }

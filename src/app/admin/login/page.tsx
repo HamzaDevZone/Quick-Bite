@@ -26,7 +26,7 @@ export default function AdminLoginPage() {
 
         if (adminUser) {
             try {
-                sessionStorage.setItem('quickbite_admin_auth', 'true');
+                sessionStorage.setItem('nexusmart_admin_auth', 'true');
                 toast({ title: 'Login Successful', description: 'Redirecting to dashboard...' });
                 router.push('/admin');
             } catch (error) {

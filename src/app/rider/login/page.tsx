@@ -24,7 +24,7 @@ export default function RiderLoginPage() {
 
         if (rider) {
             try {
-                sessionStorage.setItem('quickbite_rider_auth', JSON.stringify({isAuthenticated: true, riderId: rider.id}));
+                sessionStorage.setItem('nexusmart_rider_auth', JSON.stringify({isAuthenticated: true, riderId: rider.id}));
                 toast({ title: 'Login Successful', description: 'Redirecting to your dashboard...' });
                 router.push('/rider');
             } catch (error) {

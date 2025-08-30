@@ -16,7 +16,7 @@ export default function RiderLayout({ children }: { children: React.ReactNode })
 
     useEffect(() => {
         try {
-            const authData = sessionStorage.getItem('quickbite_rider_auth');
+            const authData = sessionStorage.getItem('nexusmart_rider_auth');
             const authenticated = authData ? JSON.parse(authData).isAuthenticated : false;
             setIsAuth(authenticated);
             if (!authenticated && pathname !== '/rider/login') {

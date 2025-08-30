@@ -33,10 +33,10 @@ export default function LandingPage() {
               />
             <div className="bg-black/60 p-8 rounded-lg z-10">
               <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-4 font-headline uppercase">
-                QuickBite Delivers
+                NexusMart Delivers
               </h1>
               <p className="text-lg md:text-xl max-w-2xl mx-auto text-white/90">
-                Your favorite meals from local restaurants, delivered fast to your door.
+                Your favorite items from local stores, delivered fast to your door.
               </p>
               <Button asChild size="lg" className="mt-8 rounded-full font-bold text-lg py-6 px-8">
                 <Link href="/menu">Order Now</Link>
@@ -48,14 +48,14 @@ export default function LandingPage() {
           <section className="py-20 bg-secondary">
             <div className="container mx-auto px-4 text-center">
               <h2 className="text-4xl font-bold mb-2 font-headline uppercase text-primary">How It Works</h2>
-              <p className="text-muted-foreground mb-12 max-w-xl mx-auto">Just a few simple steps to get your favorite food delivered.</p>
+              <p className="text-muted-foreground mb-12 max-w-xl mx-auto">Just a few simple steps to get your favorite items delivered.</p>
               <div className="grid md:grid-cols-3 gap-12">
                 <div className="flex flex-col items-center">
                   <div className="p-6 bg-primary/20 border-2 border-primary rounded-full mb-4">
                     <UtensilsCrossed className="h-10 w-10 text-primary" />
                   </div>
-                  <h3 className="text-2xl font-semibold mb-2">Choose Your Meal</h3>
-                  <p className="text-muted-foreground">Browse through a wide variety of restaurants and dishes.</p>
+                  <h3 className="text-2xl font-semibold mb-2">Choose Your Items</h3>
+                  <p className="text-muted-foreground">Browse through a wide variety of stores and products.</p>
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="p-6 bg-primary/20 border-2 border-primary rounded-full mb-4">
@@ -69,7 +69,7 @@ export default function LandingPage() {
                     <Bike className="h-10 w-10 text-primary" />
                   </div>
                   <h3 className="text-2xl font-semibold mb-2">Fast Delivery</h3>
-                  <p className="text-muted-foreground">Our riders will deliver your food hot and fresh.</p>
+                  <p className="text-muted-foreground">Our riders will deliver your order quickly and safely.</p>
                 </div>
               </div>
             </div>
@@ -80,17 +80,17 @@ export default function LandingPage() {
             <div className="container mx-auto px-4 text-center">
               <h2 className="text-4xl font-bold mb-4 font-headline uppercase">Ready to Order?</h2>
               <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-                Don't wait! Find your next favorite meal and get it delivered right to you.
+                Don't wait! Find your next favorite item and get it delivered right to you.
               </p>
               <Button asChild size="lg" className="rounded-full font-bold text-lg py-6 px-8">
-                <Link href="/menu">Browse Menu</Link>
+                <Link href="/menu">Browse Marketplace</Link>
               </Button>
             </div>
           </section>
         </main>
         <footer className="bg-background border-t">
           <div className="container mx-auto py-6 px-4 text-center text-muted-foreground">
-            <p>&copy; 2024 QuickBite. All Rights Reserved.</p>
+            <p>&copy; 2024 NexusMart. All Rights Reserved.</p>
             <p className="text-xs mt-2">
               Developed by Huzaifa. To get your own website, feel free to reach out.
             </p>

@@ -23,7 +23,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     try {
-        const storedCart = localStorage.getItem('quickbite-cart');
+        const storedCart = localStorage.getItem('nexusmart-cart');
         if (storedCart) {
             setCart(JSON.parse(storedCart));
         }
@@ -34,7 +34,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('quickbite-cart', JSON.stringify(cart));
+    localStorage.setItem('nexusmart-cart', JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = (product: Product, quantity = 1) => {

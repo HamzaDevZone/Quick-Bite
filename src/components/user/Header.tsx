@@ -19,7 +19,7 @@ export function UserHeader() {
   const { theme, setTheme } = useTheme();
 
   const navLinks = [
-    { href: '/menu', label: 'Menu' },
+    { href: '/menu', label: 'Marketplace' },
     { href: '/orders', label: 'My Orders' },
     ...(user ? [{ href: '/profile', label: 'My Profile', icon: UserCircle }] : []),
     { href: '/contact', label: 'Contact Us', icon: MessageSquare },
@@ -45,7 +45,7 @@ export function UserHeader() {
     <header className="sticky top-0 z-40 w-full border-b border-border/20 bg-background/80 backdrop-blur-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="text-2xl font-bold text-primary font-headline tracking-wider">
-          QuickBite
+          NexusMart
         </Link>
         
         {/* Desktop Navigation */}
@@ -125,7 +125,7 @@ export function UserHeader() {
                     </SheetHeader>
                     <div className="flex flex-col p-4 pt-10 h-full">
                         <Link href="/" className="text-2xl font-bold text-primary font-headline mb-8 tracking-wider" onClick={() => setIsSheetOpen(false)}>
-                            QuickBite
+                            NexusMart
                         </Link>
                         <nav className="flex flex-col gap-3">
                             {navLinks.map(({ href, label, icon: Icon }) => (

@@ -20,7 +20,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     useEffect(() => {
         try {
-            const authenticated = sessionStorage.getItem('quickbite_admin_auth') === 'true';
+            const authenticated = sessionStorage.getItem('nexusmart_admin_auth') === 'true';
             setIsAuth(authenticated);
             if (!authenticated && pathname !== '/admin/login') {
                 router.replace('/admin/login');
