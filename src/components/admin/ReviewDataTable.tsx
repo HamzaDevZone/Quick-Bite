@@ -8,6 +8,14 @@ import { format } from 'date-fns';
 import { ScrollArea } from '../ui/scroll-area';
 import { useProducts } from '@/hooks/use-products';
 
+interface ReviewWithId extends Review {
+    id: string;
+}
+
+interface ReviewDataTableProps {
+  data: ReviewWithId[];
+}
+
 // This component is simpler now as we don't link to a separate product page.
 const ProductCell = ({ productId, productsMap }: { productId: string, productsMap: Map<string, Product> }) => {
     const productName = productsMap.get(productId)?.name || 'Product not found';

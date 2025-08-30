@@ -8,8 +8,12 @@ import type { Review } from '@/lib/types';
 import { ReviewDataTable } from '@/components/admin/ReviewDataTable';
 import { Skeleton } from '@/components/ui/skeleton';
 
+interface ReviewWithId extends Review {
+    id: string;
+}
+
 export default function AdminReviewsPage() {
-    const [reviews, setReviews] = useState<Review[]>([]);
+    const [reviews, setReviews] = useState<ReviewWithId[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -19,7 +23,7 @@ export default function AdminReviewsPage() {
                 const reviewsCollection = collection(db, 'reviews');
                 const q = query(reviewsCollection, orderBy('createdAt', 'desc'));
                 const querySnapshot = await getDocs(q);
-                const reviewsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Review));
+                const reviewsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ReviewWithId));
                 setReviews(reviewsData);
             } catch (error) {
                 console.error("Error fetching reviews:", error);
