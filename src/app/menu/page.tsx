@@ -3,7 +3,7 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
-import { Search, Utensils, ShoppingBasket, HardDrive } from 'lucide-react';
+import { Search, Utensils, ShoppingBasket, HardDrive, HelpCircle } from 'lucide-react';
 import { ProductCard } from '@/components/user/ProductCard';
 import { CategoryTabs } from '@/components/user/CategoryTabs';
 import { UserHeader } from '@/components/user/Header';
@@ -15,20 +15,23 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import Autoplay from "embla-carousel-autoplay"
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { Product, MainCategory, SubCategory, ServiceType } from '@/lib/types';
+import type { Product, MainCategory, SubCategory } from '@/lib/types';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { ProductDetailDialog } from '@/components/user/ProductDetailDialog';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
-const serviceTypes: { id: ServiceType, name: string, icon: React.ElementType }[] = [
-    { id: 'Food', name: 'Food', icon: Utensils },
-    { id: 'Grocery', name: 'Grocery', icon: ShoppingBasket },
-    { id: 'Electronics', name: 'Electronics', icon: HardDrive },
-];
+const getIconForCategory = (categoryName: string) => {
+    const lowerCaseName = categoryName.toLowerCase();
+    if (lowerCaseName.includes('food')) return Utensils;
+    if (lowerCaseName.includes('grocery')) return ShoppingBasket;
+    if (lowerCaseName.includes('electronic')) return HardDrive;
+    return HelpCircle;
+}
+
 
 export default function MenuPage() {
-  const [activeServiceType, setActiveServiceType] = useState<ServiceType>('Food');
+  const [activeMainCategory, setActiveMainCategory] = useState<string | null>(null);
   const [activeSubCategory, setActiveSubCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -45,6 +48,13 @@ export default function MenuPage() {
     }
   }, [user, authLoading, router]);
 
+  // Set the first main category as active by default
+  useEffect(() => {
+    if (!activeMainCategory && mainCategories.length > 0) {
+      setActiveMainCategory(mainCategories[0].id);
+    }
+  }, [mainCategories, activeMainCategory]);
+
   const productsPerPage = 8;
 
   const plugin = useRef(
@@ -58,24 +68,21 @@ export default function MenuPage() {
       { src: settings.menuCarouselImage4, alt: 'Spicy chicken wings', hint: 'chicken wings' },
   ]
 
-  const filteredMainCategories = useMemo(() => {
-    return mainCategories.filter(mc => mc.serviceType === activeServiceType);
-  }, [mainCategories, activeServiceType]);
-
   const filteredSubCategories = useMemo(() => {
-    const mainCategoryIds = filteredMainCategories.map(mc => mc.id);
-    return subCategories.filter(sc => mainCategoryIds.includes(sc.mainCategoryId));
-  }, [subCategories, filteredMainCategories]);
+    if (!activeMainCategory) return [];
+    return subCategories.filter(sc => sc.mainCategoryId === activeMainCategory);
+  }, [subCategories, activeMainCategory]);
 
   const filteredProducts = useMemo(() => {
-    const mainCategoryIds = filteredMainCategories.map(mc => mc.id);
+    if (!activeMainCategory) return [];
+    
     return products.filter(product => {
-      const serviceMatch = mainCategoryIds.includes(product.mainCategoryId);
+      const mainCategoryMatch = product.mainCategoryId === activeMainCategory;
       const subCategoryMatch = activeSubCategory === 'all' || product.subCategoryId === activeSubCategory;
       const searchMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-      return serviceMatch && subCategoryMatch && searchMatch;
+      return mainCategoryMatch && subCategoryMatch && searchMatch;
     });
-  }, [products, filteredMainCategories, activeSubCategory, searchTerm]);
+  }, [products, activeMainCategory, activeSubCategory, searchTerm]);
 
   const isLoading = productsLoading || categoriesLoading || settingsLoading || authLoading;
 
@@ -91,8 +98,8 @@ export default function MenuPage() {
     }
   };
 
-  const handleServiceTypeChange = (service: ServiceType) => {
-    setActiveServiceType(service);
+  const handleMainCategoryChange = (mainCategoryId: string) => {
+    setActiveMainCategory(mainCategoryId);
     setActiveSubCategory('all');
     setCurrentPage(1);
   }
@@ -192,18 +199,18 @@ export default function MenuPage() {
             <div className="mb-4">
                 <ScrollArea className="w-full whitespace-nowrap">
                     <div className="flex justify-center gap-2 pb-4">
-                    {serviceTypes.map(st => {
-                        const Icon = st.icon;
+                    {mainCategories.map(mc => {
+                        const Icon = getIconForCategory(mc.name);
                         return (
                             <Button 
-                                key={st.id}
+                                key={mc.id}
                                 size="lg"
-                                variant={activeServiceType === st.id ? 'default' : 'outline'}
-                                onClick={() => handleServiceTypeChange(st.id)}
+                                variant={activeMainCategory === mc.id ? 'default' : 'outline'}
+                                onClick={() => handleMainCategoryChange(mc.id)}
                                 className="rounded-full gap-2 transition-all duration-300"
                             >
                                 <Icon className="w-5 h-5"/>
-                                {st.name}
+                                {mc.name}
                             </Button>
                         )
                     })}
