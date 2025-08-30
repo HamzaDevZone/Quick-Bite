@@ -1,8 +1,6 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
-  output: 'export',
-  dynamicParams: true, // Allow dynamic routes to be generated on-demand
   /* config options here */
   images: {
     unoptimized: true,
