@@ -34,6 +34,14 @@ export function RiderOrderDataTable({ data }: RiderOrderDataTableProps) {
   const handleStatusChange = (orderId: string, status: OrderStatus) => {
     updateOrderStatus(orderId, status);
   };
+  
+  if (data.length === 0) {
+    return (
+        <div className="rounded-md border bg-card flex items-center justify-center h-48">
+            <p className="text-muted-foreground">No orders found.</p>
+        </div>
+    );
+  }
 
   return (
     <div className="rounded-md border bg-card">
@@ -50,14 +58,7 @@ export function RiderOrderDataTable({ data }: RiderOrderDataTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.length === 0 ? (
-              <TableRow key="no-orders-row">
-                <TableCell colSpan={6} className="h-24 text-center">
-                  No orders found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              data.map(order => (
+              {data.map(order => (
                 <TableRow key={order.id}>
                   <TableCell className="font-medium">
                     <Link href={`/rider/orders/${order.id}`} className="text-primary hover:underline">
@@ -97,8 +98,7 @@ export function RiderOrderDataTable({ data }: RiderOrderDataTableProps) {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
+              ))}
           </TableBody>
         </Table>
       </ScrollArea>
