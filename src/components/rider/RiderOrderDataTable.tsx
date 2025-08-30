@@ -50,54 +50,55 @@ export function RiderOrderDataTable({ data }: RiderOrderDataTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.length === 0 && (
+            {data.length === 0 ? (
               <TableRow key="no-orders-row">
                 <TableCell colSpan={6} className="h-24 text-center">
                   No orders found.
                 </TableCell>
               </TableRow>
+            ) : (
+              data.map(order => (
+                <TableRow key={order.id}>
+                  <TableCell className="font-medium">
+                    <Link href={`/rider/orders/${order.id}`} className="text-primary hover:underline">
+                        #{order.id}
+                    </Link>
+                  </TableCell>
+                  <TableCell>{order.customerName}</TableCell>
+                  <TableCell>{order.customerAddress}</TableCell>
+                  <TableCell className="text-right">PKR {order.total.toFixed(2)}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
+                      {order.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0" disabled={order.status === 'Delivered' || order.status === 'Pending'}>
+                          <span className="sr-only">Open menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem 
+                          onClick={() => handleStatusChange(order.id, 'Picked')}
+                          disabled={order.status !== 'Preparing'}
+                        >
+                          Mark as Picked
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleStatusChange(order.id, 'Delivered')}
+                          disabled={order.status !== 'Picked'}
+                        >
+                          Mark as Delivered
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
             )}
-            {data.map(order => (
-              <TableRow key={order.id}>
-                <TableCell className="font-medium">
-                  <Link href={`/rider/orders/${order.id}`} className="text-primary hover:underline">
-                      #{order.id}
-                  </Link>
-                </TableCell>
-                <TableCell>{order.customerName}</TableCell>
-                <TableCell>{order.customerAddress}</TableCell>
-                <TableCell className="text-right">PKR {order.total.toFixed(2)}</TableCell>
-                <TableCell>
-                  <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
-                    {order.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0" disabled={order.status === 'Delivered' || order.status === 'Pending'}>
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem 
-                        onClick={() => handleStatusChange(order.id, 'Picked')}
-                        disabled={order.status !== 'Preparing'}
-                      >
-                        Mark as Picked
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => handleStatusChange(order.id, 'Delivered')}
-                        disabled={order.status !== 'Picked'}
-                      >
-                        Mark as Delivered
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
           </TableBody>
         </Table>
       </ScrollArea>
