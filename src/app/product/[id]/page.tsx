@@ -5,11 +5,9 @@ import type { Product } from '@/lib/types';
 import { notFound } from 'next/navigation';
 import { ProductDetailClient } from './ProductDetailClient';
 
-// This function tells Next.js not to pre-render any product pages at build time.
-// They will be rendered on-demand when the user visits them. This is required for "output: export".
-export async function generateStaticParams() {
-  return [];
-}
+// This page will now be rendered dynamically on-demand.
+// This is the correct approach for a dynamic app using a live database.
+export const dynamic = 'force-dynamic';
 
 async function getProduct(id: string): Promise<Product | null> {
     try {
