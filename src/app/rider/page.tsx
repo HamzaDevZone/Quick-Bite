@@ -12,7 +12,7 @@ export default function RiderDashboardPage() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const authData = sessionStorage.getItem('quickbite_rider_auth');
+        const authData = sessionStorage.getItem('nexusmart_rider_auth');
         if (authData) {
             setRiderId(JSON.parse(authData).riderId);
         }

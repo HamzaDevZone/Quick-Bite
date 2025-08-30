@@ -1,3 +1,4 @@
+
 'use client';
 
 import { RiderOrderDataTable } from '@/components/rider/RiderOrderDataTable';
@@ -9,7 +10,7 @@ export default function RiderHistoryPage() {
     const [riderId, setRiderId] = useState<string | null>(null);
 
     useEffect(() => {
-        const authData = sessionStorage.getItem('quickbite_rider_auth');
+        const authData = sessionStorage.getItem('nexusmart_rider_auth');
         if (authData) {
             setRiderId(JSON.parse(authData).riderId);
         }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -14,7 +15,7 @@ export default function RiderProfilePage() {
     const { riders, loading } = useRiders();
 
     useEffect(() => {
-        const authData = sessionStorage.getItem('quickbite_rider_auth');
+        const authData = sessionStorage.getItem('nexusmart_rider_auth');
         if (authData && !loading) {
             const riderId = JSON.parse(authData).riderId;
             const currentRider = riders.find(r => r.id === riderId);
