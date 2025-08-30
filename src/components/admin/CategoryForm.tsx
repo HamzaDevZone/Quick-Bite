@@ -48,6 +48,7 @@ export function CategoryForm({ categoryToEdit, setFormOpen }: CategoryFormProps)
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (categoryToEdit) {
+      // Use the actual document ID from the prop for updating
       updateCategory(categoryToEdit.id, values);
     } else {
       addCategory(values);
