@@ -18,6 +18,8 @@ interface NewOrderData {
     deliveryFee: number;
     orderNotes?: string;
     mainCategoryId: string;
+    transactionId?: string;
+    paymentScreenshotUrl?: string;
 }
 
 interface OrderContextType {

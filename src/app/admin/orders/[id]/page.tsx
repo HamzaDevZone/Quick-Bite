@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { useOrders } from '@/hooks/use-orders';
 import { useRiders } from '@/hooks/use-riders';
 import { OrderStatus, Rider, Order } from '@/lib/types';
-import { ArrowLeft, User, Phone, MapPin, DollarSign, Clock, Bike, Check, Package, UtensilsCrossed, ShoppingCart, StickyNote } from 'lucide-react';
+import { ArrowLeft, User, Phone, MapPin, DollarSign, Clock, Bike, Check, Package, UtensilsCrossed, ShoppingCart, StickyNote, Link as LinkIcon, Ticket } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -24,6 +24,8 @@ import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export const dynamic = 'force-dynamic';
 
@@ -132,6 +134,7 @@ export default function AdminOrderDetailPage() {
 
     const currentRider = riders.find(r => r.id === order.riderId);
     const CurrentStatusIcon = statusIcons[order.status];
+    const isPaidOrder = order.paymentMethod.toLowerCase().includes('cash on delivery') === false;
 
     return (
         <div>
@@ -157,6 +160,27 @@ export default function AdminOrderDetailPage() {
                              </div>
                         </CardHeader>
                         <CardContent>
+                             {isPaidOrder && (order.transactionId || order.paymentScreenshotUrl) && (
+                                <Alert variant="default" className="mb-6 bg-blue-500/10 border-blue-500/20">
+                                    <AlertDescription className="space-y-2">
+                                        {order.transactionId && (
+                                            <p className="flex items-center gap-2">
+                                                <Ticket className="h-4 w-4"/> 
+                                                <strong>Trx ID:</strong> {order.transactionId}
+                                            </p>
+                                        )}
+                                        {order.paymentScreenshotUrl && (
+                                            <p className="flex items-start gap-2">
+                                                <LinkIcon className="h-4 w-4 mt-1"/> 
+                                                <strong>Screenshot:</strong> 
+                                                <Link href={order.paymentScreenshotUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
+                                                    View Payment Screenshot
+                                                </Link>
+                                            </p>
+                                        )}
+                                    </AlertDescription>
+                                </Alert>
+                            )}
                             <div className="space-y-4">
                                 {order.items.map(item => (
                                     <div key={item.product.id} className="flex items-center gap-4 p-2 rounded-md bg-secondary/50">

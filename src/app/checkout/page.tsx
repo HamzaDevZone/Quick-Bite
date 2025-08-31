@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -18,8 +19,9 @@ import { useEffect, useState } from 'react';
 import { useSiteSettings } from '@/hooks/use-site-settings';
 import { Textarea } from '@/components/ui/textarea';
 import type { PaymentMethod } from '@/lib/types';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useCheckout } from '@/hooks/use-checkout';
+import { cn } from '@/lib/utils';
 
 const checkoutSchema = z.object({
   customerName: z.string().min(2, 'Name is required.'),
@@ -27,7 +29,33 @@ const checkoutSchema = z.object({
   customerAddress: z.string().min(10, 'A valid address is required.'),
   paymentMethod: z.string({ required_error: 'Please select a payment method.' }),
   orderNotes: z.string().optional(),
+  transactionId: z.string().optional(),
+  paymentScreenshotUrl: z.string().optional(),
+}).refine(data => {
+    const isCashOnDelivery = data.paymentMethod?.toLowerCase().includes('cash on delivery');
+    if (!isCashOnDelivery) {
+        return !!data.transactionId && !!data.paymentScreenshotUrl;
+    }
+    return true;
+}, {
+    message: "Transaction ID and Screenshot URL are required for this payment method.",
+    path: ['transactionId'], // You can also set path to ['paymentScreenshotUrl']
+}).refine(data => {
+    const isCashOnDelivery = data.paymentMethod?.toLowerCase().includes('cash on delivery');
+    if (!isCashOnDelivery && data.paymentScreenshotUrl) {
+        try {
+            new URL(data.paymentScreenshotUrl);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
+    return true;
+}, {
+    message: "Please enter a valid URL for the screenshot.",
+    path: ['paymentScreenshotUrl'],
 });
+
 
 export default function CheckoutPage() {
   const { cart, cartTotal, itemCount } = useCart();
@@ -36,6 +64,7 @@ export default function CheckoutPage() {
   const deliveryFee = settings.deliveryFee;
   const router = useRouter();
   const [selectedMethodDetails, setSelectedMethodDetails] = useState<string | undefined>(undefined);
+  const [isPaidMethodSelected, setIsPaidMethodSelected] = useState(false);
 
   const form = useForm<z.infer<typeof checkoutSchema>>({
     resolver: zodResolver(checkoutSchema),
@@ -44,6 +73,8 @@ export default function CheckoutPage() {
       customerPhone: '',
       customerAddress: '',
       orderNotes: '',
+      transactionId: '',
+      paymentScreenshotUrl: '',
     },
   });
 
@@ -64,17 +95,20 @@ export default function CheckoutPage() {
   const getIconForMethod = (methodValue: string) => {
     const lowerCaseValue = methodValue.toLowerCase();
     if (lowerCaseValue.includes('bank')) return Landmark;
-    if (lowerCaseValue.includes('card') || lowerCaseValue.includes('pay') || lowerCaseValue.includes('cash')) {
-        if(lowerCaseValue.includes('cash on')) return Wallet;
-        return CreditCard;
-    }
-    return Wallet; // Default icon
+    if (lowerCaseValue.includes('cash on delivery')) return Wallet;
+    return CreditCard; // Default icon
   }
 
   const handlePaymentMethodChange = (value: string) => {
     form.setValue('paymentMethod', value);
     const selectedMethod = settings.paymentMethods.find(m => m.label === value);
     setSelectedMethodDetails(selectedMethod?.details);
+    const isPaid = value.toLowerCase().includes('cash on delivery') === false;
+    setIsPaidMethodSelected(isPaid);
+    // Trigger validation when payment method changes
+    if(form.formState.isSubmitted){
+       form.trigger(['transactionId', 'paymentScreenshotUrl']);
+    }
   }
 
 
@@ -198,6 +232,41 @@ export default function CheckoutPage() {
                                 </AlertDescription>
                             </Alert>
                         )}
+                        <div className={cn("pt-4 space-y-6 transition-all duration-300", isPaidMethodSelected ? "opacity-100 max-h-96" : "opacity-0 max-h-0 overflow-hidden pointer-events-none")}>
+                            <Alert variant="default" className="border-primary/50">
+                                <AlertTitle className="font-bold">Payment Verification</AlertTitle>
+                                <AlertDescription>
+                                    For paid orders, please provide the transaction details below to help us verify your payment quickly.
+                                </AlertDescription>
+                            </Alert>
+                             <FormField
+                                control={form.control}
+                                name="transactionId"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Transaction ID (Trx ID)</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="e.g. 8431873138" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="paymentScreenshotUrl"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Payment Screenshot URL</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="https://imgbb.com/your-image-link" {...field} />
+                                    </FormControl>
+                                     <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                           
+                        </div>
                     </CardContent>
                 </Card>
 

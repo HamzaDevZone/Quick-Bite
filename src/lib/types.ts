@@ -67,6 +67,8 @@ export interface Order {
   deliveryFee: number;
   orderNotes?: string;
   mainCategoryId: string;
+  transactionId?: string;
+  paymentScreenshotUrl?: string;
 }
 
 export interface PaymentMethod {

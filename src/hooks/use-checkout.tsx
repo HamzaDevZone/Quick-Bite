@@ -13,6 +13,8 @@ interface CheckoutValues {
   customerAddress: string;
   paymentMethod: string;
   orderNotes?: string;
+  transactionId?: string;
+  paymentScreenshotUrl?: string;
 }
 
 export function useCheckout() {
