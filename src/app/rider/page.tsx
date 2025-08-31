@@ -1,8 +1,10 @@
+
 'use client';
 
+import React from 'react';
 import { useOrders } from '@/hooks/use-orders';
 import { useState, useEffect } from 'react';
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableCaption } from '@/components/ui/table';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCaption, TableCell } from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -27,11 +29,16 @@ export default function RiderDashboardPage() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const authData = sessionStorage.getItem('nexusmart_rider_auth');
-        if (authData) {
-            setRiderId(JSON.parse(authData).riderId);
+        try {
+            const authData = sessionStorage.getItem('nexusmart_rider_auth');
+            if (authData) {
+                setRiderId(JSON.parse(authData).riderId);
+            }
+        } catch(error) {
+            console.warn('Could not access sessionStorage for rider auth.');
+        } finally {
+            setIsLoading(false);
         }
-        setIsLoading(false);
     }, []);
 
     const assignedOrders = orders.filter(order => order.riderId === riderId && order.status !== 'Delivered');
@@ -73,39 +80,41 @@ export default function RiderDashboardPage() {
                       </TableHeader>
                       <TableBody>
                         {assignedOrders.map(order => (
-                            <TableRow key={order.id}>
-                                <TableCell className="font-medium">
-                                    <Link href={`/rider/orders/${order.id}`} className="text-primary hover:underline">
-                                        #{order.id}
-                                    </Link>
-                                </TableCell>
-                                <TableCell>{order.customerName}</TableCell>
-                                <TableCell>{order.customerAddress}</TableCell>
-                                <TableCell className="text-right">PKR {order.total.toFixed(2)}</TableCell>
-                                <TableCell>
-                                    <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
-                                    {order.status}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" className="h-8 w-8 p-0">
-                                            <span className="sr-only">Open menu</span>
-                                            <MoreHorizontal className="h-4 w-4" />
-                                        </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem onClick={() => updateOrderStatus(order.id, 'Picked')} disabled={order.status !== 'Preparing'}>
-                                                Mark as Picked
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => updateOrderStatus(order.id, 'Delivered')} disabled={order.status !== 'Picked'}>
-                                                Mark as Delivered
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
+                            <React.Fragment key={order.id}>
+                                <TableRow>
+                                    <TableCell className="font-medium">
+                                        <Link href={`/rider/orders/${order.id}`} className="text-primary hover:underline">
+                                            #{order.id}
+                                        </Link>
+                                    </TableCell>
+                                    <TableCell>{order.customerName}</TableCell>
+                                    <TableCell>{order.customerAddress}</TableCell>
+                                    <TableCell className="text-right">PKR {order.total.toFixed(2)}</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
+                                        {order.status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                                <span className="sr-only">Open menu</span>
+                                                <MoreHorizontal className="h-4 w-4" />
+                                            </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem onClick={() => updateOrderStatus(order.id, 'Picked')} disabled={order.status !== 'Preparing'}>
+                                                    Mark as Picked
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => updateOrderStatus(order.id, 'Delivered')} disabled={order.status !== 'Picked'}>
+                                                    Mark as Delivered
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            </React.Fragment>
                         ))}
                       </TableBody>
                     </Table>
@@ -131,27 +140,29 @@ export default function RiderDashboardPage() {
                       </TableHeader>
                       <TableBody>
                          {completedOrders.map(order => (
-                            <TableRow key={order.id}>
-                                <TableCell className="font-medium">
-                                    <Link href={`/rider/orders/${order.id}`} className="text-primary hover:underline">
-                                        #{order.id}
-                                    </Link>
-                                </TableCell>
-                                <TableCell>{order.customerName}</TableCell>
-                                <TableCell>{order.customerAddress}</TableCell>
-                                <TableCell className="text-right">PKR {order.total.toFixed(2)}</TableCell>
-                                <TableCell>
-                                    <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
-                                    {order.status}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <Button variant="ghost" className="h-8 w-8 p-0" disabled>
-                                        <span className="sr-only">Open menu</span>
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
+                            <React.Fragment key={order.id}>
+                                <TableRow>
+                                    <TableCell className="font-medium">
+                                        <Link href={`/rider/orders/${order.id}`} className="text-primary hover:underline">
+                                            #{order.id}
+                                        </Link>
+                                    </TableCell>
+                                    <TableCell>{order.customerName}</TableCell>
+                                    <TableCell>{order.customerAddress}</TableCell>
+                                    <TableCell className="text-right">PKR {order.total.toFixed(2)}</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
+                                        {order.status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <Button variant="ghost" className="h-8 w-8 p-0" disabled>
+                                            <span className="sr-only">Open menu</span>
+                                            <MoreHorizontal className="h-4 w-4" />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            </React.Fragment>
                         ))}
                       </TableBody>
                     </Table>
